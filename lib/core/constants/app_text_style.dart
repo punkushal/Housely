@@ -22,12 +22,13 @@ class AppTextStyle {
     fontWeight: fontWeight,
     fontSize: ResponsiveText.getSize(context, fontSize: fontSize),
     color: color ?? AppColors.textPrimary,
+    height: lineHeight / fontSize,
   );
 
   // headings
   static TextStyle headingRegular(BuildContext context) => _base(
     context: context,
-    fontSize: ResponsiveText.getSize(context, fontSize: 24),
+    fontSize: 24,
     lineHeight: 32,
     fontWeight: FontWeight.w400,
   );
@@ -50,24 +51,24 @@ class AppTextStyle {
       bodySemiBold(context).copyWith(fontWeight: FontWeight.w500);
 
   // Labels
-  static TextStyle lableRegular(BuildContext context) => _base(
+  static TextStyle labelRegular(BuildContext context) => _base(
     context: context,
     fontSize: 10,
     fontWeight: FontWeight.w400,
     lineHeight: 14,
   );
 
-  static TextStyle lableMedium(BuildContext context) =>
-      lableRegular(context).copyWith(fontWeight: FontWeight.w500);
+  static TextStyle labelMedium(BuildContext context) =>
+      labelRegular(context).copyWith(fontWeight: FontWeight.w500);
 
-  static TextStyle lableBold(BuildContext context) => _base(
+  static TextStyle labelBold(BuildContext context) => _base(
     context: context,
     fontSize: 12,
     fontWeight: FontWeight.w700,
     lineHeight: 14,
   );
 
-  static TextStyle lableSemiBold(BuildContext context) => _base(
+  static TextStyle labelSemiBold(BuildContext context) => _base(
     context: context,
     fontSize: 16,
     fontWeight: FontWeight.w600,
