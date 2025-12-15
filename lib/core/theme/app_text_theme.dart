@@ -15,9 +15,9 @@ class AppTextTheme {
       bodyMedium: AppTextStyle.bodyRegular(context),
 
       // Labels
-      labelLarge: AppTextStyle.lableSemiBold(context),
-      labelMedium: AppTextStyle.lableMedium(context),
-      labelSmall: AppTextStyle.lableRegular(context),
+      labelLarge: AppTextStyle.labelSemiBold(context),
+      labelMedium: AppTextStyle.labelMedium(context),
+      labelSmall: AppTextStyle.labelRegular(context),
     );
   }
 }
