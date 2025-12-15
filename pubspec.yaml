@@ -35,9 +35,37 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # State management
+  flutter_bloc: ^9.1.1
+
+  # Firebase
+  firebase_auth: ^6.1.2
+  firebase_core: ^4.2.1
+
+  # Date formating
+  intl: ^0.20.2
+
+  # Navigation
+  auto_route: ^11.0.0
+
+  # Functional Programming
+  fpdart: ^1.2.0
+
+  # Dependency Injection
+  get_it: ^9.2.0
+
+  # Equality
+  equatable: ^2.0.7
+
+  # Internet connection checker
+  internet_connection_checker_plus: ^2.9.1+1
+  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  auto_route_generator: ^10.4.0
+  build_runner: ^2.10.4
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
