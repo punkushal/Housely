@@ -10,7 +10,8 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i2;
-import 'package:housely/features/onboarding/pages/splash_page.dart' as _i1;
+import 'package:housely/features/onboarding/presentation/pages/splash_page.dart'
+    as _i1;
 
 /// generated route for
 /// [_i1.SplashPage]
