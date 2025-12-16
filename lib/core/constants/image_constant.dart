@@ -10,15 +10,15 @@ class ImageConstant {
 
   // onboarding images
   static final String firstOnBoardingImg =
-      "${_baseImageUrl}onboarding/onboarding_img1";
+      "${_baseImageUrl}onboarding/onboarding_img1.png";
   static final String secondOnBoardingImg =
-      "${_baseImageUrl}onboarding/onboarding_img2";
+      "${_baseImageUrl}onboarding/onboarding_img2.png";
   static final String thirdOnBoardingImg =
-      "${_baseImageUrl}onboarding/onboarding_img3";
+      "${_baseImageUrl}onboarding/onboarding_img3.png";
   static final String fourthOnBoardingImg =
-      "${_baseImageUrl}onboarding/onboarding_img4";
+      "${_baseImageUrl}onboarding/onboarding_img4.png";
   static final String fivthOnBoardingImg =
-      "${_baseImageUrl}onboarding/onboarding_img5";
+      "${_baseImageUrl}onboarding/onboarding_img5.png";
   static final String sixthOnBoardingImg =
-      "${_baseImageUrl}onboarding/onboarding_img6";
+      "${_baseImageUrl}onboarding/onboarding_img6.png";
 }
