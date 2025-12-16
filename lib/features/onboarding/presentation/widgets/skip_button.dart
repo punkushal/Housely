@@ -4,14 +4,14 @@ import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 class SkipButton extends StatelessWidget {
   /// Skip button to skip onboarding content
-  const SkipButton({super.key});
+  const SkipButton({super.key, this.onTap});
 
+  /// on tap function
+  final void Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        // later i'll implement skip logic
-      },
+      onTap: onTap,
       child: Container(
         alignment: .center,
         margin: ResponsiveDimensions.paddingSymmetric(
