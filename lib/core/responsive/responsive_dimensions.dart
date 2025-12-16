@@ -110,6 +110,7 @@ class ResponsiveDimensions {
   static double radiusSmall(BuildContext context) => getSize(context, 8);
   static double radiusMedium(BuildContext context) => getSize(context, 12);
   static double radiusLarge(BuildContext context) => getSize(context, 16);
+  static double radiusXLarge(BuildContext context) => getSize(context, 24);
 
   /// Border radius presets
   static BorderRadius borderRadiusSmall(BuildContext context) =>
@@ -120,6 +121,9 @@ class ResponsiveDimensions {
 
   static BorderRadius borderRadiusLarge(BuildContext context) =>
       BorderRadius.circular(radiusLarge(context));
+
+  static BorderRadius borderRadiusXLarge(BuildContext context) =>
+      BorderRadius.circular(radiusXLarge(context));
 
   /// Only top corners
   static BorderRadius borderRadiusTopMedium(BuildContext context) =>
@@ -136,7 +140,8 @@ class ResponsiveDimensions {
 
   // ==================== BUTTON SIZES ====================
 
-  static double buttonHeight(BuildContext context) => getSize(context, 52);
+  static double buttonHeight(BuildContext context, {double? buttonHeight}) =>
+      getSize(context, buttonHeight ?? 52);
 
   // ==================== AVATAR SIZES ====================
   static double avatarMedium(BuildContext context) => getSize(context, 44);
