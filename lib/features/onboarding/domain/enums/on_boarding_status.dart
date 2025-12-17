@@ -1,0 +1,1 @@
+enum OnBoardingStatus { firstTime }
