@@ -1,5 +1,7 @@
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 
@@ -34,15 +36,23 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     fadeAnimation = Tween<double>(begin: 0, end: 1).animate(fadeController);
 
     // listen status of the controller
-    controller.addStatusListener((status) {
+    controller.addStatusListener((status) async {
       if (status.isCompleted) {
         fadeController.forward();
         // Navigate to onboarding page
+        _navigateToOnboarding();
       }
     });
 
     // start the animation
     controller.forward();
+  }
+
+  void _navigateToOnboarding() async {
+    await Future.delayed(Duration(milliseconds: 1200));
+    if (mounted) {
+      await context.router.replace(const OnboardingRoute());
+    }
   }
 
   @override
