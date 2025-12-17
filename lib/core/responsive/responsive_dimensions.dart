@@ -8,18 +8,32 @@ class ResponsiveDimensions {
 
   /// Base reference width
   static final double _baseWidth = Breakpoints.smallPhone;
+  static final double _baseHeight = Breakpoints.smallPhoneHeight;
 
   /// Get scale factor based on screen width
   static double _getScaleFactor(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.widthOf(context);
     double scaleFactor = screenWidth / _baseWidth;
     // Clamp between 0.85 and 1.15 to prevent extreme scaling
     return scaleFactor.clamp(0.85, 1.15);
   }
 
-  /// Get responsive size for any dimension (padding, margin, icon size, etc.)
+  /// Get scale factor based on screen height
+  static double _getHeightScaleFactor(BuildContext context) {
+    double screenHeight = MediaQuery.heightOf(context);
+    double scaleFactor = screenHeight / _baseHeight;
+
+    return scaleFactor.clamp(0.35, 1.15);
+  }
+
+  /// Get responsive size for any dimension (padding, margin, icon size, and width etc.)
   static double getSize(BuildContext context, double size) {
     return size * _getScaleFactor(context);
+  }
+
+  /// Get responsive height
+  static double getHeight(BuildContext context, double size) {
+    return size * _getHeightScaleFactor(context);
   }
 
   // ==================== SPACING/PADDING ====================
