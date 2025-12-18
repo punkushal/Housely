@@ -4,18 +4,22 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 class RedirectSection extends StatelessWidget {
+  /// Redirect section for appropriate auth page
   const RedirectSection({
     super.key,
     required this.infoText,
     required this.redirectLinkText,
+    required this.navigateTo,
   });
 
   /// info text
   final String infoText;
 
-  /// redirect link
-  /// must be wrapped with gesture detector for navigation functionality
+  /// redirect link label text
   final String redirectLinkText;
+
+  /// on tap navigation
+  final void Function() navigateTo;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -23,9 +27,12 @@ class RedirectSection extends StatelessWidget {
       spacing: ResponsiveDimensions.getSize(context, 4),
       children: [
         Text(infoText, style: AppTextStyle.bodyRegular(context, fontSize: 14)),
-        Text(
-          redirectLinkText,
-          style: AppTextStyle.bodyMedium(context, color: AppColors.primary),
+        GestureDetector(
+          onTap: navigateTo,
+          child: Text(
+            redirectLinkText,
+            style: AppTextStyle.bodyMedium(context, color: AppColors.primary),
+          ),
         ),
       ],
     );
