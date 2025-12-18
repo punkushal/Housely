@@ -8,18 +8,32 @@ class ResponsiveDimensions {
 
   /// Base reference width
   static final double _baseWidth = Breakpoints.smallPhone;
+  static final double _baseHeight = Breakpoints.smallPhoneHeight;
 
   /// Get scale factor based on screen width
   static double _getScaleFactor(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.widthOf(context);
     double scaleFactor = screenWidth / _baseWidth;
     // Clamp between 0.85 and 1.15 to prevent extreme scaling
     return scaleFactor.clamp(0.85, 1.15);
   }
 
-  /// Get responsive size for any dimension (padding, margin, icon size, etc.)
+  /// Get scale factor based on screen height
+  static double _getHeightScaleFactor(BuildContext context) {
+    double screenHeight = MediaQuery.heightOf(context);
+    double scaleFactor = screenHeight / _baseHeight;
+
+    return scaleFactor.clamp(0.35, 1.15);
+  }
+
+  /// Get responsive size for any dimension (padding, margin, icon size, and width etc.)
   static double getSize(BuildContext context, double size) {
     return size * _getScaleFactor(context);
+  }
+
+  /// Get responsive height
+  static double getHeight(BuildContext context, double size) {
+    return size * _getHeightScaleFactor(context);
   }
 
   // ==================== SPACING/PADDING ====================
@@ -110,6 +124,7 @@ class ResponsiveDimensions {
   static double radiusSmall(BuildContext context) => getSize(context, 8);
   static double radiusMedium(BuildContext context) => getSize(context, 12);
   static double radiusLarge(BuildContext context) => getSize(context, 16);
+  static double radiusXLarge(BuildContext context) => getSize(context, 24);
 
   /// Border radius presets
   static BorderRadius borderRadiusSmall(BuildContext context) =>
@@ -120,6 +135,9 @@ class ResponsiveDimensions {
 
   static BorderRadius borderRadiusLarge(BuildContext context) =>
       BorderRadius.circular(radiusLarge(context));
+
+  static BorderRadius borderRadiusXLarge(BuildContext context) =>
+      BorderRadius.circular(radiusXLarge(context));
 
   /// Only top corners
   static BorderRadius borderRadiusTopMedium(BuildContext context) =>
@@ -136,7 +154,8 @@ class ResponsiveDimensions {
 
   // ==================== BUTTON SIZES ====================
 
-  static double buttonHeight(BuildContext context) => getSize(context, 52);
+  static double buttonHeight(BuildContext context, {double? buttonHeight}) =>
+      getSize(context, buttonHeight ?? 52);
 
   // ==================== AVATAR SIZES ====================
   static double avatarMedium(BuildContext context) => getSize(context, 44);
