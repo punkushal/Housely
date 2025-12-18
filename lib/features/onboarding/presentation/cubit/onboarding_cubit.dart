@@ -22,7 +22,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       final currentState = state as OnboardingPageChanged;
       if (!currentState.isLastPage) {
         controller.nextPage(
-          duration: Duration(milliseconds: 1200),
+          duration: Duration(milliseconds: 1000),
           curve: Curves.easeInOut,
         );
       }
@@ -37,7 +37,6 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   // check status whether first time or not
   Future<void> checkStatus() async {
     final result = await getUseCase();
-    print('status from checkStatus => $state');
     result.fold(
       (failure) => emit(OnboardingError("Error while processing onboard")),
       (status) {
