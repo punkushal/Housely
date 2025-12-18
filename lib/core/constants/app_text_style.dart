@@ -47,18 +47,33 @@ class AppTextStyle {
   );
 
   // body
-  static TextStyle bodyRegular(BuildContext context) => _base(
+  static TextStyle bodyRegular(
+    BuildContext context, {
+    double fontSize = 12,
+    double lineHeight = 18,
+    Color? color,
+  }) => _base(
     context: context,
-    fontSize: 12,
+    fontSize: fontSize,
     fontWeight: FontWeight.w400,
-    lineHeight: 18,
+    lineHeight: lineHeight,
+    color: color,
   );
 
   static TextStyle bodySemiBold(BuildContext context) =>
       bodyRegular(context).copyWith(fontSize: 14, fontWeight: FontWeight.w600);
 
-  static TextStyle bodyMedium(BuildContext context) =>
-      bodySemiBold(context).copyWith(fontWeight: FontWeight.w500);
+  static TextStyle bodyMedium(
+    BuildContext context, {
+    double fontSize = 14,
+    double lineHeight = 18,
+    Color? color,
+  }) => bodyRegular(
+    context,
+    fontSize: fontSize,
+    lineHeight: lineHeight,
+    color: color,
+  ).copyWith(fontWeight: FontWeight.w500);
 
   // Labels
   static TextStyle labelRegular(BuildContext context) => _base(
