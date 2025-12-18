@@ -18,7 +18,7 @@ class WelcomeMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: ResponsiveDimensions.paddingOnly(context, left: 24, right: 88),
+      padding: ResponsiveDimensions.paddingOnly(context, right: 88),
       child: Column(
         spacing: ResponsiveDimensions.getHeight(context, 8),
         crossAxisAlignment: .start,
