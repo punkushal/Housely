@@ -1,9 +1,10 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 
 @RoutePage()
 class SplashPage extends StatefulWidget {
@@ -39,8 +40,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     controller.addStatusListener((status) async {
       if (status.isCompleted) {
         fadeController.forward();
-        // Navigate to onboarding page
-        _navigateToOnboarding();
+        await _handleNavigation();
       }
     });
 
@@ -48,18 +48,22 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     controller.forward();
   }
 
-  void _navigateToOnboarding() async {
-    await Future.delayed(Duration(milliseconds: 1200));
-    if (mounted) {
-      await context.router.replace(const OnboardingRoute());
-    }
-  }
-
   @override
   void dispose() {
     fadeController.dispose();
     controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleNavigation() async {
+    final state = context.read<OnboardingCubit>().state;
+    await Future.delayed(Duration(milliseconds: 1200));
+    if (state is OnboardingInitial && mounted) {
+      await context.router.replace(const OnboardingRoute());
+    }
+    if (state is OnboardingCompleted) {
+      print("----- Onboarding is completed-------");
+    }
   }
 
   @override
