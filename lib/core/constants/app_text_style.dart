@@ -33,8 +33,18 @@ class AppTextStyle {
     fontWeight: FontWeight.w400,
   );
 
-  static TextStyle headingSemiBold(BuildContext context) =>
-      headingRegular(context).copyWith(fontWeight: FontWeight.w600);
+  static TextStyle headingSemiBold(
+    BuildContext context, {
+    double fontSize = 24,
+    double lineHeight = 32,
+    Color? color,
+  }) => _base(
+    context: context,
+    fontSize: fontSize,
+    lineHeight: lineHeight,
+    fontWeight: FontWeight.w600,
+    color: color,
+  );
 
   // body
   static TextStyle bodyRegular(BuildContext context) => _base(
