@@ -91,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                     GestureDetector(
                       onTap: () {
                         // navigation to forgot password page
+                        context.router.push(ForgotPasswordRoute());
                       },
                       child: Text(
                         'Forgot password ?',
