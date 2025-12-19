@@ -1,4 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:housely/features/auth/data/repositories/auth_repo_impl.dart';
+import 'package:housely/features/auth/domain/repositories/auth_repo.dart';
+import 'package:housely/features/auth/domain/usecases/login_usecase.dart';
+import 'package:housely/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:housely/features/auth/domain/usecases/register_usecase.dart';
+import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
+import 'package:housely/features/auth/presentation/cubit/register_cubit.dart';
 import 'package:housely/features/onboarding/data/datasources/onboarding_local_data_source.dart';
 import 'package:housely/features/onboarding/data/repositories/onboarding_repo_impl.dart';
 import 'package:housely/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -10,19 +19,28 @@ import 'package:shared_preferences/shared_preferences.dart';
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-  // External Dependencies
+  // ============= External Dependencies ===============
   sl.registerLazySingleton(() => SharedPreferencesAsync());
+  sl.registerLazySingleton(() => FirebaseAuth.instance);
 
-  // Data layer
+  // ============= Data layer ==============
   sl.registerLazySingleton<OnboardingLocalDataSource>(
     () => OnboardingLocalDataSourceImpl(prefs: sl()),
+  );
+
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(firebaseAuth: sl()),
   );
 
   sl.registerLazySingleton<OnboardingRepository>(
     () => OnboardingRepoImpl(localDataSource: sl<OnboardingLocalDataSource>()),
   );
 
-  // Domain layer
+  sl.registerLazySingleton<AuthRepo>(
+    () => AuthRepoImpl(remoteDataSource: sl<AuthRemoteDataSource>()),
+  );
+
+  // ============== Domain layer ===============
   sl.registerLazySingleton(
     () => SetOnboardingStatusUsecase(
       onboardingRepository: sl<OnboardingRepository>(),
@@ -35,11 +53,18 @@ Future<void> initializeDependencies() async {
     ),
   );
 
-  // Presentation layer
+  sl.registerLazySingleton(() => RegisterUsecase(sl()));
+  sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => LogOutUseCase(sl()));
+
+  // ============= Presentation layer =================
   sl.registerFactory(
     () => OnboardingCubit(
       setUseCase: sl<SetOnboardingStatusUsecase>(),
       getUseCase: sl<GetOnboardingStatusUsecase>(),
     ),
   );
+
+  sl.registerFactory(() => RegisterCubit(registerUsecase: sl()));
+  sl.registerFactory(() => LoginCubit(loginUseCase: sl()));
 }
