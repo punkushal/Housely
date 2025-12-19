@@ -60,8 +60,15 @@ class AppTextStyle {
     color: color,
   );
 
-  static TextStyle bodySemiBold(BuildContext context) =>
-      bodyRegular(context).copyWith(fontSize: 14, fontWeight: FontWeight.w600);
+  static TextStyle bodySemiBold(
+    BuildContext context, {
+    double fontSize = 14,
+    double lineHeight = 18,
+  }) => bodyRegular(
+    context,
+    fontSize: fontSize,
+    lineHeight: lineHeight,
+  ).copyWith(fontWeight: FontWeight.w600);
 
   static TextStyle bodyMedium(
     BuildContext context, {
