@@ -29,7 +29,7 @@ class AppColors {
 
   /* ===================== STATUS ===================== */
 
-  static const Color success = Color(0xFF027A48);
+  static const Color success = Color(0xFF12B76A);
   static const Color successBackground = Color(0xFFD1FADF);
   static const Color error = Color(0xFFF97066);
   static const Color warning = Color(0xFFFEE4E2);
