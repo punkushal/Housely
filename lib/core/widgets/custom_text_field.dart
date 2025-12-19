@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:housely/core/constants/app_text_style.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -12,6 +13,7 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.validator,
     this.onChanged,
+    this.style,
   });
 
   /// [TextEditingController] controller
@@ -40,9 +42,13 @@ class CustomTextField extends StatelessWidget {
 
   /// on changed function
   final void Function(String)? onChanged;
+
+  /// text style for user input text
+  final TextStyle? style;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: style ?? AppTextStyle.bodyRegular(context, fontSize: 14),
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
