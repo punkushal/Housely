@@ -36,7 +36,7 @@ class CustomTextField extends StatelessWidget {
   final bool obscureText;
 
   /// validator function
-  final String? Function(String?)? validator;
+  final String? Function(String? value)? validator;
 
   /// on changed function
   final void Function(String)? onChanged;
