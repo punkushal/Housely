@@ -8,6 +8,7 @@ class WelcomeMessage extends StatelessWidget {
     super.key,
     required this.headingTitle,
     required this.subtitle,
+    this.right,
   });
 
   /// heading title
@@ -15,10 +16,13 @@ class WelcomeMessage extends StatelessWidget {
 
   /// subtitle info
   final String subtitle;
+
+  /// right padding
+  final double? right;
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: ResponsiveDimensions.paddingOnly(context, right: 58),
+      padding: ResponsiveDimensions.paddingOnly(context, right: right ?? 58),
       child: Column(
         spacing: ResponsiveDimensions.getHeight(context, 8),
         crossAxisAlignment: .start,
