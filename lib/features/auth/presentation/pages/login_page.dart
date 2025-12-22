@@ -10,6 +10,7 @@ import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/core/widgets/custom_label_text_field.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
+import 'package:housely/features/auth/presentation/cubit/google_signin_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:housely/features/auth/presentation/widgets/checkbox_section.dart';
 import 'package:housely/features/auth/presentation/widgets/google_sign_in_container.dart';
@@ -58,10 +59,29 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // handle google sign in functionality
+  void _handleGoogleSignIn(BuildContext context) {
+    final isConnected = context
+        .read<ConnectivityCubit>()
+        .checkConnectivityForAction();
+    if (isConnected) {
+      context.read<GoogleSigninCubit>().googleSignIn();
+      return;
+    } else {
+      SnackbarHelper.showError(
+        context,
+        "No internet connection. Please try again",
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<LoginCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => sl<LoginCubit>()),
+        BlocProvider(create: (context) => sl<GoogleSigninCubit>()),
+      ],
       child: BlocListener<ConnectivityCubit, ConnectivityState>(
         listener: (context, state) {
           if (state is ConnectivityDisconnected) {
@@ -221,9 +241,28 @@ class _LoginPageState extends State<LoginPage> {
                       ),
 
                       // google sign in section
-                      GoogleSignInContainer(
-                        onTap: () {
-                          //TODO later i will implement google sign in functionality
+                      BlocConsumer<GoogleSigninCubit, GoogleSigninState>(
+                        listener: (context, state) {
+                          if (state is GoogleSigninFailure) {
+                            SnackbarHelper.showError(context, state.message);
+                            return;
+                          }
+
+                          if (state is GoogleSigninSuccess) {
+                            SnackbarHelper.showSuccess(
+                              context,
+                              'Successfully logged in via google',
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          final isLoading = state is GoogleSigninLoading;
+                          if (isLoading) {
+                            return CircularProgressIndicator();
+                          }
+                          return GoogleSignInContainer(
+                            onTap: () => _handleGoogleSignIn(context),
+                          );
                         },
                       ),
 
