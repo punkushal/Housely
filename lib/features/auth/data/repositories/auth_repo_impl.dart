@@ -3,6 +3,7 @@ import 'package:housely/core/error/exception.dart';
 import 'package:housely/core/error/failure.dart';
 import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:housely/features/auth/domain/entities/app_user.dart';
 import 'package:housely/features/auth/domain/repositories/auth_repo.dart';
 
 class AuthRepoImpl implements AuthRepo {
@@ -82,6 +83,22 @@ class AuthRepoImpl implements AuthRepo {
       return NetworkFailure(e.message);
     } else {
       return AuthFailure(e.message);
+    }
+  }
+
+  @override
+  ResultFuture<AppUser?> googleSignIn() async {
+    try {
+      final appUser = await remoteDataSource.googleSignIn();
+      return Right(appUser);
+    } on AuthException catch (e) {
+      return Left(_mapAuthExceptionToFailure(e));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('An unexpected error occurred'));
     }
   }
 }
