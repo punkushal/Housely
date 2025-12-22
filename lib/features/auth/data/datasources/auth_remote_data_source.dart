@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:housely/core/error/exception.dart';
+import 'package:housely/features/auth/domain/entities/app_user.dart';
 
 abstract class AuthRemoteDataSource {
   Future<void> register({
@@ -11,12 +13,18 @@ abstract class AuthRemoteDataSource {
   Future<void> login({required String email, required String password});
 
   Future<void> logout();
+
+  Future<AppUser?> googleSignIn();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
+  final GoogleSignIn googleSignInInstance;
 
-  AuthRemoteDataSourceImpl({required this.firebaseAuth});
+  AuthRemoteDataSourceImpl({
+    required this.firebaseAuth,
+    required this.googleSignInInstance,
+  });
 
   /// login through firebase auth
   @override
@@ -84,6 +92,45 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return AuthException('No internet connection');
       default:
         return AuthException(e.message ?? 'Authentication failed');
+    }
+  }
+
+  @override
+  Future<AppUser?> googleSignIn() async {
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount googleUser = await googleSignInInstance
+          .authenticate();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+
+      // sign in with these credential
+      final userCredential = await firebaseAuth.signInWithCredential(
+        credential,
+      );
+
+      // firebase user
+      final firebaseUser = userCredential.user;
+
+      // user cancelled sign-in process
+      if (firebaseUser == null) return null;
+
+      final appUser = AppUser(
+        uid: firebaseUser.uid,
+        email: firebaseUser.email!,
+        username: firebaseUser.displayName!,
+      );
+      return appUser;
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseException(e);
+    } catch (e) {
+      throw ServerException('An unexpected error occurred');
     }
   }
 }
