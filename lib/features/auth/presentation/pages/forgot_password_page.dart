@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
@@ -60,7 +61,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               // continue button
               CustomButton(
                 onTap: () {
-                  //TODO later i will implement actual continue logic
+                  // navigation to email verfication page
+                  context.router.push(EmailVerificationRoute());
                 },
                 child: Text(
                   "Continue",
