@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:housely/core/utils/typedef.dart';
+import 'package:housely/features/auth/domain/entities/app_user.dart';
 
 abstract interface class AuthRepo {
   // register user
@@ -14,4 +15,7 @@ abstract interface class AuthRepo {
 
   // log out user
   ResultVoid logout();
+
+  // sign in user via google
+  ResultFuture<AppUser?> googleSignIn();
 }
