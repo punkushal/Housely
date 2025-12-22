@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:housely/features/auth/data/repositories/auth_repo_impl.dart';
 import 'package:housely/features/auth/domain/repositories/auth_repo.dart';
@@ -19,6 +20,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
+  // ============= Network ================
+  sl.registerLazySingleton(() => ConnectivityCubit());
   // ============= External Dependencies ===============
   sl.registerLazySingleton(() => SharedPreferencesAsync());
   sl.registerLazySingleton(() => FirebaseAuth.instance);
