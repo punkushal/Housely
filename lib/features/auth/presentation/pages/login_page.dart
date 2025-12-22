@@ -10,6 +10,7 @@ import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/core/widgets/custom_label_text_field.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_form_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/google_signin_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:housely/features/auth/presentation/widgets/checkbox_section.dart';
@@ -81,6 +82,7 @@ class _LoginPageState extends State<LoginPage> {
       providers: [
         BlocProvider(create: (context) => sl<LoginCubit>()),
         BlocProvider(create: (context) => sl<GoogleSigninCubit>()),
+        BlocProvider(create: (context) => AuthFormCubit()),
       ],
       child: BlocListener<ConnectivityCubit, ConnectivityState>(
         listener: (context, state) {
@@ -134,31 +136,52 @@ class _LoginPageState extends State<LoginPage> {
                       ),
 
                       // Password input field
-                      CustomLabelTextField(
-                        labelText: 'Password',
-                        customTextField: CustomTextField(
-                          controller: _passwordController,
-                          hintText: 'Password',
-                          keyboardType: TextInputType.visiblePassword,
-                          obscureText: true,
-                          suffixIcon: Icon(Icons.visibility_off_outlined),
-                          validator: (value) {
-                            if (value!.isEmpty || value == "") {
-                              return "Please enter password email";
-                            }
-                            return null;
-                          },
-                        ),
+                      BlocSelector<AuthFormCubit, AuthFormState, bool>(
+                        selector: (state) {
+                          return state.isPasswordVisible;
+                        },
+                        builder: (context, state) {
+                          return CustomLabelTextField(
+                            labelText: 'Password',
+                            customTextField: CustomTextField(
+                              controller: _passwordController,
+                              hintText: 'Password',
+                              keyboardType: TextInputType.visiblePassword,
+                              obscureText: state,
+                              suffixIcon: GestureDetector(
+                                onTap: () => context
+                                    .read<AuthFormCubit>()
+                                    .togglePasswordVissibility(),
+                                child: Icon(Icons.visibility_off_outlined),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty || value == "") {
+                                  return "Please enter password email";
+                                }
+                                return null;
+                              },
+                            ),
+                          );
+                        },
                       ),
 
                       // checkbox + forgot password section
                       Row(
                         children: [
-                          CheckboxSection(
-                            labelText: 'Remember me',
-                            value: true,
-                            onChanged: (value) {
-                              // TODO implement check box on changed functionality
+                          BlocSelector<AuthFormCubit, AuthFormState, bool>(
+                            selector: (state) {
+                              return state.rememberMe;
+                            },
+                            builder: (context, state) {
+                              return CheckboxSection(
+                                labelText: 'Remember me',
+                                value: state,
+                                onChanged: (value) {
+                                  context
+                                      .read<AuthFormCubit>()
+                                      .toggleRememberMe(value!);
+                                },
+                              );
                             },
                           ),
                           Spacer(),
