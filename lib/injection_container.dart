@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:housely/features/auth/data/repositories/auth_repo_impl.dart';
@@ -25,6 +26,7 @@ Future<void> initializeDependencies() async {
   // ============= External Dependencies ===============
   sl.registerLazySingleton(() => SharedPreferencesAsync());
   sl.registerLazySingleton(() => FirebaseAuth.instance);
+  sl.registerLazySingleton(() => GoogleSignIn.instance);
 
   // ============= Data layer ==============
   sl.registerLazySingleton<OnboardingLocalDataSource>(
@@ -32,7 +34,10 @@ Future<void> initializeDependencies() async {
   );
 
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(firebaseAuth: sl()),
+    () => AuthRemoteDataSourceImpl(
+      firebaseAuth: sl<FirebaseAuth>(),
+      googleSignInInstance: sl<GoogleSignIn>(),
+    ),
   );
 
   sl.registerLazySingleton<OnboardingRepository>(
