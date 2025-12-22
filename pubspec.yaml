@@ -62,6 +62,9 @@ dependencies:
 
   # Local storage
   shared_preferences: ^2.5.4
+
+  # Google login 
+  google_sign_in: ^7.2.0
   
 
 dev_dependencies:
