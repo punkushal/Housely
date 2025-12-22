@@ -1,16 +1,21 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/core/widgets/custom_label_text_field.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
+import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:housely/features/auth/presentation/widgets/checkbox_section.dart';
 import 'package:housely/features/auth/presentation/widgets/google_sign_in_container.dart';
 import 'package:housely/features/auth/presentation/widgets/redirect_section.dart';
 import 'package:housely/features/auth/presentation/widgets/welcome_message.dart';
+import 'package:housely/injection_container.dart';
 
 @RoutePage()
 class LoginPage extends StatefulWidget {
@@ -23,6 +28,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -31,126 +37,212 @@ class _LoginPageState extends State<LoginPage> {
     _passwordController.dispose();
   }
 
+  // handle login functionality
+  void _handleLogin(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      final isConnected = context
+          .read<ConnectivityCubit>()
+          .checkConnectivityForAction();
+      if (isConnected) {
+        context.read<LoginCubit>().login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        return;
+      } else {
+        SnackbarHelper.showError(
+          context,
+          "No internet connection. Please try again",
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: Padding(
-          padding: ResponsiveDimensions.paddingSymmetric(
-            context,
-            horizontal: 24,
-          ),
-          child: SingleChildScrollView(
-            dragStartBehavior: .down,
-            child: Column(
-              mainAxisAlignment: .end,
-              spacing: ResponsiveDimensions.getHeight(context, 16),
-              children: [
-                // welcome message section
-                WelcomeMessage(
-                  headingTitle: "Welcome Back !",
-                  subtitle:
-                      "Sign in with your email and password\nor social media to continue",
-                ),
+    return BlocProvider(
+      create: (context) => sl<LoginCubit>(),
+      child: BlocListener<ConnectivityCubit, ConnectivityState>(
+        listener: (context, state) {
+          if (state is ConnectivityDisconnected) {
+            SnackbarHelper.showError(context, 'No internet connection');
+          }
+          if (state is ConnectivityConnected && state.showMessage) {
+            SnackbarHelper.showSuccess(context, "Internet connected");
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(),
+          body: SafeArea(
+            child: Padding(
+              padding: ResponsiveDimensions.paddingSymmetric(
+                context,
+                horizontal: 24,
+              ),
+              child: SingleChildScrollView(
+                dragStartBehavior: .down,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: .end,
+                    spacing: ResponsiveDimensions.getHeight(context, 16),
+                    children: [
+                      // welcome message section
+                      WelcomeMessage(
+                        headingTitle: "Welcome Back !",
+                        subtitle:
+                            "Sign in with your email and password\nor social media to continue",
+                      ),
 
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 12)),
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 12),
+                      ),
 
-                // Email input field
-                CustomLabelTextField(
-                  labelText: 'Email',
-                  customTextField: CustomTextField(
-                    hintText: 'Email',
-                    controller: _emailController,
-                  ),
-                ),
-
-                // Password input field
-                CustomLabelTextField(
-                  labelText: 'Password',
-                  customTextField: CustomTextField(
-                    controller: _passwordController,
-                    hintText: 'Password',
-                    keyboardType: TextInputType.visiblePassword,
-                    obscureText: true,
-                    suffixIcon: Icon(Icons.visibility_off_outlined),
-                  ),
-                ),
-
-                // checkbox + forgot password section
-                Row(
-                  children: [
-                    CheckboxSection(
-                      labelText: 'Remember me',
-                      value: true,
-                      onChanged: (value) {
-                        // TODO implement check box on changed functionality
-                      },
-                    ),
-                    Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        // navigation to forgot password page
-                        context.router.push(ForgotPasswordRoute());
-                      },
-                      child: Text(
-                        'Forgot password ?',
-                        style: AppTextStyle.bodyRegular(
-                          context,
-                          fontSize: 14,
-                          color: AppColors.primary,
+                      // Email input field
+                      CustomLabelTextField(
+                        labelText: 'Email',
+                        customTextField: CustomTextField(
+                          hintText: 'Email',
+                          controller: _emailController,
+                          validator: (value) {
+                            if (value!.isEmpty || value == "") {
+                              return "Please enter your email";
+                            }
+                            return null;
+                          },
                         ),
                       ),
-                    ),
-                  ],
-                ),
 
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 12)),
+                      // Password input field
+                      CustomLabelTextField(
+                        labelText: 'Password',
+                        customTextField: CustomTextField(
+                          controller: _passwordController,
+                          hintText: 'Password',
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: true,
+                          suffixIcon: Icon(Icons.visibility_off_outlined),
+                          validator: (value) {
+                            if (value!.isEmpty || value == "") {
+                              return "Please enter password email";
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
 
-                // sign in button
-                CustomButton(
-                  onTap: () {
-                    //TODO later i will implement actual login logic
-                  },
-                  child: Text(
-                    "Sign in",
-                    style: AppTextStyle.bodyRegular(
-                      context,
-                      fontSize: 18,
-                      lineHeight: 27,
-                      color: AppColors.surface,
-                    ),
+                      // checkbox + forgot password section
+                      Row(
+                        children: [
+                          CheckboxSection(
+                            labelText: 'Remember me',
+                            value: true,
+                            onChanged: (value) {
+                              // TODO implement check box on changed functionality
+                            },
+                          ),
+                          Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              // navigation to forgot password page
+                              context.router.push(ForgotPasswordRoute());
+                            },
+                            child: Text(
+                              'Forgot password ?',
+                              style: AppTextStyle.bodyRegular(
+                                context,
+                                fontSize: 14,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 12),
+                      ),
+
+                      // sign in button
+                      BlocConsumer<LoginCubit, LoginState>(
+                        listener: (context, state) {
+                          if (state is LoginSuccess) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: AppColors.success,
+                                duration: Duration(seconds: 3),
+                                content: Text('Successfully logged in'),
+                              ),
+                            );
+                          }
+                          if (state is LoginError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: AppColors.error,
+                                duration: Duration(seconds: 3),
+                                content: Text(state.error),
+                              ),
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          final isLoading = state is LoginLoading;
+                          return CustomButton(
+                            onTap: () => _handleLogin(context),
+                            child: isLoading
+                                ? CircularProgressIndicator(
+                                    color: AppColors.surface,
+                                  )
+                                : Text(
+                                    "Sign in",
+                                    style: AppTextStyle.bodyRegular(
+                                      context,
+                                      fontSize: 18,
+                                      lineHeight: 27,
+                                      color: AppColors.surface,
+                                    ),
+                                  ),
+                          );
+                        },
+                      ),
+
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 6),
+                      ),
+
+                      // or section
+                      Text(
+                        "Or",
+                        style: AppTextStyle.bodyRegular(context, fontSize: 14),
+                      ),
+
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 6),
+                      ),
+
+                      // google sign in section
+                      GoogleSignInContainer(
+                        onTap: () {
+                          //TODO later i will implement google sign in functionality
+                        },
+                      ),
+
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 8),
+                      ),
+
+                      // sign up section
+                      RedirectSection(
+                        infoText: "Don't have account ?",
+                        redirectLinkText: "Sign up",
+                        navigateTo: () {
+                          context.router.push(SignupRoute());
+                        },
+                      ),
+                    ],
                   ),
                 ),
-
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 6)),
-
-                // or section
-                Text(
-                  "Or",
-                  style: AppTextStyle.bodyRegular(context, fontSize: 14),
-                ),
-
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 6)),
-
-                // google sign in section
-                GoogleSignInContainer(
-                  onTap: () {
-                    //TODO later i will implement google sign in functionality
-                  },
-                ),
-
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
-
-                // sign up section
-                RedirectSection(
-                  infoText: "Don't have account ?",
-                  redirectLinkText: "Sign up",
-                  navigateTo: () {
-                    context.router.push(SignupRoute());
-                  },
-                ),
-              ],
+              ),
             ),
           ),
         ),
