@@ -9,6 +9,7 @@ import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/core/widgets/custom_label_text_field.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_form_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/google_signin_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/register_cubit.dart';
 import 'package:housely/features/auth/presentation/widgets/checkbox_section.dart';
@@ -90,6 +91,7 @@ class _SignupPageState extends State<SignupPage> {
       providers: [
         BlocProvider(create: (context) => sl<RegisterCubit>()),
         BlocProvider(create: (context) => sl<GoogleSigninCubit>()),
+        BlocProvider(create: (context) => AuthFormCubit()),
       ],
       child: BlocListener<ConnectivityCubit, ConnectivityState>(
         listener: (context, state) {
@@ -158,47 +160,80 @@ class _SignupPageState extends State<SignupPage> {
                       ),
 
                       // Password input field
-                      CustomLabelTextField(
-                        labelText: 'Password',
-                        customTextField: CustomTextField(
-                          controller: _passwordController,
-                          hintText: 'Password',
-                          keyboardType: TextInputType.visiblePassword,
-                          obscureText: true,
-                          suffixIcon: Icon(Icons.visibility_off_outlined),
-                          validator: (value) {
-                            if (value!.isEmpty || value == "") {
-                              return "Please enter your password";
-                            }
-                            return null;
-                          },
-                        ),
+                      BlocSelector<AuthFormCubit, AuthFormState, bool>(
+                        selector: (state) {
+                          return state.isPasswordVisible;
+                        },
+                        builder: (context, state) {
+                          return CustomLabelTextField(
+                            labelText: 'Password',
+                            customTextField: CustomTextField(
+                              controller: _passwordController,
+                              hintText: 'Password',
+                              keyboardType: TextInputType.visiblePassword,
+                              obscureText: state,
+                              suffixIcon: GestureDetector(
+                                onTap: () => context
+                                    .read<AuthFormCubit>()
+                                    .togglePasswordVissibility(),
+                                child: Icon(Icons.visibility_off_outlined),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty || value == "") {
+                                  return "Please enter your password";
+                                }
+                                return null;
+                              },
+                            ),
+                          );
+                        },
                       ),
 
                       // confirm password input field
-                      CustomLabelTextField(
-                        labelText: 'Confirm Password',
-                        customTextField: CustomTextField(
-                          controller: _confirmController,
-                          hintText: 'Retype Password',
-                          keyboardType: TextInputType.visiblePassword,
-                          obscureText: true,
-                          suffixIcon: Icon(Icons.visibility_off_outlined),
-                          validator: (value) {
-                            if (value!.isEmpty || value == "") {
-                              return "Please enter your password";
-                            }
-                            return null;
-                          },
-                        ),
+                      BlocSelector<AuthFormCubit, AuthFormState, bool>(
+                        selector: (state) {
+                          return state.isConfirmPasswordVisible;
+                        },
+                        builder: (context, state) {
+                          return CustomLabelTextField(
+                            labelText: 'Confirm Password',
+                            customTextField: CustomTextField(
+                              controller: _confirmController,
+                              hintText: 'Retype Password',
+                              keyboardType: TextInputType.visiblePassword,
+                              obscureText: state,
+                              suffixIcon: GestureDetector(
+                                onTap: () => context
+                                    .read<AuthFormCubit>()
+                                    .toggleConfirmPasswordVissibility(),
+                                child: Icon(Icons.visibility_off_outlined),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty || value == "") {
+                                  return "Please enter your password";
+                                } else if (value != _passwordController.text) {
+                                  return "Please enter the same password";
+                                }
+                                return null;
+                              },
+                            ),
+                          );
+                        },
                       ),
 
                       // checkbox section
-                      CheckboxSection(
-                        hasHighlightText: true,
-                        value: true,
-                        onChanged: (value) {
-                          // TODO implement check box on changed functionality
+                      BlocSelector<AuthFormCubit, AuthFormState, bool>(
+                        selector: (state) {
+                          return state.acceptTerms;
+                        },
+                        builder: (context, state) {
+                          return CheckboxSection(
+                            hasHighlightText: true,
+                            value: state,
+                            onChanged: (value) {
+                              context.read<AuthFormCubit>().toggleTerms(value!);
+                            },
+                          );
                         },
                       ),
 
