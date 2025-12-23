@@ -15,6 +15,8 @@ abstract class AuthRemoteDataSource {
   Future<void> logout();
 
   Future<AppUser?> googleSignIn();
+
+  Future<void> sendPasswordRestEmail({required String email});
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -127,6 +129,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         username: firebaseUser.displayName!,
       );
       return appUser;
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseException(e);
+    } catch (e) {
+      throw ServerException('An unexpected error occurred');
+    }
+  }
+
+  @override
+  Future<void> sendPasswordRestEmail({required String email}) async {
+    try {
+      await firebaseAuth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
