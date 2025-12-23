@@ -71,6 +71,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => LoginUseCase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => LogOutUseCase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => GoogleSigninUsecase(sl<AuthRepo>()));
+  sl.registerLazySingleton(() => SendPasswordResetUsecase(sl<AuthRepo>()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
