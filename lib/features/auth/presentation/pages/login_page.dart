@@ -1,0 +1,307 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:housely/app/app_router.gr.dart';
+import 'package:housely/core/constants/app_colors.dart';
+import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/network/cubit/connectivity_cubit.dart';
+import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/utils/snack_bar_helper.dart';
+import 'package:housely/core/validator/form_validator.dart';
+import 'package:housely/core/widgets/custom_button.dart';
+import 'package:housely/core/widgets/custom_label_text_field.dart';
+import 'package:housely/core/widgets/custom_text_field.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_form_cubit.dart';
+import 'package:housely/features/auth/presentation/cubit/google_signin_cubit.dart';
+import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
+import 'package:housely/features/auth/presentation/widgets/checkbox_section.dart';
+import 'package:housely/features/auth/presentation/widgets/google_sign_in_container.dart';
+import 'package:housely/features/auth/presentation/widgets/redirect_section.dart';
+import 'package:housely/features/auth/presentation/widgets/welcome_message.dart';
+import 'package:housely/injection_container.dart';
+
+@RoutePage()
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
+
+  // handle login functionality
+  void _handleLogin(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      final isConnected = context
+          .read<ConnectivityCubit>()
+          .checkConnectivityForAction();
+      if (isConnected) {
+        context.read<LoginCubit>().login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        return;
+      } else {
+        SnackbarHelper.showError(
+          context,
+          "No internet connection. Please try again",
+        );
+      }
+    }
+  }
+
+  // handle google sign in functionality
+  void _handleGoogleSignIn(BuildContext context) {
+    final isConnected = context
+        .read<ConnectivityCubit>()
+        .checkConnectivityForAction();
+    if (isConnected) {
+      context.read<GoogleSigninCubit>().googleSignIn();
+      return;
+    } else {
+      SnackbarHelper.showError(
+        context,
+        "No internet connection. Please try again",
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => sl<LoginCubit>()),
+        BlocProvider(create: (context) => sl<GoogleSigninCubit>()),
+        BlocProvider(create: (context) => AuthFormCubit()),
+      ],
+      child: BlocListener<ConnectivityCubit, ConnectivityState>(
+        listener: (context, state) {
+          if (state is ConnectivityDisconnected) {
+            SnackbarHelper.showError(context, 'No internet connection');
+          }
+          if (state is ConnectivityConnected && state.showMessage) {
+            SnackbarHelper.showSuccess(context, "Internet connected");
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(),
+          body: SafeArea(
+            child: Padding(
+              padding: ResponsiveDimensions.paddingSymmetric(
+                context,
+                horizontal: 24,
+              ),
+              child: SingleChildScrollView(
+                dragStartBehavior: .down,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: .end,
+                    spacing: ResponsiveDimensions.getHeight(context, 16),
+                    children: [
+                      // welcome message section
+                      WelcomeMessage(
+                        headingTitle: "Welcome Back !",
+                        subtitle:
+                            "Sign in with your email and password\nor social media to continue",
+                      ),
+
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 12),
+                      ),
+
+                      // Email input field
+                      CustomLabelTextField(
+                        labelText: 'Email',
+                        customTextField: CustomTextField(
+                          hintText: 'Email',
+                          controller: _emailController,
+                          validator: (value) =>
+                              FormValidators.validateEmail(value),
+                        ),
+                      ),
+
+                      // Password input field
+                      BlocSelector<AuthFormCubit, AuthFormState, bool>(
+                        selector: (state) {
+                          return state.isPasswordVisible;
+                        },
+                        builder: (context, state) {
+                          return CustomLabelTextField(
+                            labelText: 'Password',
+                            customTextField: CustomTextField(
+                              controller: _passwordController,
+                              hintText: 'Password',
+                              keyboardType: TextInputType.visiblePassword,
+                              obscureText: state,
+                              suffixIcon: GestureDetector(
+                                onTap: () => context
+                                    .read<AuthFormCubit>()
+                                    .togglePasswordVissibility(),
+                                child: Icon(Icons.visibility_off_outlined),
+                              ),
+                              validator: (value) =>
+                                  FormValidators.validatePassword(value),
+                            ),
+                          );
+                        },
+                      ),
+
+                      // checkbox + forgot password section
+                      Row(
+                        children: [
+                          BlocSelector<AuthFormCubit, AuthFormState, bool>(
+                            selector: (state) {
+                              return state.rememberMe;
+                            },
+                            builder: (context, state) {
+                              return CheckboxSection(
+                                labelText: 'Remember me',
+                                value: state,
+                                onChanged: (value) {
+                                  context
+                                      .read<AuthFormCubit>()
+                                      .toggleRememberMe(value!);
+                                },
+                              );
+                            },
+                          ),
+                          Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              // navigation to forgot password page
+                              context.router.push(ForgotPasswordRoute());
+                            },
+                            child: Text(
+                              'Forgot password ?',
+                              style: AppTextStyle.bodyRegular(
+                                context,
+                                fontSize: 14,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 12),
+                      ),
+
+                      // sign in button
+                      BlocConsumer<LoginCubit, LoginState>(
+                        listener: (context, state) {
+                          if (state is LoginSuccess) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: AppColors.success,
+                                duration: Duration(seconds: 3),
+                                content: Text('Successfully logged in'),
+                              ),
+                            );
+                          }
+                          if (state is LoginError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: AppColors.error,
+                                duration: Duration(seconds: 3),
+                                content: Text(state.error),
+                              ),
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          final isLoading = state is LoginLoading;
+                          return CustomButton(
+                            onTap: () => _handleLogin(context),
+                            child: isLoading
+                                ? CircularProgressIndicator(
+                                    color: AppColors.surface,
+                                  )
+                                : Text(
+                                    "Sign in",
+                                    style: AppTextStyle.bodyRegular(
+                                      context,
+                                      fontSize: 18,
+                                      lineHeight: 27,
+                                      color: AppColors.surface,
+                                    ),
+                                  ),
+                          );
+                        },
+                      ),
+
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 6),
+                      ),
+
+                      // or section
+                      Text(
+                        "Or",
+                        style: AppTextStyle.bodyRegular(context, fontSize: 14),
+                      ),
+
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 6),
+                      ),
+
+                      // google sign in section
+                      BlocConsumer<GoogleSigninCubit, GoogleSigninState>(
+                        listener: (context, state) {
+                          if (state is GoogleSigninFailure) {
+                            SnackbarHelper.showError(context, state.message);
+                            return;
+                          }
+
+                          if (state is GoogleSigninSuccess) {
+                            SnackbarHelper.showSuccess(
+                              context,
+                              'Successfully logged in via google',
+                            );
+                          }
+                        },
+                        builder: (context, state) {
+                          final isLoading = state is GoogleSigninLoading;
+                          if (isLoading) {
+                            return CircularProgressIndicator();
+                          }
+                          return GoogleSignInContainer(
+                            onTap: () => _handleGoogleSignIn(context),
+                          );
+                        },
+                      ),
+
+                      SizedBox(
+                        height: ResponsiveDimensions.getHeight(context, 8),
+                      ),
+
+                      // sign up section
+                      RedirectSection(
+                        infoText: "Don't have account ?",
+                        redirectLinkText: "Sign up",
+                        navigateTo: () {
+                          context.router.push(SignupRoute());
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

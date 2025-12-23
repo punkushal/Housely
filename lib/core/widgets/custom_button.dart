@@ -9,7 +9,7 @@ class CustomButton extends StatelessWidget {
     this.height,
     this.child,
     required this.onTap,
-    required this.horizontal,
+    this.horizontal = 0,
   });
 
   /// Button's height

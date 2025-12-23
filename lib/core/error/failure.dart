@@ -26,3 +26,39 @@ class StorageReadFailure extends CacheFailure {
 class StorageWriteFailure extends CacheFailure {
   const StorageWriteFailure() : super('Failed to write to local storage');
 }
+
+final class ServerFailure extends Failure {
+  const ServerFailure(super.message);
+}
+
+final class NetworkFailure extends Failure {
+  const NetworkFailure(super.message);
+}
+
+final class InvalidEmailFailure extends Failure {
+  const InvalidEmailFailure() : super('Invalid email address');
+}
+
+final class EmailAlreadyInUseFailure extends Failure {
+  const EmailAlreadyInUseFailure(super.message);
+}
+
+final class WrongPasswordFailure extends Failure {
+  const WrongPasswordFailure() : super('Wrong password');
+}
+
+final class WeakPasswordFailure extends Failure {
+  const WeakPasswordFailure(super.message);
+}
+
+final class UserNotFoundFailure extends Failure {
+  const UserNotFoundFailure() : super("User not found");
+}
+
+final class UnknownFailure extends Failure {
+  const UnknownFailure() : super("Something went wrong. Please try again");
+}
+
+final class AuthFailure extends Failure {
+  const AuthFailure(super.message);
+}

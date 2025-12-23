@@ -33,22 +33,54 @@ class AppTextStyle {
     fontWeight: FontWeight.w400,
   );
 
-  static TextStyle headingSemiBold(BuildContext context) =>
-      headingRegular(context).copyWith(fontWeight: FontWeight.w600);
-
-  // body
-  static TextStyle bodyRegular(BuildContext context) => _base(
+  static TextStyle headingSemiBold(
+    BuildContext context, {
+    double fontSize = 24,
+    double lineHeight = 32,
+    Color? color,
+  }) => _base(
     context: context,
-    fontSize: 12,
-    fontWeight: FontWeight.w400,
-    lineHeight: 18,
+    fontSize: fontSize,
+    lineHeight: lineHeight,
+    fontWeight: FontWeight.w600,
+    color: color,
   );
 
-  static TextStyle bodySemiBold(BuildContext context) =>
-      bodyRegular(context).copyWith(fontSize: 14, fontWeight: FontWeight.w600);
+  // body
+  static TextStyle bodyRegular(
+    BuildContext context, {
+    double fontSize = 12,
+    double lineHeight = 18,
+    Color? color,
+  }) => _base(
+    context: context,
+    fontSize: fontSize,
+    fontWeight: FontWeight.w400,
+    lineHeight: lineHeight,
+    color: color,
+  );
 
-  static TextStyle bodyMedium(BuildContext context) =>
-      bodySemiBold(context).copyWith(fontWeight: FontWeight.w500);
+  static TextStyle bodySemiBold(
+    BuildContext context, {
+    double fontSize = 14,
+    double lineHeight = 18,
+  }) => bodyRegular(
+    context,
+    fontSize: fontSize,
+    lineHeight: lineHeight,
+  ).copyWith(fontWeight: FontWeight.w600);
+
+  static TextStyle bodyMedium(
+    BuildContext context, {
+    double fontSize = 14,
+    double lineHeight = 18,
+    Color? color,
+  }) => bodyRegular(
+    context,
+    fontSize: fontSize,
+    lineHeight: lineHeight,
+    color: color,
+  ).copyWith(fontWeight: FontWeight.w500);
 
   // Labels
   static TextStyle labelRegular(BuildContext context) => _base(

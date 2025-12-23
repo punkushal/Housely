@@ -61,8 +61,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     if (state is OnboardingInitial && mounted) {
       await context.router.replace(const OnboardingRoute());
     }
-    if (state is OnboardingCompleted) {
-      print("----- Onboarding is completed-------");
+    if (state is OnboardingCompleted && mounted) {
+      await context.router.replace(const LoginRoute());
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_button.dart';
@@ -34,7 +35,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     super.dispose();
   }
 
-  void _handleNextButton() {
+  void _handleNextButton() async {
     final cubit = context.read<OnboardingCubit>();
     final state = cubit.state;
 
@@ -42,6 +43,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       cubit.nextPage(_controller);
     } else {
       cubit.completeOnboarding();
+      await context.router.replace(const LoginRoute());
     }
   }
 

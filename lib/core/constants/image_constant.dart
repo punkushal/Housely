@@ -7,6 +7,7 @@ class ImageConstant {
 
   // icons
   static final String logoIcon = "${_baseIconUrl}logo_icon.png";
+  static final String googleIcon = "${_baseIconUrl}google_icon.png";
 
   // onboarding images
   static final String firstOnBoardingImg =
