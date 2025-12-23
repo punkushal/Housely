@@ -1,8 +1,11 @@
-import 'dart:async';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:housely/core/constants/app_colors.dart';
+import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/constants/image_constant.dart';
+import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/widgets/custom_button.dart';
+import 'package:housely/features/onboarding/presentation/widgets/skip_button.dart';
 
 @RoutePage()
 class LocationPage extends StatefulWidget {
@@ -13,43 +16,72 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-  // in the below line, we are initializing our controller for google maps.
-  final Completer<GoogleMapController> _controller = Completer();
-
-  final location = LatLng(27.686386, 83.432426);
-
-  // in the below line, we are specifying our camera position
-  static final CameraPosition _kNepal = const CameraPosition(
-    target: LatLng(27.686386, 83.432426),
-    zoom: 22,
-  );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // in the below line, we are specifying our app bar.
-      appBar: AppBar(title: Text("Location Page")),
-      body: GoogleMap(
-        // in the below line, setting camera position
-        initialCameraPosition: _kNepal,
-        markers: {
-          Marker(
-            markerId: MarkerId("first_marker"),
-            draggable: true,
-            onDragEnd: (value) {},
-            position: location,
-            infoWindow: InfoWindow(title: 'Title of this marker'),
-          ),
-        },
+      appBar: AppBar(actions: [SkipButton()]),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: .center,
+            spacing: ResponsiveDimensions.spacing16(context),
+            children: [
+              SizedBox(height: ResponsiveDimensions.getHeight(context, 40)),
+              Padding(
+                padding: ResponsiveDimensions.paddingSymmetric(
+                  context,
+                  horizontal: 38,
+                ),
+                child: Column(
+                  spacing: ResponsiveDimensions.spacing16(context),
+                  children: [
+                    //location image
+                    Image.asset(ImageConstant.searchLocationImg),
 
-        // in the below line, setting user location enabled.
-        // myLocationEnabled: true,
-        // in the below line, setting compass enabled.
-        compassEnabled: true,
-        // in the below line, specifying controller on map complete.
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
+                    SizedBox(
+                      height: ResponsiveDimensions.getHeight(context, 14),
+                    ),
+                    // welcome message
+                    Text(
+                      "Hi, Nice to meet you !",
+                      style: AppTextStyle.bodySemiBold(
+                        context,
+                        fontSize: 20,
+                        lineHeight: 26,
+                      ),
+                    ),
+
+                    // info message
+                    Text(
+                      "Choose your location to find property around you",
+                      style: AppTextStyle.bodyRegular(
+                        context,
+                        fontSize: 14,
+                        color: AppColors.textHint,
+                      ),
+                      textAlign: .center,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: ResponsiveDimensions.getHeight(context, 60)),
+              // current location button
+              CustomButton(
+                onTap: () {},
+                buttonLabel: "Use current location",
+                horizontal: 24,
+              ),
+              CustomButton(
+                onTap: () {},
+                buttonLabel: "Select it manually",
+                horizontal: 24,
+                isOutlined: true,
+                textColor: AppColors.primary,
+              ),
+              SizedBox(height: ResponsiveDimensions.getHeight(context, 48)),
+            ],
+          ),
+        ),
       ),
     );
   }
