@@ -7,6 +7,7 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
+import 'package:housely/core/validator/form_validator.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/core/widgets/custom_label_text_field.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
@@ -126,12 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                         customTextField: CustomTextField(
                           hintText: 'Email',
                           controller: _emailController,
-                          validator: (value) {
-                            if (value!.isEmpty || value == "") {
-                              return "Please enter your email";
-                            }
-                            return null;
-                          },
+                          validator: (value) =>
+                              FormValidators.validateEmail(value),
                         ),
                       ),
 
@@ -154,12 +151,8 @@ class _LoginPageState extends State<LoginPage> {
                                     .togglePasswordVissibility(),
                                 child: Icon(Icons.visibility_off_outlined),
                               ),
-                              validator: (value) {
-                                if (value!.isEmpty || value == "") {
-                                  return "Please enter password email";
-                                }
-                                return null;
-                              },
+                              validator: (value) =>
+                                  FormValidators.validatePassword(value),
                             ),
                           );
                         },
