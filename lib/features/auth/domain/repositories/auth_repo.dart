@@ -18,4 +18,7 @@ abstract interface class AuthRepo {
 
   // sign in user via google
   ResultFuture<AppUser?> googleSignIn();
+
+  // change password via email reset link
+  ResultVoid sendPasswordResetEmail({required String email});
 }
