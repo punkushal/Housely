@@ -1,8 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
@@ -106,17 +104,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     final isLoading = state is PasswordResetLoading;
                     return CustomButton(
                       onTap: () => _handlePasswordReset(context),
-                      child: isLoading
-                          ? CircularProgressIndicator(color: AppColors.surface)
-                          : Text(
-                              "Continue",
-                              style: AppTextStyle.bodyRegular(
-                                context,
-                                fontSize: 18,
-                                lineHeight: 27,
-                                color: AppColors.surface,
-                              ),
-                            ),
+                      buttonLabel: "Continue",
+                      isLoading: isLoading,
                     );
                   },
                 ),

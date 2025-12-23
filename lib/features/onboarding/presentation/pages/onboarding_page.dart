@@ -131,13 +131,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               return CustomButton(
                 onTap: _handleNextButton,
                 horizontal: 24,
-                child: Text(
-                  isLastPage ? "Get Started" : 'Next',
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: AppColors.surface,
-                    fontSize: 18,
-                  ),
-                ),
+                buttonLabel: isLastPage ? "Get Started" : 'Next',
               );
             },
           ),
