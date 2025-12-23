@@ -101,4 +101,20 @@ class AuthRepoImpl implements AuthRepo {
       return Left(ServerFailure('An unexpected error occurred'));
     }
   }
+
+  @override
+  ResultVoid sendPasswordResetEmail({required String email}) async {
+    try {
+      await remoteDataSource.sendPasswordRestEmail(email: email);
+      return const Right(null);
+    } on AuthException catch (e) {
+      return Left(_mapAuthExceptionToFailure(e));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure('An unexpected error occurred'));
+    }
+  }
 }
