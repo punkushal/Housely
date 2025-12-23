@@ -5,6 +5,7 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_button.dart';
+import 'package:housely/features/location/presentation/widgets/drop_shadow.dart';
 import 'package:housely/features/onboarding/presentation/widgets/skip_button.dart';
 
 @RoutePage()
@@ -66,17 +67,61 @@ class _LocationPageState extends State<LocationPage> {
               ),
               SizedBox(height: ResponsiveDimensions.getHeight(context, 60)),
               // current location button
-              CustomButton(
-                onTap: () {},
-                buttonLabel: "Use current location",
-                horizontal: 24,
+              DropShadow(
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(0, 20),
+                    blurRadius: ResponsiveDimensions.radiusXLarge(context),
+                    spreadRadius: ResponsiveDimensions.radiusSmall(
+                      context,
+                      size: -4,
+                    ),
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                  ),
+                  BoxShadow(
+                    offset: Offset(0, 8),
+                    blurRadius: ResponsiveDimensions.radiusSmall(context),
+                    spreadRadius: ResponsiveDimensions.radiusSmall(
+                      context,
+                      size: -4,
+                    ),
+                    color: AppColors.primary.withValues(alpha: 0.03),
+                  ),
+                ],
+                child: CustomButton(
+                  onTap: () {},
+                  buttonLabel: "Use current location",
+                  horizontal: 24,
+                ),
               ),
-              CustomButton(
-                onTap: () {},
-                buttonLabel: "Select it manually",
-                horizontal: 24,
-                isOutlined: true,
-                textColor: AppColors.primary,
+              DropShadow(
+                boxShadow: [
+                  BoxShadow(
+                    offset: Offset(0, 20),
+                    blurRadius: ResponsiveDimensions.radiusXLarge(context),
+                    spreadRadius: ResponsiveDimensions.radiusSmall(
+                      context,
+                      size: -4,
+                    ),
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                  ),
+                  BoxShadow(
+                    offset: Offset(0, 8),
+                    blurRadius: ResponsiveDimensions.radiusSmall(context),
+                    spreadRadius: ResponsiveDimensions.radiusSmall(
+                      context,
+                      size: -4,
+                    ),
+                    color: AppColors.primary.withValues(alpha: 0.03),
+                  ),
+                ],
+                child: CustomButton(
+                  onTap: () {},
+                  buttonLabel: "Select it manually",
+                  horizontal: 24,
+                  isOutlined: true,
+                  textColor: AppColors.primary,
+                ),
               ),
               SizedBox(height: ResponsiveDimensions.getHeight(context, 48)),
             ],
