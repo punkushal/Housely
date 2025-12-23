@@ -65,6 +65,9 @@ dependencies:
 
   # Google login 
   google_sign_in: ^7.2.0
+
+  # Google map 
+  google_maps_flutter: ^2.14.0
   
 
 dev_dependencies:
