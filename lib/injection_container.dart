@@ -9,9 +9,11 @@ import 'package:housely/features/auth/domain/usecases/google_signin_usecase.dart
 import 'package:housely/features/auth/domain/usecases/login_usecase.dart';
 import 'package:housely/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:housely/features/auth/domain/usecases/register_usecase.dart';
+import 'package:housely/features/auth/domain/usecases/send_password_reset_usecase.dart';
 import 'package:housely/features/auth/presentation/cubit/google_signin_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
+import 'package:housely/features/auth/presentation/cubit/password_reset_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/register_cubit.dart';
 import 'package:housely/features/onboarding/data/datasources/onboarding_local_data_source.dart';
 import 'package:housely/features/onboarding/data/repositories/onboarding_repo_impl.dart';
@@ -65,10 +67,10 @@ Future<void> initializeDependencies() async {
     ),
   );
 
-  sl.registerLazySingleton(() => RegisterUsecase(sl()));
-  sl.registerLazySingleton(() => LoginUseCase(sl()));
-  sl.registerLazySingleton(() => LogOutUseCase(sl()));
-  sl.registerLazySingleton(() => GoogleSigninUsecase(sl()));
+  sl.registerLazySingleton(() => RegisterUsecase(sl<AuthRepo>()));
+  sl.registerLazySingleton(() => LoginUseCase(sl<AuthRepo>()));
+  sl.registerLazySingleton(() => LogOutUseCase(sl<AuthRepo>()));
+  sl.registerLazySingleton(() => GoogleSigninUsecase(sl<AuthRepo>()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -78,8 +80,15 @@ Future<void> initializeDependencies() async {
     ),
   );
 
-  sl.registerFactory(() => RegisterCubit(registerUsecase: sl()));
-  sl.registerFactory(() => LoginCubit(loginUseCase: sl()));
-  sl.registerFactory(() => LogoutCubit(logOutUseCase: sl()));
-  sl.registerFactory(() => GoogleSigninCubit(googleSigninUsecase: sl()));
+  sl.registerFactory(
+    () => RegisterCubit(registerUsecase: sl<RegisterUsecase>()),
+  );
+  sl.registerFactory(() => LoginCubit(loginUseCase: sl<LoginUseCase>()));
+  sl.registerFactory(() => LogoutCubit(logOutUseCase: sl<LogOutUseCase>()));
+  sl.registerFactory(
+    () => PasswordResetCubit(resetUsecase: sl<SendPasswordResetUsecase>()),
+  );
+  sl.registerFactory(
+    () => GoogleSigninCubit(googleSigninUsecase: sl<GoogleSigninUsecase>()),
+  );
 }
