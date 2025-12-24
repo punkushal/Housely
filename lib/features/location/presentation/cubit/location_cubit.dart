@@ -22,8 +22,8 @@ class LocationCubit extends Cubit<LocationState> {
 
   // get location
   Future<void> getCurrentLocation() async {
+    emit(LocationLoading());
     final permissionResult = await checkLocationPermissionUseCase();
-
     permissionResult.fold(
       (failure) => emit(PermissionDenied(failure.message)),
       (hasPermission) async {
@@ -36,10 +36,12 @@ class LocationCubit extends Cubit<LocationState> {
               if (granted) {
                 await _fetchLocation();
               } else {
-                emit(PermissionDenied("Permission denied"));
+                emit(PermissionDenied("Location permission denied"));
               }
             },
           );
+        } else {
+          await _fetchLocation();
         }
       },
     );
@@ -51,5 +53,22 @@ class LocationCubit extends Cubit<LocationState> {
       (failure) => emit(LocationFailure(failure.message)),
       (location) => emit(LocationLoaded(location: location)),
     );
+  }
+
+  void updateLocationFromMap(
+    double latitude,
+    double longitude, {
+    String? address,
+  }) {
+    final location = Location(
+      latitude: latitude,
+      longitude: longitude,
+      address: address,
+    );
+    emit(LocationLoaded(location: location));
+  }
+
+  void reset() {
+    emit(LocationInitial());
   }
 }
