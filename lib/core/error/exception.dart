@@ -12,3 +12,8 @@ class AuthException implements Exception {
   final String message;
   AuthException([this.message = 'Authentication failed']);
 }
+
+class PermissionExcetipn implements Exception {
+  final String message;
+  PermissionExcetipn([this.message = "Permission denied"]);
+}
