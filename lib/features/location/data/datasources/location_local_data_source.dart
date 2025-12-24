@@ -38,7 +38,7 @@ class LocationLocalDataSourceImpl implements LocationLocalDataSource {
   @override
   Future<bool> requestLocationPermission() async {
     try {
-      LocationPermission permission = await Geolocator.checkPermission();
+      LocationPermission permission = await Geolocator.requestPermission();
       if (permission == .denied) {
         return false;
       } else if (permission == .deniedForever) {
