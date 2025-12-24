@@ -18,15 +18,20 @@ class SnackbarHelper {
     _showSnackbar(context, message, SnackbarType.info);
   }
 
-  static void showWarning(BuildContext context, String message) {
-    _showSnackbar(context, message, SnackbarType.warning);
+  static void showWarning(
+    BuildContext context,
+    String message, {
+    SnackBarAction? action,
+  }) {
+    _showSnackbar(context, message, SnackbarType.warning, action: action);
   }
 
   static void _showSnackbar(
     BuildContext context,
     String message,
-    SnackbarType type,
-  ) {
+    SnackbarType type, {
+    SnackBarAction? action,
+  }) {
     final config = _getSnackbarConfig(type);
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -64,6 +69,7 @@ class SnackbarHelper {
           vertical: 10,
         ),
         duration: const Duration(seconds: 3),
+        action: action,
       ),
     );
   }
