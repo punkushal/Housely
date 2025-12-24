@@ -46,9 +46,9 @@ class LocationLocalDataSourceImpl implements LocationLocalDataSource {
       }
       return permission == .always || permission == .whileInUse;
     } on PermissionDeniedException catch (e) {
-      throw PermissionException(e.message!);
+      throw PermissionException(e.message ?? e.toString());
     } on PermissionRequestInProgressException catch (e) {
-      throw PermissionException(e.message!);
+      throw PermissionException(e.message ?? e.toString());
     } catch (e) {
       throw PermissionException();
     }
