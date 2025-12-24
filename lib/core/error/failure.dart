@@ -62,3 +62,7 @@ final class UnknownFailure extends Failure {
 final class AuthFailure extends Failure {
   const AuthFailure(super.message);
 }
+
+final class PermissionFailure extends Failure {
+  const PermissionFailure(super.message);
+}

@@ -13,7 +13,7 @@ class AuthException implements Exception {
   AuthException([this.message = 'Authentication failed']);
 }
 
-class PermissionExcetipn implements Exception {
+class PermissionException implements Exception {
   final String message;
-  PermissionExcetipn([this.message = "Permission denied"]);
+  PermissionException([this.message = "Permission denied"]);
 }
