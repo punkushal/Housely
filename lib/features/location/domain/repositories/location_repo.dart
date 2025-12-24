@@ -10,4 +10,7 @@ abstract interface class LocationRepo {
 
   // check location permission
   ResultFuture<bool> checkLocationPermission();
+
+  // check service enable
+  ResultFuture<bool> checkSeriviceEnabled();
 }
