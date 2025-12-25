@@ -10,12 +10,15 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i8;
+import 'package:flutter/material.dart' as _i9;
 import 'package:housely/features/auth/presentation/pages/forgot_password_page.dart'
     as _i1;
 import 'package:housely/features/auth/presentation/pages/login_page.dart'
     as _i3;
 import 'package:housely/features/auth/presentation/pages/signup_page.dart'
     as _i6;
+import 'package:housely/features/location/presentation/cubit/location_cubit.dart'
+    as _i10;
 import 'package:housely/features/location/presentation/pages/location_page.dart'
     as _i2;
 import 'package:housely/features/location/presentation/pages/map_picker_page.dart'
@@ -42,17 +45,17 @@ class ForgotPasswordRoute extends _i8.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i2.LocationPage]
-class LocationRoute extends _i8.PageRouteInfo<void> {
-  const LocationRoute({List<_i8.PageRouteInfo>? children})
-    : super(LocationRoute.name, initialChildren: children);
+/// [_i2.LocationWrapper]
+class LocationWrapper extends _i8.PageRouteInfo<void> {
+  const LocationWrapper({List<_i8.PageRouteInfo>? children})
+    : super(LocationWrapper.name, initialChildren: children);
 
-  static const String name = 'LocationRoute';
+  static const String name = 'LocationWrapper';
 
   static _i8.PageInfo page = _i8.PageInfo(
     name,
     builder: (data) {
-      return const _i2.LocationPage();
+      return const _i2.LocationWrapper();
     },
   );
 }
@@ -75,18 +78,52 @@ class LoginRoute extends _i8.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.MapPickerPage]
-class MapPickerRoute extends _i8.PageRouteInfo<void> {
-  const MapPickerRoute({List<_i8.PageRouteInfo>? children})
-    : super(MapPickerRoute.name, initialChildren: children);
+class MapPickerRoute extends _i8.PageRouteInfo<MapPickerRouteArgs> {
+  MapPickerRoute({
+    _i9.Key? key,
+    required _i10.LocationCubit locationCubit,
+    List<_i8.PageRouteInfo>? children,
+  }) : super(
+         MapPickerRoute.name,
+         args: MapPickerRouteArgs(key: key, locationCubit: locationCubit),
+         initialChildren: children,
+       );
 
   static const String name = 'MapPickerRoute';
 
   static _i8.PageInfo page = _i8.PageInfo(
     name,
     builder: (data) {
-      return const _i4.MapPickerPage();
+      final args = data.argsAs<MapPickerRouteArgs>();
+      return _i4.MapPickerPage(
+        key: args.key,
+        locationCubit: args.locationCubit,
+      );
     },
   );
+}
+
+class MapPickerRouteArgs {
+  const MapPickerRouteArgs({this.key, required this.locationCubit});
+
+  final _i9.Key? key;
+
+  final _i10.LocationCubit locationCubit;
+
+  @override
+  String toString() {
+    return 'MapPickerRouteArgs{key: $key, locationCubit: $locationCubit}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! MapPickerRouteArgs) return false;
+    return key == other.key && locationCubit == other.locationCubit;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ locationCubit.hashCode;
 }
 
 /// generated route for
