@@ -44,12 +44,16 @@ class LocationDetail extends StatelessWidget {
                 child: Icon(Icons.location_on_outlined),
               ),
 
-              Text(
-                address,
-                style: AppTextStyle.bodyRegular(
-                  context,
-                  fontSize: 14,
-                  color: AppColors.textHint,
+              SizedBox(
+                width: ResponsiveDimensions.getSize(context, 230),
+                child: Text(
+                  address,
+                  overflow: .ellipsis,
+                  style: AppTextStyle.bodyRegular(
+                    context,
+                    fontSize: 14,
+                    color: AppColors.textHint,
+                  ),
                 ),
               ),
             ],
