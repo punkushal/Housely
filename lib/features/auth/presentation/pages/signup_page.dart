@@ -258,19 +258,8 @@ class _SignupPageState extends State<SignupPage> {
                           final isLoading = state is RegisterLoading;
                           return CustomButton(
                             onTap: () => _handleRegistration(context),
-                            child: isLoading
-                                ? CircularProgressIndicator(
-                                    color: AppColors.surface,
-                                  )
-                                : Text(
-                                    "Sign up",
-                                    style: AppTextStyle.bodyRegular(
-                                      context,
-                                      fontSize: 18,
-                                      lineHeight: 27,
-                                      color: AppColors.surface,
-                                    ),
-                                  ),
+                            buttonLabel: "Sign up",
+                            isLoading: isLoading,
                           );
                         },
                       ),

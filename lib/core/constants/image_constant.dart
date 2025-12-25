@@ -16,4 +16,7 @@ class ImageConstant {
       "${_baseImageUrl}onboarding/onboarding_img2.png";
   static final String thirdOnBoardingImg =
       "${_baseImageUrl}onboarding/onboarding_img3.png";
+
+  // search location image
+  static final String searchLocationImg = "${_baseImageUrl}location.png";
 }

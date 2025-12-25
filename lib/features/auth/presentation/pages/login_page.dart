@@ -225,19 +225,8 @@ class _LoginPageState extends State<LoginPage> {
                           final isLoading = state is LoginLoading;
                           return CustomButton(
                             onTap: () => _handleLogin(context),
-                            child: isLoading
-                                ? CircularProgressIndicator(
-                                    color: AppColors.surface,
-                                  )
-                                : Text(
-                                    "Sign in",
-                                    style: AppTextStyle.bodyRegular(
-                                      context,
-                                      fontSize: 18,
-                                      lineHeight: 27,
-                                      color: AppColors.surface,
-                                    ),
-                                  ),
+                            buttonLabel: "Sign in",
+                            isLoading: isLoading,
                           );
                         },
                       ),
@@ -265,6 +254,8 @@ class _LoginPageState extends State<LoginPage> {
                           }
 
                           if (state is GoogleSigninSuccess) {
+                            // navigate to location page
+                            context.router.replace(LocationRoute());
                             SnackbarHelper.showSuccess(
                               context,
                               'Successfully logged in via google',

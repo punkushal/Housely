@@ -4,7 +4,8 @@
 <dict>
 	<key>GIDClientID</key>
 	<string>299731885134-v3986q5kpjdmidb3re36odgu509qrred.apps.googleusercontent.com</string>
-
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Housely needs access to location when open.</string>
 	<!-- Google Sign-in Section -->
 	<key>CFBundleURLTypes</key>
 	<array>

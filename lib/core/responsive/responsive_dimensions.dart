@@ -97,7 +97,7 @@ class ResponsiveDimensions {
     double horizontal = 0,
     double vertical = 0,
   }) => EdgeInsets.symmetric(
-    horizontal: getSize(context, horizontal),
+    horizontal: getHeight(context, horizontal),
     vertical: getSize(context, vertical),
   );
 
@@ -121,23 +121,38 @@ class ResponsiveDimensions {
 
   // ==================== BORDER RADIUS ====================
 
-  static double radiusSmall(BuildContext context) => getSize(context, 8);
-  static double radiusMedium(BuildContext context) => getSize(context, 12);
-  static double radiusLarge(BuildContext context) => getSize(context, 16);
-  static double radiusXLarge(BuildContext context) => getSize(context, 24);
+  /// default size : 8
+  static double radiusSmall(BuildContext context, {double? size}) =>
+      getSize(context, size ?? 8);
+
+  /// default size : 12
+  static double radiusMedium(BuildContext context, {double? size}) =>
+      getSize(context, size ?? 12);
+
+  /// default size : 16
+  static double radiusLarge(BuildContext context, {double? size}) =>
+      getSize(context, size ?? 16);
+
+  /// default size : 24
+  static double radiusXLarge(BuildContext context, {double? size}) =>
+      getSize(context, size ?? 24);
 
   /// Border radius presets
-  static BorderRadius borderRadiusSmall(BuildContext context) =>
-      BorderRadius.circular(radiusSmall(context));
+  static BorderRadius borderRadiusSmall(BuildContext context, {double? size}) =>
+      BorderRadius.circular(radiusSmall(context, size: size));
 
-  static BorderRadius borderRadiusMedium(BuildContext context) =>
-      BorderRadius.circular(radiusMedium(context));
+  static BorderRadius borderRadiusMedium(
+    BuildContext context, {
+    double? size,
+  }) => BorderRadius.circular(radiusMedium(context, size: size));
 
-  static BorderRadius borderRadiusLarge(BuildContext context) =>
-      BorderRadius.circular(radiusLarge(context));
+  static BorderRadius borderRadiusLarge(BuildContext context, {double? size}) =>
+      BorderRadius.circular(radiusLarge(context, size: size));
 
-  static BorderRadius borderRadiusXLarge(BuildContext context) =>
-      BorderRadius.circular(radiusXLarge(context));
+  static BorderRadius borderRadiusXLarge(
+    BuildContext context, {
+    double? size,
+  }) => BorderRadius.circular(radiusXLarge(context, size: size));
 
   /// Only top corners
   static BorderRadius borderRadiusTopMedium(BuildContext context) =>

@@ -15,6 +15,14 @@ import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/password_reset_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/register_cubit.dart';
+import 'package:housely/features/location/data/datasources/location_local_data_source.dart';
+import 'package:housely/features/location/data/repositories/location_repo_impl.dart';
+import 'package:housely/features/location/domain/repositories/location_repo.dart';
+import 'package:housely/features/location/domain/usecases/check_location_permission_use_case.dart';
+import 'package:housely/features/location/domain/usecases/check_service_enabled_use_case.dart';
+import 'package:housely/features/location/domain/usecases/get_current_location_use_case.dart';
+import 'package:housely/features/location/domain/usecases/request_location_permission_use_case.dart';
+import 'package:housely/features/location/presentation/cubit/location_cubit.dart';
 import 'package:housely/features/onboarding/data/datasources/onboarding_local_data_source.dart';
 import 'package:housely/features/onboarding/data/repositories/onboarding_repo_impl.dart';
 import 'package:housely/features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -54,6 +62,14 @@ Future<void> initializeDependencies() async {
     () => AuthRepoImpl(remoteDataSource: sl<AuthRemoteDataSource>()),
   );
 
+  sl.registerLazySingleton<LocationLocalDataSource>(
+    () => LocationLocalDataSourceImpl(),
+  );
+
+  sl.registerLazySingleton<LocationRepo>(
+    () => LocationRepoImpl(dataSource: sl<LocationLocalDataSource>()),
+  );
+
   // ============== Domain layer ===============
   sl.registerLazySingleton(
     () => SetOnboardingStatusUsecase(
@@ -72,6 +88,18 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => LogOutUseCase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => GoogleSigninUsecase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => SendPasswordResetUsecase(sl<AuthRepo>()));
+  sl.registerLazySingleton(
+    () => GetCurrentLocationUseCase(locationRepo: sl<LocationRepo>()),
+  );
+  sl.registerLazySingleton(
+    () => CheckLocationPermissionUseCase(locationRepo: sl<LocationRepo>()),
+  );
+  sl.registerLazySingleton(
+    () => RequestLocationPermissionUseCase(locationRepo: sl<LocationRepo>()),
+  );
+  sl.registerLazySingleton(
+    () => CheckServiceEnabledUseCase(locationRepo: sl<LocationRepo>()),
+  );
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -91,5 +119,13 @@ Future<void> initializeDependencies() async {
   );
   sl.registerFactory(
     () => GoogleSigninCubit(googleSigninUsecase: sl<GoogleSigninUsecase>()),
+  );
+  sl.registerFactory(
+    () => LocationCubit(
+      getCurrentLocationUseCase: sl<GetCurrentLocationUseCase>(),
+      checkLocationPermissionUseCase: sl<CheckLocationPermissionUseCase>(),
+      checkServiceEnabledUseCase: sl<CheckServiceEnabledUseCase>(),
+      requestLocationPermissionUseCase: sl<RequestLocationPermissionUseCase>(),
+    ),
   );
 }
