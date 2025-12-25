@@ -97,7 +97,7 @@ class ResponsiveDimensions {
     double horizontal = 0,
     double vertical = 0,
   }) => EdgeInsets.symmetric(
-    horizontal: getSize(context, horizontal),
+    horizontal: getHeight(context, horizontal),
     vertical: getSize(context, vertical),
   );
 
@@ -121,12 +121,19 @@ class ResponsiveDimensions {
 
   // ==================== BORDER RADIUS ====================
 
+  /// default size : 8
   static double radiusSmall(BuildContext context, {double? size}) =>
       getSize(context, size ?? 8);
+
+  /// default size : 12
   static double radiusMedium(BuildContext context, {double? size}) =>
       getSize(context, size ?? 12);
+
+  /// default size : 16
   static double radiusLarge(BuildContext context, {double? size}) =>
       getSize(context, size ?? 16);
+
+  /// default size : 24
   static double radiusXLarge(BuildContext context, {double? size}) =>
       getSize(context, size ?? 24);
 
