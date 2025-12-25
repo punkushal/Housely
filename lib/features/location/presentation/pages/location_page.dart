@@ -84,26 +84,6 @@ class _LocationPageState extends State<LocationPage> {
                 SizedBox(height: ResponsiveDimensions.getHeight(context, 60)),
                 // current location button
                 DropShadow(
-                  boxShadow: [
-                    BoxShadow(
-                      offset: Offset(0, 20),
-                      blurRadius: ResponsiveDimensions.radiusXLarge(context),
-                      spreadRadius: ResponsiveDimensions.radiusSmall(
-                        context,
-                        size: -4,
-                      ),
-                      color: AppColors.primary.withValues(alpha: 0.08),
-                    ),
-                    BoxShadow(
-                      offset: Offset(0, 8),
-                      blurRadius: ResponsiveDimensions.radiusSmall(context),
-                      spreadRadius: ResponsiveDimensions.radiusSmall(
-                        context,
-                        size: -4,
-                      ),
-                      color: AppColors.primary.withValues(alpha: 0.03),
-                    ),
-                  ],
                   child: BlocConsumer<LocationCubit, LocationState>(
                     listener: (context, state) {
                       if (state is LocationFailure) {
@@ -142,26 +122,6 @@ class _LocationPageState extends State<LocationPage> {
                   ),
                 ),
                 DropShadow(
-                  boxShadow: [
-                    BoxShadow(
-                      offset: Offset(0, 20),
-                      blurRadius: ResponsiveDimensions.radiusXLarge(context),
-                      spreadRadius: ResponsiveDimensions.radiusSmall(
-                        context,
-                        size: -4,
-                      ),
-                      color: AppColors.primary.withValues(alpha: 0.08),
-                    ),
-                    BoxShadow(
-                      offset: Offset(0, 8),
-                      blurRadius: ResponsiveDimensions.radiusSmall(context),
-                      spreadRadius: ResponsiveDimensions.radiusSmall(
-                        context,
-                        size: -4,
-                      ),
-                      color: AppColors.primary.withValues(alpha: 0.03),
-                    ),
-                  ],
                   child: CustomButton(
                     onTap: () async {
                       context.router.push(LocationWrapper());
