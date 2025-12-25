@@ -62,7 +62,9 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       await context.router.replace(const OnboardingRoute());
     }
     if (state is OnboardingCompleted && mounted) {
-      await context.router.replace(const LoginRoute());
+      // for now i will navigate to location page , later only after logged in then
+      // only user willn navigate to this location page
+      await context.router.replace(const LocationRoute());
     }
   }
 

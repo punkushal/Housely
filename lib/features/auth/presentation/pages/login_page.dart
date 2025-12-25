@@ -255,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
 
                           if (state is GoogleSigninSuccess) {
                             // navigate to location page
-                            context.router.replace(LocationWrapper());
+                            context.router.replace(LocationRoute());
                             SnackbarHelper.showSuccess(
                               context,
                               'Successfully logged in via google',
