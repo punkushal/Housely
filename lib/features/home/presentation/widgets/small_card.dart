@@ -10,23 +10,22 @@ import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.d
 class SmallCard extends StatelessWidget {
   /// for now there is hard coded value , later i'll implement
   /// dynamic values
-  const SmallCard({super.key, this.isHidden = false, this.onTap});
-
-  /// To hide favorite icon
-  final bool isHidden;
+  const SmallCard({super.key, this.isNearby = false, this.onTap});
 
   /// favorite toggle function
   final void Function()? onTap;
+
+  /// To check is it nearby showcase
+  final bool isNearby;
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: ResponsiveDimensions.getSize(context, 327),
-      height: ResponsiveDimensions.getHeight(context, 84),
+      height: isNearby ? null : ResponsiveDimensions.getHeight(context, 84),
       decoration: BoxDecoration(
         borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
       ),
       child: Row(
-        crossAxisAlignment: .start,
+        crossAxisAlignment: .end,
         spacing: ResponsiveDimensions.getSize(context, 12),
         children: [
           // image container
@@ -57,7 +56,10 @@ class SmallCard extends StatelessWidget {
                 children: [
                   SvgPicture.asset(ImageConstant.locationIcon),
                   SizedBox(
-                    width: ResponsiveDimensions.getSize(context, 142),
+                    width: ResponsiveDimensions.getSize(
+                      context,
+                      isNearby ? 98 : 142,
+                    ),
                     child: Text(
                       "Jl. Tentara Pelajar No.47, RW.001",
                       style: AppTextStyle.bodyRegular(
@@ -89,7 +91,7 @@ class SmallCard extends StatelessWidget {
             mainAxisAlignment: .spaceBetween,
             children: [
               // favorite section
-              isHidden
+              isNearby
                   ? SizedBox.shrink()
                   : GestureDetector(
                       onTap: onTap,
