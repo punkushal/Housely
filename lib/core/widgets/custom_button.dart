@@ -54,7 +54,7 @@ class CustomButton extends StatelessWidget {
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: onTap,
+          onPressed: isLoading ? null : onTap,
           style: ElevatedButton.styleFrom(
             backgroundColor: isOutlined
                 ? AppColors.surface
