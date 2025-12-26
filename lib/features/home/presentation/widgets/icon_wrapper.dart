@@ -26,6 +26,7 @@ class IconWrapper extends StatelessWidget {
           iconPath,
           height: ResponsiveDimensions.getHeight(context, 24),
           width: ResponsiveDimensions.getSize(context, 24),
+          fit: .scaleDown,
         ),
       ),
     );
