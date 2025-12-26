@@ -4,7 +4,8 @@ class ImageConstant {
   // base assets url
   static const String _baseIconUrl = "assets/icons/";
   static const String _baseImageUrl = "assets/images/";
-  static const String _baseVillaUrl = "assets/villa/";
+  static const String _baseVillaUrl = "${_baseImageUrl}villa/";
+  static const String _baseOtherUrl = "${_baseImageUrl}others/";
 
   // icons
   static final String logoIcon = "${_baseIconUrl}logo_icon.png";
@@ -58,7 +59,7 @@ class ImageConstant {
       "${_baseImageUrl}onboarding/onboarding_img3.png";
 
   // search location image
-  static final String searchLocationImg = "${_baseImageUrl}location.png";
+  static final String searchLocationImg = "${_baseOtherUrl}location.png";
 
   // villa images
   static final String firstVilla = "${_baseVillaUrl}villa1.jpg";
