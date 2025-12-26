@@ -64,10 +64,12 @@ class AppTextStyle {
     BuildContext context, {
     double fontSize = 14,
     double lineHeight = 18,
+    Color? color,
   }) => bodyRegular(
     context,
     fontSize: fontSize,
     lineHeight: lineHeight,
+    color: color,
   ).copyWith(fontWeight: FontWeight.w600);
 
   static TextStyle bodyMedium(
