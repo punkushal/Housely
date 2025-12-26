@@ -102,6 +102,7 @@ flutter:
   assets:
     - assets/images/onboarding/
     - assets/images/
+    - assets/images/villa
     - assets/icons/
   #   - images/a_dot_ham.jpeg
 
