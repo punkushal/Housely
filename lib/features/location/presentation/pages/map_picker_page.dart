@@ -55,7 +55,7 @@ class _MapPickerPageState extends State<MapPickerPage> {
   void _handleBackNavigation() {
     final state = context.read<LocationCubit>().state;
     if (state is LocationLoaded && state.location.address != null) {
-      context.router.replaceAll([HomeRoute(address: state.location.address)]);
+      context.router.replaceAll([TabWrapper(address: state.location.address)]);
     } else {
       SnackbarHelper.showInfo(context, "Please pick your location");
     }

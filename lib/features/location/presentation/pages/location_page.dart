@@ -34,7 +34,7 @@ class _LocationPageState extends State<LocationPage> {
       child: Scaffold(
         appBar: AppBar(
           actions: [
-            SkipButton(onTap: () => context.router.replace(HomeRoute())),
+            SkipButton(onTap: () => context.router.replace(TabWrapper())),
           ],
         ),
         body: SafeArea(
@@ -105,7 +105,7 @@ class _LocationPageState extends State<LocationPage> {
                           state.location.address ?? "no address found",
                         );
                         context.router.replace(
-                          HomeRoute(address: state.location.address),
+                          TabWrapper(address: state.location.address),
                         );
                       }
                     },
