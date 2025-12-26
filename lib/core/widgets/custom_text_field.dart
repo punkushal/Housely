@@ -14,6 +14,7 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.style,
+    this.contentPadding,
   });
 
   /// [TextEditingController] controller
@@ -45,6 +46,9 @@ class CustomTextField extends StatelessWidget {
 
   /// text style for user input text
   final TextStyle? style;
+
+  /// content padding
+  final EdgeInsetsGeometry? contentPadding;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -59,6 +63,7 @@ class CustomTextField extends StatelessWidget {
         hintStyle: hintStyle,
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
+        contentPadding: contentPadding,
       ),
     );
   }

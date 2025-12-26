@@ -137,18 +137,21 @@ class ResponsiveDimensions {
   static double radiusXLarge(BuildContext context, {double? size}) =>
       getSize(context, size ?? 24);
 
-  /// Border radius presets
+  /// Defaul radius size: 8
   static BorderRadius borderRadiusSmall(BuildContext context, {double? size}) =>
       BorderRadius.circular(radiusSmall(context, size: size));
 
+  /// Defaul radius size: 12
   static BorderRadius borderRadiusMedium(
     BuildContext context, {
     double? size,
   }) => BorderRadius.circular(radiusMedium(context, size: size));
 
+  /// Defaul radius size: 16
   static BorderRadius borderRadiusLarge(BuildContext context, {double? size}) =>
       BorderRadius.circular(radiusLarge(context, size: size));
 
+  /// Defaul radius size: 24
   static BorderRadius borderRadiusXLarge(
     BuildContext context, {
     double? size,
