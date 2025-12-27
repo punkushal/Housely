@@ -37,7 +37,9 @@ class AppTheme {
         centerTitle: true,
         titleTextStyle: AppTextStyle.bodySemiBold(
           context,
-        ).copyWith(fontSize: 16, height: 24 / 16),
+          fontSize: 16,
+          lineHeight: 24,
+        ),
         iconTheme: IconThemeData(color: AppColors.textPrimary, size: 24),
       ),
 
