@@ -24,11 +24,12 @@ class ImageConstant {
       "${_baseIconUrl}favorite_filled_icon.svg";
   static final String locationFilledIcon =
       "${_baseIconUrl}location_filled_icon.svg";
+  static final String homeFilledIcon = "${_baseIconUrl}home_filled_icon.svg";
   static final String paperFilledIcon = "${_baseIconUrl}paper_filled_icon.svg";
   static final String personFilledIcon =
-      "${_baseIconUrl}person_filled_icon.svg";
+      "${_baseIconUrl}profile_filled_icon.svg";
   static final String favoriteIcon = "${_baseIconUrl}favorite_icon.svg";
-  static final String personIcon = "${_baseIconUrl}person_icon.svg";
+  static final String personIcon = "${_baseIconUrl}profile_icon.svg";
   static final String removeIcon = "${_baseIconUrl}remove_icon.svg";
   static final String searchIcon = "${_baseIconUrl}search_icon.svg";
   static final String settingIcon = "${_baseIconUrl}setting_icon.svg";
