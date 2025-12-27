@@ -10,17 +10,18 @@ import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.d
 class SmallCard extends StatelessWidget {
   /// for now there is hard coded value , later i'll implement
   /// dynamic values
-  const SmallCard({super.key, this.isNearby = false, this.onTap});
+  const SmallCard({super.key, this.onTap, this.height});
 
   /// favorite toggle function
   final void Function()? onTap;
 
-  /// To check is it nearby showcase
-  final bool isNearby;
+  /// height of the card
+  final double? height;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: isNearby ? null : ResponsiveDimensions.getHeight(context, 84),
+      height: height ?? ResponsiveDimensions.getHeight(context, 84),
       decoration: BoxDecoration(
         borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
       ),
@@ -42,6 +43,7 @@ class SmallCard extends StatelessWidget {
           // Property detail section
           Column(
             crossAxisAlignment: .start,
+
             spacing: ResponsiveDimensions.getHeight(context, 5),
             children: [
               // Property name
@@ -56,10 +58,7 @@ class SmallCard extends StatelessWidget {
                 children: [
                   SvgPicture.asset(ImageConstant.locationIcon),
                   SizedBox(
-                    width: ResponsiveDimensions.getSize(
-                      context,
-                      isNearby ? 98 : 142,
-                    ),
+                    width: ResponsiveDimensions.getSize(context, 112),
                     child: Text(
                       "Jl. Tentara Pelajar No.47, RW.001",
                       style: AppTextStyle.bodyRegular(
@@ -85,47 +84,39 @@ class SmallCard extends StatelessWidget {
               ),
             ],
           ),
-
+          Spacer(),
           // favorite + rating section
           Column(
             mainAxisAlignment: .spaceBetween,
             children: [
               // favorite section
-              isNearby
-                  ? SizedBox.shrink()
-                  : GestureDetector(
-                      onTap: onTap,
-                      child:
-                          BlocSelector<
-                            FavoriteToggleCubit,
-                            FavoriteToggleState,
-                            bool
-                          >(
-                            selector: (state) {
-                              return state.isSelected;
-                            },
-                            builder: (context, state) {
-                              return SvgPicture.asset(
-                                state
-                                    ? ImageConstant.favoriteFilledIcon
-                                    : ImageConstant.favoriteIcon,
-                                width: ResponsiveDimensions.getSize(
-                                  context,
-                                  24,
-                                ),
-                                height: ResponsiveDimensions.getHeight(
-                                  context,
-                                  24,
-                                ),
-                                fit: .scaleDown,
-                                colorFilter: ColorFilter.mode(
-                                  AppColors.error,
-                                  .srcIn,
-                                ),
-                              );
-                            },
+              GestureDetector(
+                onTap: onTap,
+                child:
+                    BlocSelector<
+                      FavoriteToggleCubit,
+                      FavoriteToggleState,
+                      bool
+                    >(
+                      selector: (state) {
+                        return state.isSelected;
+                      },
+                      builder: (context, state) {
+                        return SvgPicture.asset(
+                          state
+                              ? ImageConstant.favoriteFilledIcon
+                              : ImageConstant.favoriteIcon,
+                          width: ResponsiveDimensions.getSize(context, 24),
+                          height: ResponsiveDimensions.getHeight(context, 24),
+                          fit: .scaleDown,
+                          colorFilter: ColorFilter.mode(
+                            AppColors.error,
+                            .srcIn,
                           ),
+                        );
+                      },
                     ),
+              ),
 
               // rating container
               Container(
@@ -148,6 +139,7 @@ class SmallCard extends StatelessWidget {
                       ImageConstant.starIcon,
                       width: ResponsiveDimensions.getSize(context, 12),
                       height: ResponsiveDimensions.getHeight(context, 12),
+                      fit: .scaleDown,
                     ),
 
                     // rating
