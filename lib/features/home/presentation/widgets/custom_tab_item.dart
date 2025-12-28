@@ -47,6 +47,9 @@ class CustomBottomNavItem extends StatelessWidget {
           isActive ? filledIconPath : iconPath,
           width: ResponsiveDimensions.getSize(context, 24),
           height: ResponsiveDimensions.getHeight(context, 24),
+          colorFilter: isActive
+              ? ColorFilter.mode(AppColors.primaryPressed, .srcIn)
+              : null,
         ),
 
         SizedBox(height: ResponsiveDimensions.getHeight(context, 4)),
