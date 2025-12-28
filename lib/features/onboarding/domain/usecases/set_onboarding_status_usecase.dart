@@ -10,7 +10,7 @@ class SetOnboardingStatusUsecase implements UseCase<void, StatusParam> {
 
   @override
   ResultFuture<void> call(StatusParam param) {
-    return onboardingRepository.setOnboardingStatus(isFirstTime: param.status);
+    return onboardingRepository.setOnboardingStatus(isCompleted: param.status);
   }
 }
 
