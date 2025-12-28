@@ -24,7 +24,69 @@ class TabWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => FavoriteToggleCubit(),
-      child: AutoTabsScaffold(routes: [HomeRoute()]),
+      child: AutoTabsScaffold(
+        routes: [
+          HomeRoute(address: address),
+          ExploreRoute(),
+          BookingRoute(),
+          ProfileRoute(),
+        ],
+        bottomNavigationBuilder: (_, tabsRouter) {
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.textPrimary.withValues(alpha: 0.05),
+                  blurRadius: ResponsiveDimensions.radiusSmall(context),
+                ),
+              ],
+            ),
+            padding: ResponsiveDimensions.paddingOnly(context, bottom: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                GestureDetector(
+                  onTap: () => tabsRouter.setActiveIndex(0),
+                  child: CustomBottomNavItem(
+                    iconPath: ImageConstant.homeIcon,
+                    filledIconPath: ImageConstant.homeFilledIcon,
+                    label: 'Home',
+                    isActive: tabsRouter.activeIndex == 0,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => tabsRouter.setActiveIndex(1),
+                  child: CustomBottomNavItem(
+                    iconPath: ImageConstant.discoveryIcon,
+                    filledIconPath: ImageConstant.discoveryFilledIcon,
+                    label: 'Explore',
+                    isActive: tabsRouter.activeIndex == 1,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => tabsRouter.setActiveIndex(2),
+                  child: CustomBottomNavItem(
+                    iconPath: ImageConstant.documentIcon,
+                    filledIconPath: ImageConstant.documentFilledIcon,
+                    label: 'My Booking',
+                    isActive: tabsRouter.activeIndex == 2,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => tabsRouter.setActiveIndex(3),
+                  child: CustomBottomNavItem(
+                    iconPath: ImageConstant.personIcon,
+                    filledIconPath: ImageConstant.personFilledIcon,
+                    label: 'Profile',
+                    isActive: tabsRouter.activeIndex == 3,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -182,27 +244,6 @@ class _HomePageState extends State<HomePage>
               ],
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: SizedBox(
-        height: ResponsiveDimensions.getHeight(context, 86),
-        child: TabBar(
-          splashFactory: NoSplash.splashFactory,
-          indicatorPadding: ResponsiveDimensions.paddingOnly(
-            context,
-            bottom: 76,
-          ),
-          controller: _tabController,
-          tabs: [
-            CustomTabItem(
-              iconPath: ImageConstant.homeFilledIcon,
-              label: "Home",
-            ),
-            CustomTabItem(
-              iconPath: ImageConstant.personFilledIcon,
-              label: "Profile",
-            ),
-          ],
         ),
       ),
     );
