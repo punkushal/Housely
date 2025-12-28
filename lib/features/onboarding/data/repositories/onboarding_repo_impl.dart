@@ -15,17 +15,17 @@ class OnboardingRepoImpl implements OnboardingRepository {
       final result = await localDataSource.getOnboardingStatus();
       return Right(result);
     } catch (e) {
-      return Left(StorageWriteFailure());
+      return Left(StorageReadFailure());
     }
   }
 
   @override
-  ResultVoid setOnboardingStatus({required bool isFirstTime}) async {
+  ResultVoid setOnboardingStatus({required bool isCompleted}) async {
     try {
-      await localDataSource.setOnboardingStatus(isFirstTime: isFirstTime);
+      await localDataSource.setOnboardingStatus(isCompleted: isCompleted);
       return Right(null);
     } catch (e) {
-      return Left(StorageReadFailure());
+      return Left(StorageWriteFailure());
     }
   }
 }

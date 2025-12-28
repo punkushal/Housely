@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 abstract interface class OnboardingLocalDataSource {
   /// Set Onboarding status
-  Future<void> setOnboardingStatus({required bool isFirstTime});
+  Future<void> setOnboardingStatus({required bool isCompleted});
 
   /// Get Onboarding status
   Future<bool> getOnboardingStatus();
@@ -16,9 +16,12 @@ class OnboardingLocalDataSourceImpl implements OnboardingLocalDataSource {
 
   OnboardingLocalDataSourceImpl({required this.prefs});
   @override
-  Future<void> setOnboardingStatus({required bool isFirstTime}) async {
+  Future<void> setOnboardingStatus({required bool isCompleted}) async {
     try {
-      await prefs.setBool(OnBoardingStatus.firstTime.name, isFirstTime);
+      await prefs.setBool(
+        OnBoardingStatus.onboardingCompleted.name,
+        isCompleted,
+      );
     } catch (e) {
       // for now just print exception via console
       // later i will implement more efficient way
@@ -31,7 +34,8 @@ class OnboardingLocalDataSourceImpl implements OnboardingLocalDataSource {
   @override
   Future<bool> getOnboardingStatus() async {
     try {
-      return await prefs.getBool(OnBoardingStatus.firstTime.name) ?? false;
+      return await prefs.getBool(OnBoardingStatus.onboardingCompleted.name) ??
+          false;
     } catch (e) {
       // for now just print exception via console
       // later i will implement more efficient way
