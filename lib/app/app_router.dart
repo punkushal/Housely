@@ -13,6 +13,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: LocationWrapper.page),
     AutoRoute(page: LocationRoute.page),
     AutoRoute(page: TabWrapper.page),
+    AutoRoute(page: HomeRoute.page),
     AutoRoute(page: SeeAllListRoute.page),
   ];
 }

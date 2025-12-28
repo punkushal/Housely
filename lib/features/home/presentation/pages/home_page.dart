@@ -24,11 +24,12 @@ class TabWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => FavoriteToggleCubit(),
-      child: HomePage(address: address),
+      child: AutoTabsScaffold(routes: [HomeRoute()]),
     );
   }
 }
 
+@RoutePage()
 class HomePage extends StatefulWidget {
   const HomePage({super.key, this.address});
   final String? address;
