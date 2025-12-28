@@ -1,34 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 
-class CustomTabItem extends StatelessWidget {
-  const CustomTabItem({
+class CustomBottomNavItem extends StatelessWidget {
+  const CustomBottomNavItem({
     super.key,
-    required this.iconPath,
     required this.label,
-    this.labelColor,
+    required this.isActive,
+    required this.iconPath,
+    required this.filledIconPath,
   });
 
-  /// tab icon path
+  /// normal icon path
   final String iconPath;
 
-  /// tab label
+  /// filled icon path
+  final String filledIconPath;
+
+  /// label text
   final String label;
 
-  /// tab label text color
-  final Color? labelColor;
+  /// active tab checker
+  final bool isActive;
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: ResponsiveDimensions.getHeight(context, 4),
-      mainAxisAlignment: .center,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(iconPath),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          height: ResponsiveDimensions.getHeight(context, 4),
+          width: isActive ? ResponsiveDimensions.getSize(context, 28) : 0,
+          margin: ResponsiveDimensions.paddingOnly(context, bottom: 6),
+          decoration: BoxDecoration(
+            color: isActive ? AppColors.primary : Colors.transparent,
+            borderRadius: ResponsiveDimensions.borderRadiusSmall(context),
+          ),
+        ),
+
+        SizedBox(height: ResponsiveDimensions.getHeight(context, 11)),
+
+        SvgPicture.asset(
+          isActive ? filledIconPath : iconPath,
+          width: ResponsiveDimensions.getSize(context, 24),
+          height: ResponsiveDimensions.getHeight(context, 24),
+        ),
+
+        SizedBox(height: ResponsiveDimensions.getHeight(context, 4)),
+
         Text(
           label,
-          style: AppTextStyle.labelMedium(context, color: labelColor),
+          style: AppTextStyle.labelMedium(
+            context,
+            color: isActive ? AppColors.primary : AppColors.textHint,
+          ),
         ),
       ],
     );
