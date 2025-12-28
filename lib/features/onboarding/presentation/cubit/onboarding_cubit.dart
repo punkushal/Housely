@@ -39,8 +39,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     final result = await getUseCase();
     result.fold(
       (failure) => emit(OnboardingError("Error while processing onboard")),
-      (status) {
-        status == true
+      (isCompleted) {
+        isCompleted == true
             ? emit(OnboardingCompleted())
             : emit(OnboardingInitial());
       },

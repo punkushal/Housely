@@ -1,1 +1,1 @@
-enum OnBoardingStatus { firstTime }
+enum OnBoardingStatus { onboardingCompleted }
