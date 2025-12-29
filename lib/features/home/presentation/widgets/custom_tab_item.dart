@@ -49,7 +49,7 @@ class CustomBottomNavItem extends StatelessWidget {
           height: ResponsiveDimensions.getHeight(context, 24),
           colorFilter: isActive
               ? ColorFilter.mode(AppColors.primaryPressed, .srcIn)
-              : null,
+              : ColorFilter.mode(AppColors.textHint, .srcIn),
         ),
 
         SizedBox(height: ResponsiveDimensions.getHeight(context, 4)),
