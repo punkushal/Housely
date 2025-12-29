@@ -24,4 +24,7 @@ abstract interface class AuthRepo {
 
   // get auth changes state
   Stream<AppUser?> get authStateChanges;
+
+  // check current user logged in or not
+  bool isLoggedIn();
 }
