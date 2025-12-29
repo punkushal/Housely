@@ -8,13 +8,14 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
+import 'package:housely/features/home/data/bottom_nav_list.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
 import 'package:housely/features/home/presentation/widgets/custom_tab_item.dart';
 import 'package:housely/features/home/presentation/widgets/heading_section.dart';
 import 'package:housely/features/home/presentation/widgets/icon_wrapper.dart';
 import 'package:housely/features/home/presentation/widgets/nearby_list.dart';
+import 'package:housely/features/home/presentation/widgets/property_list.dart';
 import 'package:housely/features/home/presentation/widgets/recommended_list.dart';
-import 'package:housely/features/home/presentation/widgets/small_card.dart';
 import 'package:housely/features/home/presentation/widgets/top_location_list.dart';
 
 @RoutePage()
@@ -47,53 +48,18 @@ class TabWrapper extends StatelessWidget {
             padding: ResponsiveDimensions.paddingOnly(context, bottom: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                GestureDetector(
-                  onTap: () => tabsRouter.setActiveIndex(0),
+              children: List.generate(navList.length, (index) {
+                final navItem = navList[index];
+                return GestureDetector(
+                  onTap: () => tabsRouter.setActiveIndex(index),
                   child: CustomBottomNavItem(
-                    iconPath: ImageConstant.homeIcon,
-                    filledIconPath: ImageConstant.homeFilledIcon,
-                    label: 'Home',
-                    isActive: tabsRouter.activeIndex == 0,
+                    label: navItem.label,
+                    isActive: tabsRouter.activeIndex == index,
+                    iconPath: navItem.iconPath,
+                    filledIconPath: navItem.iconFilledPath,
                   ),
-                ),
-                GestureDetector(
-                  onTap: () => tabsRouter.setActiveIndex(1),
-                  child: CustomBottomNavItem(
-                    iconPath: ImageConstant.discoveryIcon,
-                    filledIconPath: ImageConstant.discoveryFilledIcon,
-                    label: 'Explore',
-                    isActive: tabsRouter.activeIndex == 1,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => tabsRouter.setActiveIndex(2),
-                  child: CustomBottomNavItem(
-                    iconPath: ImageConstant.addIcon,
-                    filledIconPath: ImageConstant.addFilledIcon,
-                    label: 'Add',
-                    isActive: tabsRouter.activeIndex == 2,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => tabsRouter.setActiveIndex(3),
-                  child: CustomBottomNavItem(
-                    iconPath: ImageConstant.documentIcon,
-                    filledIconPath: ImageConstant.documentFilledIcon,
-                    label: 'My Booking',
-                    isActive: tabsRouter.activeIndex == 3,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => tabsRouter.setActiveIndex(4),
-                  child: CustomBottomNavItem(
-                    iconPath: ImageConstant.personIcon,
-                    filledIconPath: ImageConstant.personFilledIcon,
-                    label: 'Profile',
-                    isActive: tabsRouter.activeIndex == 4,
-                  ),
-                ),
-              ],
+                );
+              }),
             ),
           );
         },
@@ -212,46 +178,16 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(height: ResponsiveDimensions.getHeight(context, 4)),
 
                 // top location section
-                // TODO : i have to make it tappable and changes it's appearance
                 HeadingSection(title: "Top Locations", onTapText: "See all"),
                 TopLocationList(),
 
                 SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
                 HeadingSection(title: "Popular for you", onTapText: "See all"),
 
-                // TODO: later i will create reusable list widget for it
+                // Popular property list
                 SizedBox(
                   height: ResponsiveDimensions.getHeight(context, 400),
-                  child: ListView.builder(
-                    itemCount: 6,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: ResponsiveDimensions.paddingSymmetric(
-                          context,
-                          vertical: 12,
-                        ),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: Column(
-                            mainAxisSize: .min,
-                            spacing: ResponsiveDimensions.getHeight(
-                              context,
-                              12,
-                            ),
-                            children: [
-                              SmallCard(
-                                height: ResponsiveDimensions.getHeight(
-                                  context,
-                                  72,
-                                ),
-                              ),
-                              Divider(color: AppColors.divider),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                  child: PropertyList(horizontal: 0),
                 ),
               ],
             ),
