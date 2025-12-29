@@ -5,10 +5,17 @@ import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 class TopLocationCard extends StatelessWidget {
-  const TopLocationCard({super.key, required this.location});
+  const TopLocationCard({
+    super.key,
+    required this.location,
+    this.isActive = false,
+  });
 
   /// location name
   final String location;
+
+  /// boolean for active check
+  final bool isActive;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,6 +30,7 @@ class TopLocationCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: ResponsiveDimensions.borderRadiusSmall(context, size: 10),
         border: Border.all(color: AppColors.border),
+        color: isActive ? AppColors.primaryPressed : AppColors.chipInActive,
       ),
       child: Row(
         spacing: ResponsiveDimensions.getSize(context, 8),
@@ -43,7 +51,7 @@ class TopLocationCard extends StatelessWidget {
               context,
               fontSize: 12,
               lineHeight: 14,
-              color: AppColors.textHint,
+              color: isActive ? AppColors.surface : AppColors.textHint,
             ),
           ),
         ],
