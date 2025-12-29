@@ -19,6 +19,8 @@ abstract class AuthRemoteDataSource {
   Future<void> sendPasswordRestEmail({required String email});
 
   Stream<AppUser?> get authStateChanges;
+
+  bool isLoggedIn();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -161,4 +163,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         }
         return null;
       });
+
+  @override
+  bool isLoggedIn() {
+    return firebaseAuth.currentUser != null;
+  }
 }

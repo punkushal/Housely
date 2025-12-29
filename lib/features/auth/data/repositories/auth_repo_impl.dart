@@ -120,4 +120,9 @@ class AuthRepoImpl implements AuthRepo {
 
   @override
   Stream<AppUser?> get authStateChanges => remoteDataSource.authStateChanges;
+
+  @override
+  bool isLoggedIn() {
+    return remoteDataSource.isLoggedIn();
+  }
 }
