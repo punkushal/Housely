@@ -46,6 +46,8 @@ class ImageConstant {
   static final String documentIcon = "${_baseIconUrl}document_icon.svg";
   static final String bathTubIcon = "${_baseIconUrl}bathtub_icon.svg";
   static final String wifiIcon = "${_baseIconUrl}wifi_icon.svg";
+  static final String addIcon = "${_baseIconUrl}add_icon.svg";
+  static final String addFilledIcon = "${_baseIconUrl}add_filled_icon.svg";
   static final String arrowLeftCircleIcon =
       "${_baseIconUrl}arrow_left_circle_icon.svg";
   static final String arrowRightCircleIcon =
