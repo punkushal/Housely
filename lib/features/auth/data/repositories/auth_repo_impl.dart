@@ -117,4 +117,12 @@ class AuthRepoImpl implements AuthRepo {
       return Left(ServerFailure('An unexpected error occurred'));
     }
   }
+
+  @override
+  Stream<AppUser?> get authStateChanges => remoteDataSource.authStateChanges;
+
+  @override
+  bool isLoggedIn() {
+    return remoteDataSource.isLoggedIn();
+  }
 }

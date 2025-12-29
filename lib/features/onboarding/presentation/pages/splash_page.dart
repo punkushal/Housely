@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 
 @RoutePage()
@@ -74,9 +75,12 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     if (_hasNavigated || !_animationCompleted || !mounted) return;
 
     final state = context.read<OnboardingCubit>().state;
-
+    final authState = context.read<AuthCubit>().state;
     // Only navigate if we have a definitive state (not loading/initial)
-    if (state is OnboardingCompleted) {
+    if (state is OnboardingCompleted && authState is UnAuthenticated) {
+      _hasNavigated = true;
+      context.router.replace(const LoginRoute());
+    } else if (state is OnboardingCompleted && authState is Authenticated) {
       _hasNavigated = true;
       context.router.replace(const LocationRoute());
     } else if (state is OnboardingInitial) {

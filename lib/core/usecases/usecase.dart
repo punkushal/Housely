@@ -7,3 +7,7 @@ abstract interface class UseCase<T, Params> {
 abstract interface class UseCaseWithoutParams<T> {
   ResultFuture<T> call();
 }
+
+abstract interface class UseCaseWithStream<T> {
+  ResultStream<T> call();
+}
