@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
+import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
@@ -14,7 +15,7 @@ import 'package:housely/features/home/presentation/widgets/icon_wrapper.dart';
 import 'package:housely/features/home/presentation/widgets/nearby_list.dart';
 import 'package:housely/features/home/presentation/widgets/recommended_list.dart';
 import 'package:housely/features/home/presentation/widgets/small_card.dart';
-import 'package:housely/features/home/presentation/widgets/top_location_card.dart';
+import 'package:housely/features/home/presentation/widgets/top_location_list.dart';
 
 @RoutePage()
 class TabWrapper extends StatelessWidget {
@@ -28,6 +29,7 @@ class TabWrapper extends StatelessWidget {
         routes: [
           HomeRoute(address: address),
           ExploreRoute(),
+          CreateNewPropertyRoute(),
           BookingRoute(),
           ProfileRoute(),
         ],
@@ -67,19 +69,28 @@ class TabWrapper extends StatelessWidget {
                 GestureDetector(
                   onTap: () => tabsRouter.setActiveIndex(2),
                   child: CustomBottomNavItem(
-                    iconPath: ImageConstant.documentIcon,
-                    filledIconPath: ImageConstant.documentFilledIcon,
-                    label: 'My Booking',
+                    iconPath: ImageConstant.addIcon,
+                    filledIconPath: ImageConstant.addFilledIcon,
+                    label: 'Add',
                     isActive: tabsRouter.activeIndex == 2,
                   ),
                 ),
                 GestureDetector(
                   onTap: () => tabsRouter.setActiveIndex(3),
                   child: CustomBottomNavItem(
+                    iconPath: ImageConstant.documentIcon,
+                    filledIconPath: ImageConstant.documentFilledIcon,
+                    label: 'My Booking',
+                    isActive: tabsRouter.activeIndex == 3,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => tabsRouter.setActiveIndex(4),
+                  child: CustomBottomNavItem(
                     iconPath: ImageConstant.personIcon,
                     filledIconPath: ImageConstant.personFilledIcon,
                     label: 'Profile',
-                    isActive: tabsRouter.activeIndex == 3,
+                    isActive: tabsRouter.activeIndex == 4,
                   ),
                 ),
               ],
@@ -99,39 +110,45 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          spacing: ResponsiveDimensions.getSize(context, 2),
+        title: Column(
+          mainAxisSize: .min,
           children: [
-            SvgPicture.asset(
-              ImageConstant.locationFilledIcon,
-              height: ResponsiveDimensions.getSize(context, 24),
+            Row(
+              children: [
+                Text(
+                  "Location",
+                  style: AppTextStyle.labelMedium(
+                    context,
+                    fontSize: 12,
+                    color: AppColors.textHint,
+                  ),
+                ),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: AppColors.primaryPressed,
+                ),
+              ],
             ),
-            SizedBox(
-              width: ResponsiveDimensions.getSize(context, 92),
-              child: Text(
-                widget.address != null ? widget.address! : 'Home page',
-                overflow: .ellipsis,
-              ),
+            Row(
+              spacing: ResponsiveDimensions.getSize(context, 2),
+              children: [
+                SvgPicture.asset(
+                  ImageConstant.locationFilledIcon,
+                  height: ResponsiveDimensions.getSize(context, 24),
+                ),
+                SizedBox(
+                  width: ResponsiveDimensions.getSize(context, 92),
+                  child: Text(
+                    widget.address != null ? widget.address! : 'Home page',
+                    overflow: .ellipsis,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -197,13 +214,8 @@ class _HomePageState extends State<HomePage>
                 // top location section
                 // TODO : i have to make it tappable and changes it's appearance
                 HeadingSection(title: "Top Locations", onTapText: "See all"),
-                Row(
-                  spacing: ResponsiveDimensions.getSize(context, 12),
-                  children: [
-                    TopLocationCard(location: "Pokhara"),
-                    TopLocationCard(location: "Lumbini"),
-                  ],
-                ),
+                TopLocationList(),
+
                 SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
                 HeadingSection(title: "Popular for you", onTapText: "See all"),
 
