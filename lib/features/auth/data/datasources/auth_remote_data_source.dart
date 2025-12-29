@@ -17,6 +17,8 @@ abstract class AuthRemoteDataSource {
   Future<AppUser?> googleSignIn();
 
   Future<void> sendPasswordRestEmail({required String email});
+
+  Stream<AppUser?> get authStateChanges;
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -146,4 +148,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ServerException('An unexpected error occurred');
     }
   }
+
+  @override
+  Stream<AppUser?> get authStateChanges =>
+      firebaseAuth.authStateChanges().map((user) {
+        if (user != null) {
+          return AppUser(
+            uid: user.uid,
+            email: user.email!,
+            username: user.displayName ?? "no user name",
+          );
+        }
+        return null;
+      });
 }
