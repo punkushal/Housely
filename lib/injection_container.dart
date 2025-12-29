@@ -5,11 +5,13 @@ import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:housely/features/auth/data/repositories/auth_repo_impl.dart';
 import 'package:housely/features/auth/domain/repositories/auth_repo.dart';
+import 'package:housely/features/auth/domain/usecases/auth_state_change_usecase.dart';
 import 'package:housely/features/auth/domain/usecases/google_signin_usecase.dart';
 import 'package:housely/features/auth/domain/usecases/login_usecase.dart';
 import 'package:housely/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:housely/features/auth/domain/usecases/register_usecase.dart';
 import 'package:housely/features/auth/domain/usecases/send_password_reset_usecase.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/google_signin_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
@@ -88,6 +90,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => LogOutUseCase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => GoogleSigninUsecase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => SendPasswordResetUsecase(sl<AuthRepo>()));
+  sl.registerLazySingleton(() => AuthStateChangeUsecase(sl<AuthRepo>()));
   sl.registerLazySingleton(
     () => GetCurrentLocationUseCase(locationRepo: sl<LocationRepo>()),
   );
@@ -127,5 +130,8 @@ Future<void> initializeDependencies() async {
       checkServiceEnabledUseCase: sl<CheckServiceEnabledUseCase>(),
       requestLocationPermissionUseCase: sl<RequestLocationPermissionUseCase>(),
     ),
+  );
+  sl.registerFactory(
+    () => AuthCubit(authStateChangeUsecase: sl<AuthStateChangeUsecase>()),
   );
 }
