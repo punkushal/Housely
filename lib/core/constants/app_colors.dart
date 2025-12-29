@@ -17,6 +17,7 @@ class AppColors {
   static const Color surfaceAlt = Color(0xFFF2F4F7);
   static const Color rating = Color(0xFFFFFAEB);
   static const Color ratingStrong = Color(0xFFFDB022);
+  static const Color chipInActive = Color(0xFFF9F5FF);
 
   /* ===================== TEXT ===================== */
 
