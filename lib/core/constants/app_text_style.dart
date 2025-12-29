@@ -64,10 +64,12 @@ class AppTextStyle {
     BuildContext context, {
     double fontSize = 14,
     double lineHeight = 18,
+    Color? color,
   }) => bodyRegular(
     context,
     fontSize: fontSize,
     lineHeight: lineHeight,
+    color: color,
   ).copyWith(fontWeight: FontWeight.w600);
 
   static TextStyle bodyMedium(
@@ -83,27 +85,54 @@ class AppTextStyle {
   ).copyWith(fontWeight: FontWeight.w500);
 
   // Labels
-  static TextStyle labelRegular(BuildContext context) => _base(
+  static TextStyle labelRegular(
+    BuildContext context, {
+    double fontSize = 10,
+    double lineHeight = 14,
+    Color? color,
+  }) => _base(
     context: context,
-    fontSize: 10,
+    fontSize: fontSize,
     fontWeight: FontWeight.w400,
-    lineHeight: 14,
+    lineHeight: lineHeight,
+    color: color,
   );
 
-  static TextStyle labelMedium(BuildContext context) =>
-      labelRegular(context).copyWith(fontWeight: FontWeight.w500);
+  static TextStyle labelMedium(
+    BuildContext context, {
+    double fontSize = 10,
+    double lineHeight = 14,
+    Color? color,
+  }) => labelRegular(
+    context,
+    fontSize: fontSize,
+    lineHeight: lineHeight,
+    color: color,
+  ).copyWith(fontWeight: FontWeight.w500);
 
-  static TextStyle labelBold(BuildContext context) => _base(
+  static TextStyle labelBold(
+    BuildContext context, {
+    double fontSize = 12,
+    double lineHeight = 14,
+    Color? color,
+  }) => _base(
     context: context,
-    fontSize: 12,
+    fontSize: fontSize,
     fontWeight: FontWeight.w700,
-    lineHeight: 14,
+    lineHeight: lineHeight,
+    color: color,
   );
 
-  static TextStyle labelSemiBold(BuildContext context) => _base(
+  static TextStyle labelSemiBold(
+    BuildContext context, {
+    double fontSize = 16,
+    double lineHeight = 20,
+    Color? color,
+  }) => _base(
     context: context,
-    fontSize: 16,
+    fontSize: fontSize,
     fontWeight: FontWeight.w600,
-    lineHeight: 20,
+    lineHeight: lineHeight,
+    color: color,
   );
 }
