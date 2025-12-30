@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 class InfoContainer extends StatelessWidget {
   const InfoContainer({
@@ -22,6 +23,7 @@ class InfoContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
+      spacing: ResponsiveDimensions.getHeight(context, 4),
       children: [
         Text(
           label,
