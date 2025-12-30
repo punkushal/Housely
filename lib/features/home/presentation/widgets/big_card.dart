@@ -14,7 +14,8 @@ class BigCard extends StatelessWidget {
     required this.imagePath,
     required this.propertyName,
     required this.location,
-    this.onTap,
+    this.onFavorite,
+    this.navigateTo,
   });
 
   /// per month price
@@ -30,147 +31,153 @@ class BigCard extends StatelessWidget {
   final String location;
 
   /// favorite toggle function
-  final void Function()? onTap;
+  final void Function()? onFavorite;
+
+  /// navigation to detail page
+  final void Function()? navigateTo;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: ResponsiveDimensions.getSize(context, 224),
-      height: ResponsiveDimensions.getHeight(context, 164),
-      decoration: BoxDecoration(
-        borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
-      ),
-      child: Stack(
-        children: [
-          // later image will come from network
-          ClipRRect(
-            borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
-            child: Image.asset(imagePath),
-          ),
-          Padding(
-            padding: ResponsiveDimensions.paddingOnly(
-              context,
-              left: 16,
-              top: 16,
-              bottom: 24,
-              right: 16,
+    return GestureDetector(
+      onTap: navigateTo,
+      child: Container(
+        width: ResponsiveDimensions.getSize(context, 224),
+        height: ResponsiveDimensions.getHeight(context, 164),
+        decoration: BoxDecoration(
+          borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
+        ),
+        child: Stack(
+          children: [
+            // later image will come from network
+            ClipRRect(
+              borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
+              child: Image.asset(imagePath),
             ),
-            child: Column(
-              crossAxisAlignment: .end,
-              children: [
-                // price container
-                Container(
-                  height: ResponsiveDimensions.getHeight(context, 26),
-                  padding: ResponsiveDimensions.paddingSymmetric(
-                    context,
-                    horizontal: 8,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: ResponsiveDimensions.borderRadiusSmall(
+            Padding(
+              padding: ResponsiveDimensions.paddingOnly(
+                context,
+                left: 16,
+                top: 16,
+                bottom: 24,
+                right: 16,
+              ),
+              child: Column(
+                crossAxisAlignment: .end,
+                children: [
+                  // price container
+                  Container(
+                    height: ResponsiveDimensions.getHeight(context, 26),
+                    padding: ResponsiveDimensions.paddingSymmetric(
                       context,
+                      horizontal: 8,
+                      vertical: 6,
                     ),
-                    color: AppColors.surface,
-                  ),
-                  child: RichText(
-                    text: TextSpan(
-                      text: "\$${price.toString()}",
-                      style: AppTextStyle.labelBold(
+                    decoration: BoxDecoration(
+                      borderRadius: ResponsiveDimensions.borderRadiusSmall(
                         context,
-                        color: AppColors.primaryPressed,
                       ),
-                      children: [
-                        TextSpan(
-                          text: "/month",
-                          style: AppTextStyle.labelRegular(
-                            context,
-                            color: AppColors.textHint,
-                          ),
+                      color: AppColors.surface,
+                    ),
+                    child: RichText(
+                      text: TextSpan(
+                        text: "\$${price.toString()}",
+                        style: AppTextStyle.labelBold(
+                          context,
+                          color: AppColors.primaryPressed,
                         ),
-                      ],
+                        children: [
+                          TextSpan(
+                            text: "/month",
+                            style: AppTextStyle.labelRegular(
+                              context,
+                              color: AppColors.textHint,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Spacer(),
-                Row(
-                  mainAxisAlignment: .spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        // property name
-                        Text(
-                          propertyName,
-                          style: AppTextStyle.bodySemiBold(
-                            context,
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: .spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: .start,
+                        children: [
+                          // property name
+                          Text(
+                            propertyName,
+                            style: AppTextStyle.bodySemiBold(
+                              context,
+                              color: AppColors.surface,
+                            ),
+                          ),
+
+                          // location
+                          Row(
+                            children: [
+                              SvgPicture.asset(ImageConstant.locationIcon),
+                              Text(
+                                location,
+                                style: AppTextStyle.bodyRegular(
+                                  context,
+                                  color: AppColors.border,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      // favorite button
+                      GestureDetector(
+                        onTap: onFavorite,
+                        child: Container(
+                          width: ResponsiveDimensions.getSize(context, 24),
+                          height: ResponsiveDimensions.getHeight(context, 24),
+                          padding: ResponsiveDimensions.paddingAll4(context),
+                          decoration: BoxDecoration(
+                            shape: .circle,
                             color: AppColors.surface,
                           ),
-                        ),
-
-                        // location
-                        Row(
-                          children: [
-                            SvgPicture.asset(ImageConstant.locationIcon),
-                            Text(
-                              location,
-                              style: AppTextStyle.bodyRegular(
-                                context,
-                                color: AppColors.border,
+                          child:
+                              BlocSelector<
+                                FavoriteToggleCubit,
+                                FavoriteToggleState,
+                                bool
+                              >(
+                                selector: (state) {
+                                  return state.isSelected;
+                                },
+                                builder: (context, state) {
+                                  return SvgPicture.asset(
+                                    state
+                                        ? ImageConstant.favoriteFilledIcon
+                                        : ImageConstant.favoriteIcon,
+                                    width: ResponsiveDimensions.getSize(
+                                      context,
+                                      16,
+                                    ),
+                                    height: ResponsiveDimensions.getHeight(
+                                      context,
+                                      16,
+                                    ),
+                                    fit: .scaleDown,
+                                    colorFilter: ColorFilter.mode(
+                                      AppColors.error,
+                                      .srcIn,
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
-                          ],
                         ),
-                      ],
-                    ),
-                    // favorite button
-                    GestureDetector(
-                      onTap: onTap,
-                      child: Container(
-                        width: ResponsiveDimensions.getSize(context, 24),
-                        height: ResponsiveDimensions.getHeight(context, 24),
-                        padding: ResponsiveDimensions.paddingAll4(context),
-                        decoration: BoxDecoration(
-                          shape: .circle,
-                          color: AppColors.surface,
-                        ),
-                        child:
-                            BlocSelector<
-                              FavoriteToggleCubit,
-                              FavoriteToggleState,
-                              bool
-                            >(
-                              selector: (state) {
-                                return state.isSelected;
-                              },
-                              builder: (context, state) {
-                                return SvgPicture.asset(
-                                  state
-                                      ? ImageConstant.favoriteFilledIcon
-                                      : ImageConstant.favoriteIcon,
-                                  width: ResponsiveDimensions.getSize(
-                                    context,
-                                    16,
-                                  ),
-                                  height: ResponsiveDimensions.getHeight(
-                                    context,
-                                    16,
-                                  ),
-                                  fit: .scaleDown,
-                                  colorFilter: ColorFilter.mode(
-                                    AppColors.error,
-                                    .srcIn,
-                                  ),
-                                );
-                              },
-                            ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

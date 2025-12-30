@@ -1,4 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/home/presentation/widgets/nearby_card.dart';
@@ -24,7 +26,7 @@ class NearbyList extends StatelessWidget {
           return Column(
             spacing: ResponsiveDimensions.getHeight(context, 12),
             children: [
-              NearbyCard(),
+              NearbyCard(navigateTo: () => context.router.push(DetailRoute())),
               Divider(color: AppColors.divider),
             ],
           );

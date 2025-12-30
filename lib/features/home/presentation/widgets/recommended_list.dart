@@ -1,5 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
@@ -29,10 +31,11 @@ class RecommendedList extends StatelessWidget {
                 imagePath: ImageConstant.firstVilla,
                 propertyName: "Ayana Homestay",
                 location: "Imogiri, Yogyakarta",
-                onTap: () {
+                onFavorite: () {
                   // later implement add to favorite list
                   toggleFavorite(context);
                 },
+                navigateTo: () => context.router.push(DetailRoute()),
               ),
             );
           },
