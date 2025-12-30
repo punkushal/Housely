@@ -22,6 +22,7 @@ class ImageList extends StatelessWidget {
               width: ResponsiveDimensions.getSize(context, 76),
               height: ResponsiveDimensions.getHeight(context, 72),
               fit: .cover,
+              radius: 8,
             ),
           );
         },

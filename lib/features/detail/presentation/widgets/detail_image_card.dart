@@ -10,6 +10,7 @@ class DetailImageCard extends StatelessWidget {
     this.imgWidth,
     this.imgHeight,
     this.fit,
+    this.radius,
   });
 
   /// width of this container
@@ -29,6 +30,9 @@ class DetailImageCard extends StatelessWidget {
 
   /// Boxfit of the image
   final BoxFit? fit;
+
+  /// Optional border radius
+  final double? radius;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,7 +43,10 @@ class DetailImageCard extends StatelessWidget {
       ),
       child: ClipRRect(
         // TODO: later actual network image will be placed
-        borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
+        borderRadius: ResponsiveDimensions.borderRadiusMedium(
+          context,
+          size: radius,
+        ),
         child: Image.asset(
           imgPath,
           width: imgWidth,
