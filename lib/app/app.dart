@@ -8,12 +8,11 @@ import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.
 import 'package:housely/injection_container.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  MyApp({super.key});
+  final appRouter = AppRouter();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final appRouter = AppRouter();
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => sl<OnboardingCubit>()..checkStatus()),
