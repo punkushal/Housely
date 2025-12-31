@@ -25,7 +25,7 @@ class DetailPage extends StatelessWidget {
               title: Text('Details'),
               actionsPadding: ResponsiveDimensions.paddingOnly(
                 context,
-                right: 24,
+                left: 24,
               ),
               actions: [
                 // favorite icon button
