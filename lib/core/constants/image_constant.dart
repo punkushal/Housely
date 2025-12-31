@@ -11,6 +11,7 @@ class ImageConstant {
   static final String logoIcon = "${_baseIconUrl}logo_icon.png";
   static final String googleIcon = "${_baseIconUrl}google_icon.png";
   static final String acIcon = "${_baseIconUrl}ac_icon.svg";
+  static final String areaIcon = "${_baseIconUrl}area_icon.svg";
   static final String bedIcon = "${_baseIconUrl}bed_icon.svg";
   static final String calenderIcon = "${_baseIconUrl}calender_icon.svg";
   static final String cameraIcon = "${_baseIconUrl}camera_icon.svg";
