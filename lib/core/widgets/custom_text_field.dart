@@ -15,6 +15,7 @@ class CustomTextField extends StatelessWidget {
     this.onChanged,
     this.style,
     this.contentPadding,
+    this.maxLines,
   });
 
   /// [TextEditingController] controller
@@ -49,6 +50,9 @@ class CustomTextField extends StatelessWidget {
 
   /// content padding
   final EdgeInsetsGeometry? contentPadding;
+
+  /// max line for field
+  final int? maxLines;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -58,6 +62,7 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       validator: validator,
       onChanged: onChanged,
+      maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: hintStyle,
