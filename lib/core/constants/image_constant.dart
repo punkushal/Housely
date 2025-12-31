@@ -11,6 +11,7 @@ class ImageConstant {
   static final String logoIcon = "${_baseIconUrl}logo_icon.png";
   static final String googleIcon = "${_baseIconUrl}google_icon.png";
   static final String acIcon = "${_baseIconUrl}ac_icon.svg";
+  static final String areaIcon = "${_baseIconUrl}area_icon.svg";
   static final String bedIcon = "${_baseIconUrl}bed_icon.svg";
   static final String calenderIcon = "${_baseIconUrl}calender_icon.svg";
   static final String cameraIcon = "${_baseIconUrl}camera_icon.svg";
@@ -52,6 +53,10 @@ class ImageConstant {
       "${_baseIconUrl}arrow_left_circle_icon.svg";
   static final String arrowRightCircleIcon =
       "${_baseIconUrl}arrow_right_circle_icon.svg";
+  static final String callIcon = "${_baseIconUrl}call_icon.svg";
+  static final String hospitalIcon = "${_baseIconUrl}hospital_icon.svg";
+  static final String gasPumpIcon = "${_baseIconUrl}gas_pump_icon.svg";
+  static final String bagIcon = "${_baseIconUrl}bag_icon.svg";
 
   // onboarding images
   static final String firstOnBoardingImg =
@@ -63,6 +68,7 @@ class ImageConstant {
 
   // search location image
   static final String searchLocationImg = "${_baseOtherUrl}location.png";
+  static final String mapPreviewImg = "${_baseOtherUrl}map_preview.jpg";
 
   // villa images
   static final String firstVilla = "${_baseVillaUrl}villa1.jpg";
