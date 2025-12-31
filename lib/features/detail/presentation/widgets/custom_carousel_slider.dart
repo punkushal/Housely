@@ -43,6 +43,7 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
               );
             },
             options: CarouselOptions(
+              clipBehavior: .none,
               autoPlay: true,
               aspectRatio: 327 / 232,
               viewportFraction: 1,

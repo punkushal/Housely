@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 class DetailImageCard extends StatelessWidget {
@@ -38,8 +39,23 @@ class DetailImageCard extends StatelessWidget {
     return Container(
       width: width,
       height: height,
+      margin: ResponsiveDimensions.paddingAll4(context),
       decoration: BoxDecoration(
-        borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
+        color: Colors
+            .white, // Required for shadow to appear if image is transparent
+        borderRadius: ResponsiveDimensions.borderRadiusMedium(
+          context,
+          size: radius,
+        ),
+        boxShadow: [
+          BoxShadow(
+            // 2. Adjusted values for better visibility
+            offset: const Offset(0, 4),
+            color: AppColors.textPrimary.withValues(alpha: 0.12),
+            blurRadius: ResponsiveDimensions.getSize(context, 4),
+            spreadRadius: ResponsiveDimensions.getSize(context, 1),
+          ),
+        ],
       ),
       child: ClipRRect(
         // TODO: later actual network image will be placed
