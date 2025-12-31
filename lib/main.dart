@@ -18,5 +18,5 @@ void main() async {
 
   // Initialize dependencies
   await initializeDependencies();
-  runApp(const MyApp());
+  runApp(MyApp());
 }

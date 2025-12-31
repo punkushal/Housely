@@ -38,8 +38,12 @@ class DetailImageCard extends StatelessWidget {
     return Container(
       width: width,
       height: height,
+      margin: ResponsiveDimensions.paddingAll4(context),
       decoration: BoxDecoration(
-        borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
+        borderRadius: ResponsiveDimensions.borderRadiusMedium(
+          context,
+          size: radius,
+        ),
       ),
       child: ClipRRect(
         // TODO: later actual network image will be placed
