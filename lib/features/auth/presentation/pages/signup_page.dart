@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
@@ -289,6 +290,7 @@ class _SignupPageState extends State<SignupPage> {
                           }
 
                           if (state is GoogleSigninSuccess) {
+                            context.router.replace(LocationRoute());
                             SnackbarHelper.showSuccess(
                               context,
                               'Successfully logged in via google',

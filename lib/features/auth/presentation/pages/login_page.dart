@@ -204,6 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                       BlocConsumer<LoginCubit, LoginState>(
                         listener: (context, state) {
                           if (state is LoginSuccess) {
+                            context.router.replace(LocationRoute());
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 backgroundColor: AppColors.success,
