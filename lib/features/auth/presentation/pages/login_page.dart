@@ -145,6 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                               hintText: 'Password',
                               keyboardType: TextInputType.visiblePassword,
                               obscureText: state,
+                              maxLines: state ? 1 : null,
                               suffixIcon: GestureDetector(
                                 onTap: () => context
                                     .read<AuthFormCubit>()

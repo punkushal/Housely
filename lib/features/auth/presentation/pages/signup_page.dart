@@ -165,6 +165,7 @@ class _SignupPageState extends State<SignupPage> {
                               hintText: 'Password',
                               keyboardType: TextInputType.visiblePassword,
                               obscureText: state,
+                              maxLines: state ? 1 : null,
                               suffixIcon: GestureDetector(
                                 onTap: () => context
                                     .read<AuthFormCubit>()
@@ -191,6 +192,7 @@ class _SignupPageState extends State<SignupPage> {
                               hintText: 'Retype Password',
                               keyboardType: TextInputType.visiblePassword,
                               obscureText: state,
+                              maxLines: state ? 1 : null,
                               suffixIcon: GestureDetector(
                                 onTap: () => context
                                     .read<AuthFormCubit>()
