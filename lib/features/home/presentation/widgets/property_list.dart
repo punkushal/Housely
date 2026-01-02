@@ -29,10 +29,10 @@ class PropertyList extends StatelessWidget {
             width: double.infinity,
             child: Column(
               mainAxisSize: .min,
-              spacing: ResponsiveDimensions.getHeight(context, 12),
+              spacing: ResponsiveDimensions.getSize(context, 12),
               children: [
                 SmallCard(
-                  height: ResponsiveDimensions.getHeight(context, 72),
+                  height: ResponsiveDimensions.getSize(context, 72),
                   navigateTo: () => context.router.push(DetailRoute()),
                 ),
                 Divider(color: AppColors.divider),
