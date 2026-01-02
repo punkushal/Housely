@@ -77,8 +77,15 @@ dependencies:
 
   # Carousel
   carousel_slider: ^5.1.1
+
+  # Border
   dotted_border: ^3.1.0
+
+  # For picking image
   image_picker: ^1.2.1
+
+  # To store image files
+  appwrite: ^20.3.2
   
 
 dev_dependencies:
