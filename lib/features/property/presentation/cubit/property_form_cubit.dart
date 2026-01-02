@@ -30,7 +30,7 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
   void setMultipleImages(List<File> newImages) {
     final currentImages = List<File>.from(state.imageList);
 
-    final currentSize = FileUtils.getTotalSizeInMB(currentImages);
+    double currentSize = FileUtils.getTotalSizeInMB(currentImages);
 
     final allowedImages = <File>[];
 
@@ -38,6 +38,7 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
       final imageSize = FileUtils.getFileSizeInMB(image);
       if (currentSize + imageSize <= maxPropertyImagesSizeInMB) {
         allowedImages.add(image);
+        currentSize += imageSize;
       } else {
         break;
       }
@@ -50,6 +51,8 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
         ),
       );
     }
+
+    print("after adding images : ${state.imageError}");
     emit(
       state.copyWith(
         imageList: [...state.imageList, ...allowedImages],
@@ -59,7 +62,7 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
   }
 
   void removeImage(int index) {
-    state.imageList.removeAt(index);
-    emit(state.copyWith(imageList: [...state.imageList]));
+    final updatedImages = List<File>.from(state.imageList)..removeAt(index);
+    emit(state.copyWith(imageList: updatedImages, imageError: null));
   }
 }
