@@ -1,6 +1,8 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:housely/features/auth/data/repositories/auth_repo_impl.dart';
@@ -39,6 +41,11 @@ final sl = GetIt.instance;
 Future<void> initializeDependencies() async {
   // ============= Network ================
   sl.registerLazySingleton(() => ConnectivityCubit());
+  sl.registerLazySingleton(
+    () => Client()
+        .setEndpoint(TextConstants.appwriteUrl)
+        .setProject("6954b11a00214cb8b35f"), //TODO: later add this id securely
+  );
 
   // ============= External Dependencies ===============
   sl.registerLazySingleton(() => SharedPreferencesAsync());
