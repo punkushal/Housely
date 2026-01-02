@@ -62,7 +62,11 @@ class SnackbarHelper {
         shape: RoundedRectangleBorder(
           borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
         ),
-        margin: ResponsiveDimensions.paddingAll16(context),
+        margin: ResponsiveDimensions.paddingSymmetric(
+          context,
+          horizontal: 16,
+          vertical: 2,
+        ),
         padding: ResponsiveDimensions.paddingSymmetric(
           context,
           horizontal: 16,
