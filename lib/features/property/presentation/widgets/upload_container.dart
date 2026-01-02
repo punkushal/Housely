@@ -46,7 +46,7 @@ class UploadContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<PropertyFormCubit, PropertyFormState>(
       listenWhen: (prev, curr) {
-        return curr.imageError != null;
+        return prev.imageError != curr.imageError && curr.imageError != null;
       },
       listener: (context, state) {
         SnackbarHelper.showError(context, state.imageError!);
