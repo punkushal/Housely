@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/app_limits.dart';
+import 'package:housely/core/utils/file_utils.dart';
 
 part 'property_form_state.dart';
 
@@ -16,32 +17,49 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
   }
 
   void setSingleImage(File image) {
-    emit(state.copyWith(image: image));
+    final imageSize = FileUtils.getFileSizeInMB(image);
+    if (imageSize <= 10) {
+      return emit(state.copyWith(image: image, imageError: null));
+    } else {
+      return emit(
+        state.copyWith(imageError: "Cover image must be under 10 MB"),
+      );
+    }
   }
 
-  void setMultipleImages(List<File> imageList) {
-    final currentCount = state.imageList.length;
-    final availableSlots = maxPropertyImagesLimit - currentCount;
+  void setMultipleImages(List<File> newImages) {
+    final currentImages = List<File>.from(state.imageList);
 
-    if (availableSlots <= 0) {
+    final currentSize = FileUtils.getTotalSizeInMB(currentImages);
+
+    final allowedImages = <File>[];
+
+    for (var image in newImages) {
+      final imageSize = FileUtils.getFileSizeInMB(image);
+      if (currentSize + imageSize <= maxPropertyImagesSizeInMB) {
+        allowedImages.add(image);
+      } else {
+        break;
+      }
+    }
+
+    if (allowedImages.isEmpty) {
       return emit(
         state.copyWith(
-          imageError: "You can only upload max $maxPropertyImagesLimit images",
+          imageError: "Image files exceed $maxPropertyImagesSizeInMB MB",
         ),
       );
     }
-    final imagesToAdd = imageList.take(availableSlots).toList();
     emit(
       state.copyWith(
-        imageList: [...state.imageList, ...imagesToAdd],
+        imageList: [...state.imageList, ...allowedImages],
         imageError: null,
       ),
     );
   }
 
   void removeImage(int index) {
-    final images = state.imageList;
-    images.removeAt(index);
-    emit(state.copyWith(imageList: images));
+    state.imageList.removeAt(index);
+    emit(state.copyWith(imageList: [...state.imageList]));
   }
 }
