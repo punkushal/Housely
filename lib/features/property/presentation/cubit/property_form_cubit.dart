@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:housely/core/constants/app_limits.dart';
 
 part 'property_form_state.dart';
 
@@ -19,7 +20,23 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
   }
 
   void setMultipleImages(List<File> imageList) {
-    emit(state.copyWith(imageList: [...state.imageList, ...imageList]));
+    final currentCount = state.imageList.length;
+    final availableSlots = maxPropertyImagesLimit - currentCount;
+
+    if (availableSlots <= 0) {
+      return emit(
+        state.copyWith(
+          imageError: "You can only upload max $maxPropertyImagesLimit images",
+        ),
+      );
+    }
+    final imagesToAdd = imageList.take(availableSlots).toList();
+    emit(
+      state.copyWith(
+        imageList: [...state.imageList, ...imagesToAdd],
+        imageError: null,
+      ),
+    );
   }
 
   void removeImage(int index) {
