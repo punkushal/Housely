@@ -22,4 +22,11 @@ class TextConstants {
   static final String save = "Save Change";
   static final String rent = "Rent Now";
   static final String submit = "Submit Review";
+  static final String addProperty = "Add Property";
+
+  // error messages
+  static final String internetError =
+      "No internet connection. Please try again";
+  static final String uploadSingleFileError = "Please upload image";
+  static final String uploadManyFileError = "Please upload property images";
 }
