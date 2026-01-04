@@ -13,29 +13,16 @@ import 'package:housely/features/location/presentation/widgets/location_detail.d
 import 'package:housely/injection_container.dart';
 
 @RoutePage()
-class LocationWrapper extends StatelessWidget {
-  const LocationWrapper({super.key});
+class MapPickerPage extends StatelessWidget {
+  MapPickerPage({super.key, this.isOwner = false});
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<LocationCubit>(),
-      child: MapPickerPage(),
-    );
-  }
-}
-
-class MapPickerPage extends StatefulWidget {
-  const MapPickerPage({super.key});
-
-  @override
-  State<MapPickerPage> createState() => _MapPickerPageState();
-}
-
-class _MapPickerPageState extends State<MapPickerPage> {
+  /// check whether a normal user or property owner visits
+  /// the map page. Default to normal user
+  /// and if not then it is property owner
+  final bool isOwner;
   final myLocation = LatLng(27.6983, 83.4653);
 
-  Future<void> setMarker(LatLng position) async {
+  Future<void> setMarker(LatLng position, BuildContext context) async {
     final cubit = context.read<LocationCubit>();
 
     List<Placemark> placemark = await placemarkFromCoordinates(
@@ -52,9 +39,11 @@ class _MapPickerPageState extends State<MapPickerPage> {
   }
 
   // handle back navigation
-  void _handleBackNavigation() {
+  void _handleBackNavigation(BuildContext context) {
     final state = context.read<LocationCubit>().state;
-    if (state is LocationLoaded && state.location.address != null) {
+    if (state is LocationLoaded && state.location.address != null && isOwner) {
+      context.pop(state.location);
+    } else if (state is LocationLoaded && state.location.address != null) {
       context.router.replaceAll([TabWrapper(address: state.location.address)]);
     } else {
       SnackbarHelper.showInfo(context, "Please pick your location");
@@ -63,71 +52,79 @@ class _MapPickerPageState extends State<MapPickerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: myLocation,
-                zoom: 14,
-              ),
-              zoomControlsEnabled: false,
-              markers: {
-                Marker(
-                  markerId: MarkerId('my home'),
-                  draggable: true,
-                  position: myLocation,
-                  onDragEnd: (value) {
-                    setMarker(value);
-                  },
-                ),
-              },
-            ),
-
-            // location detail
-            BlocBuilder<LocationCubit, LocationState>(
-              builder: (context, state) {
-                if (state is LocationLoaded) {
-                  return Positioned(
-                    bottom: ResponsiveDimensions.getHeight(context, 160),
-                    left: 0,
-                    child: DropShadow(
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0, 24),
-                          blurRadius: ResponsiveDimensions.radiusXLarge(
-                            context,
-                            size: 48,
-                          ),
-                          spreadRadius: ResponsiveDimensions.radiusMedium(
-                            context,
-                            size: -12,
-                          ),
-                          color: Color(0x1F2A372E),
-                        ),
-                      ],
-                      child: LocationDetail(
-                        address: state.location.address ?? "no location found",
-                      ),
+    return BlocProvider(
+      create: (context) => sl<LocationCubit>(),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            body: SafeArea(
+              child: Stack(
+                children: [
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: myLocation,
+                      zoom: 14,
                     ),
-                  );
-                }
-                return SizedBox.shrink();
-              },
-            ),
+                    zoomControlsEnabled: false,
+                    markers: {
+                      Marker(
+                        markerId: MarkerId('my home'),
+                        draggable: true,
+                        position: myLocation,
+                        onDragEnd: (value) {
+                          setMarker(value, context);
+                        },
+                      ),
+                    },
+                  ),
 
-            Positioned(
-              bottom: ResponsiveDimensions.getHeight(context, 80),
-              left: ResponsiveDimensions.getSize(context, 24),
-              right: ResponsiveDimensions.getSize(context, 24),
-              child: CustomButton(
-                onTap: _handleBackNavigation,
-                buttonLabel: "Confirm location",
+                  // location detail
+                  BlocBuilder<LocationCubit, LocationState>(
+                    builder: (context, state) {
+                      if (state is LocationLoaded) {
+                        return Positioned(
+                          bottom: ResponsiveDimensions.getHeight(context, 160),
+                          left: 0,
+                          child: DropShadow(
+                            boxShadow: [
+                              BoxShadow(
+                                offset: Offset(0, 24),
+                                blurRadius: ResponsiveDimensions.radiusXLarge(
+                                  context,
+                                  size: 48,
+                                ),
+                                spreadRadius: ResponsiveDimensions.radiusMedium(
+                                  context,
+                                  size: -12,
+                                ),
+                                color: Color(0x1F2A372E),
+                              ),
+                            ],
+                            child: LocationDetail(
+                              address:
+                                  state.location.address ?? "no location found",
+                            ),
+                          ),
+                        );
+                      }
+                      return SizedBox.shrink();
+                    },
+                  ),
+
+                  Positioned(
+                    bottom: ResponsiveDimensions.getHeight(context, 80),
+                    left: ResponsiveDimensions.getSize(context, 24),
+                    right: ResponsiveDimensions.getSize(context, 24),
+                    child: CustomButton(
+                      onTap: () => _handleBackNavigation(context),
+                      buttonLabel: "Confirm location",
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
