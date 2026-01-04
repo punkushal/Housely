@@ -52,7 +52,6 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
       );
     }
 
-    print("after adding images : ${state.imageError}");
     emit(
       state.copyWith(
         imageList: [...state.imageList, ...allowedImages],
@@ -64,5 +63,9 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
   void removeImage(int index) {
     final updatedImages = List<File>.from(state.imageList)..removeAt(index);
     emit(state.copyWith(imageList: updatedImages, imageError: null));
+  }
+
+  void updateFacilities(List<String> facilities) {
+    emit(state.copyWith(facilities: facilities));
   }
 }
