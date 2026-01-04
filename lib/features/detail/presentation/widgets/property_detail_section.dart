@@ -202,7 +202,7 @@ class PropertyDetailSection extends StatelessWidget {
         GestureDetector(
           // TODO: later if agent or owner added their location then only this preview
           // vissible otherwise hidden
-          onTap: () => context.router.push(LocationWrapper()),
+          onTap: () => context.router.push(MapPickerRoute()),
           child: ClipRRect(
             borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
             child: Image.asset(
