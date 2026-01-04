@@ -66,3 +66,16 @@ final class AuthFailure extends Failure {
 final class PermissionFailure extends Failure {
   const PermissionFailure(super.message);
 }
+
+// app write related failure
+final class StorageUploadFailure extends Failure {
+  const StorageUploadFailure(super.message);
+}
+
+final class StorageDeleteFailure extends Failure {
+  const StorageDeleteFailure(super.message);
+}
+
+final class InvalidFileFailure extends Failure {
+  const InvalidFileFailure(super.message);
+}
