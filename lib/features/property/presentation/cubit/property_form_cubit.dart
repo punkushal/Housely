@@ -16,6 +16,10 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
     emit(state.copyWith(propertyStatus: value));
   }
 
+  void setAddress(String address) {
+    emit(state.copyWith(address: address));
+  }
+
   void setSingleImage(File image) {
     final imageSize = FileUtils.getFileSizeInMB(image);
     if (imageSize <= 10) {

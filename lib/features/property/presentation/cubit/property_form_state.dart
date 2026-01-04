@@ -7,6 +7,7 @@ class PropertyFormState {
   final List<File> imageList;
   final List<String> facilities;
   final String? imageError;
+  final String? address;
 
   PropertyFormState({
     this.propertyType,
@@ -15,6 +16,7 @@ class PropertyFormState {
     this.facilities = const [],
     this.propertyStatus,
     this.imageError,
+    this.address,
   });
 
   PropertyFormState copyWith({
@@ -24,6 +26,7 @@ class PropertyFormState {
     File? image,
     List<File>? imageList,
     List<String>? facilities,
+    String? address,
   }) {
     return PropertyFormState(
       propertyType: propertyType ?? this.propertyType,
@@ -32,6 +35,7 @@ class PropertyFormState {
       imageList: imageList ?? this.imageList,
       imageError: imageError ?? this.imageError,
       facilities: facilities ?? this.facilities,
+      address: address ?? this.address,
     );
   }
 }
