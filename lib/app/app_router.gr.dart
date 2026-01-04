@@ -14,7 +14,7 @@ import 'package:flutter/material.dart' as _i16;
 import 'package:housely/features/auth/presentation/pages/forgot_password_page.dart'
     as _i5;
 import 'package:housely/features/auth/presentation/pages/login_page.dart'
-    as _i9;
+    as _i8;
 import 'package:housely/features/auth/presentation/pages/signup_page.dart'
     as _i13;
 import 'package:housely/features/detail/presentation/pages/detail_page.dart'
@@ -31,7 +31,7 @@ import 'package:housely/features/home/presentation/pages/see_all_list_page.dart'
 import 'package:housely/features/location/presentation/pages/location_page.dart'
     as _i7;
 import 'package:housely/features/location/presentation/pages/map_picker_page.dart'
-    as _i8;
+    as _i9;
 import 'package:housely/features/onboarding/presentation/pages/onboarding_page.dart'
     as _i10;
 import 'package:housely/features/onboarding/presentation/pages/splash_page.dart'
@@ -185,23 +185,7 @@ class LocationRoute extends _i15.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i8.LocationWrapper]
-class LocationWrapper extends _i15.PageRouteInfo<void> {
-  const LocationWrapper({List<_i15.PageRouteInfo>? children})
-    : super(LocationWrapper.name, initialChildren: children);
-
-  static const String name = 'LocationWrapper';
-
-  static _i15.PageInfo page = _i15.PageInfo(
-    name,
-    builder: (data) {
-      return const _i8.LocationWrapper();
-    },
-  );
-}
-
-/// generated route for
-/// [_i9.LoginPage]
+/// [_i8.LoginPage]
 class LoginRoute extends _i15.PageRouteInfo<void> {
   const LoginRoute({List<_i15.PageRouteInfo>? children})
     : super(LoginRoute.name, initialChildren: children);
@@ -211,9 +195,58 @@ class LoginRoute extends _i15.PageRouteInfo<void> {
   static _i15.PageInfo page = _i15.PageInfo(
     name,
     builder: (data) {
-      return const _i9.LoginPage();
+      return const _i8.LoginPage();
     },
   );
+}
+
+/// generated route for
+/// [_i9.MapPickerPage]
+class MapPickerRoute extends _i15.PageRouteInfo<MapPickerRouteArgs> {
+  MapPickerRoute({
+    _i16.Key? key,
+    bool isOwner = false,
+    List<_i15.PageRouteInfo>? children,
+  }) : super(
+         MapPickerRoute.name,
+         args: MapPickerRouteArgs(key: key, isOwner: isOwner),
+         initialChildren: children,
+       );
+
+  static const String name = 'MapPickerRoute';
+
+  static _i15.PageInfo page = _i15.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<MapPickerRouteArgs>(
+        orElse: () => const MapPickerRouteArgs(),
+      );
+      return _i9.MapPickerPage(key: args.key, isOwner: args.isOwner);
+    },
+  );
+}
+
+class MapPickerRouteArgs {
+  const MapPickerRouteArgs({this.key, this.isOwner = false});
+
+  final _i16.Key? key;
+
+  final bool isOwner;
+
+  @override
+  String toString() {
+    return 'MapPickerRouteArgs{key: $key, isOwner: $isOwner}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! MapPickerRouteArgs) return false;
+    return key == other.key && isOwner == other.isOwner;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ isOwner.hashCode;
 }
 
 /// generated route for

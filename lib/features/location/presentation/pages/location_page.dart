@@ -125,7 +125,7 @@ class _LocationPageState extends State<LocationPage> {
                   DropShadow(
                     child: CustomButton(
                       onTap: () async {
-                        context.router.push(LocationWrapper());
+                        context.router.push(MapPickerRoute());
                       },
                       buttonLabel: "Select it manually",
                       horizontal: 24,
