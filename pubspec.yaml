@@ -41,6 +41,7 @@ dependencies:
   # Firebase
   firebase_auth: ^6.1.2
   firebase_core: ^4.2.1
+  cloud_firestore: ^6.1.1
 
   # Date formating
   intl: ^0.20.2
