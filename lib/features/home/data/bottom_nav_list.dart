@@ -14,11 +14,6 @@ final List<NavItem> navList = [
     label: TextConstants.explore,
   ),
   NavItem(
-    iconPath: ImageConstant.addIcon,
-    iconFilledPath: ImageConstant.addFilledIcon,
-    label: TextConstants.add,
-  ),
-  NavItem(
     iconPath: ImageConstant.documentIcon,
     iconFilledPath: ImageConstant.documentFilledIcon,
     label: TextConstants.booking,

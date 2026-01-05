@@ -30,10 +30,22 @@ class TabWrapper extends StatelessWidget {
         routes: [
           HomeRoute(address: address),
           ExploreRoute(),
-          CreateNewPropertyRoute(),
           BookingRoute(),
           ProfileRoute(),
         ],
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.pushRoute(CreateNewPropertyRoute());
+          },
+          shape: RoundedRectangleBorder(
+            borderRadius: ResponsiveDimensions.borderRadiusLarge(
+              context,
+              size: 28,
+            ),
+          ),
+          child: Icon(Icons.add),
+        ),
         bottomNavigationBuilder: (_, tabsRouter) {
           return Container(
             decoration: BoxDecoration(
