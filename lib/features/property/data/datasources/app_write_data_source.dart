@@ -25,6 +25,7 @@ class AppwriteStorageDataSourceImpl implements AppwriteStorageDataSource {
   final Storage storage;
 
   final _bucketId = "6957a5060003fc720b53";
+  final _projectId = "6954b11a00214cb8b35f";
 
   AppwriteStorageDataSourceImpl({required this.storage});
 
@@ -46,7 +47,7 @@ class AppwriteStorageDataSourceImpl implements AppwriteStorageDataSource {
       );
 
       final fileUrl =
-          '${TextConstants.appwriteUrl}storage/buckets/$_bucketId/files/${file.$id}/view?project=$_bucketId';
+          '${TextConstants.appwriteUrl}storage/buckets/$_bucketId/files/${file.$id}/view?project=$_projectId';
 
       return {"url": fileUrl, "id": file.$id};
     } catch (e) {
@@ -71,9 +72,10 @@ class AppwriteStorageDataSourceImpl implements AppwriteStorageDataSource {
         bucketId: _bucketId,
         fileId: ID.unique(),
         file: InputFile.fromPath(path: image.path, filename: fileName),
+        permissions: [Permission.read(Role.any())],
       );
       final fileUrl =
-          '${TextConstants.appwriteUrl}storage/buckets/$_bucketId/files/${file.$id}/view?project=$_bucketId';
+          '${TextConstants.appwriteUrl}storage/buckets/$_bucketId/files/${file.$id}/view?project=$_projectId';
 
       return {"url": fileUrl, "id": file.$id};
     } catch (e) {
