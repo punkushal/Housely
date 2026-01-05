@@ -13,18 +13,13 @@ import 'package:housely/features/property/domain/repository/property_repo.dart';
 class PropertyRepoImpl implements PropertyRepo {
   final AppwriteStorageDataSource dataSource;
   final FirebaseRemoteDataSource firebase;
-  final PropertyRepo repo;
 
-  PropertyRepoImpl({
-    required this.dataSource,
-    required this.repo,
-    required this.firebase,
-  });
+  PropertyRepoImpl({required this.dataSource, required this.firebase});
   @override
   ResultVoid createProperty(Property property) async {
     try {
       final model = PropertyModel(
-        id: property.id,
+        id: "",
         name: property.name,
         description: property.description,
         owner: property.owner,
