@@ -14,7 +14,6 @@ class UploadCoverImage
   ResultFuture<Map<String, String>> call(UploadImageParam params) async {
     return await repository.uploadCoverImage(
       image: params.image,
-      ownerEmail: params.ownerEmail,
       folderType: params.folderType,
     );
   }
@@ -22,14 +21,9 @@ class UploadCoverImage
 
 class UploadImageParam extends Equatable {
   final File image;
-  final String ownerEmail;
   final String folderType; // 'profile', 'cover', or 'gallery'
-  const UploadImageParam({
-    required this.image,
-    required this.ownerEmail,
-    required this.folderType,
-  });
+  const UploadImageParam({required this.image, required this.folderType});
 
   @override
-  List<Object> get props => [image, ownerEmail, folderType];
+  List<Object> get props => [image, folderType];
 }

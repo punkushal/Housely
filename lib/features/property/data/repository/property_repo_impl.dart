@@ -5,18 +5,40 @@ import 'package:fpdart/fpdart.dart';
 import 'package:housely/core/error/failure.dart';
 import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/property/data/datasources/app_write_data_source.dart';
+import 'package:housely/features/property/data/datasources/firebase_remote_data_source.dart';
+import 'package:housely/features/property/data/models/property_model.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/repository/property_repo.dart';
 
 class PropertyRepoImpl implements PropertyRepo {
   final AppwriteStorageDataSource dataSource;
+  final FirebaseRemoteDataSource firebase;
   final PropertyRepo repo;
 
-  PropertyRepoImpl({required this.dataSource, required this.repo});
+  PropertyRepoImpl({
+    required this.dataSource,
+    required this.repo,
+    required this.firebase,
+  });
   @override
   ResultVoid createProperty(Property property) async {
     try {
-      await repo.createProperty(property);
+      final model = PropertyModel(
+        id: property.id,
+        name: property.name,
+        description: property.description,
+        owner: property.owner,
+        location: property.location,
+        price: property.price,
+        status: property.status,
+        type: property.type,
+        specs: property.specs,
+        media: property.media,
+        facilities: property.facilities,
+        createdAt: property.createdAt,
+        updatedAt: property.updatedAt,
+      );
+      await firebase.addNewProperty(model);
       return Right(null);
     } on FirebaseAuthException catch (e) {
       return Left(_handleFirebaseError(e));
@@ -54,13 +76,13 @@ class PropertyRepoImpl implements PropertyRepo {
   @override
   ResultFuture<Map<String, String>> uploadCoverImage({
     required File image,
-    required String ownerEmail,
     required String folderType,
   }) async {
     try {
+      final email = await firebase.getOwnerEmail();
       final result = await dataSource.uploadCoverImage(
         image: image,
-        ownerEmail: ownerEmail,
+        ownerEmail: email,
         folderType: folderType,
       );
       return Right(result);
@@ -74,12 +96,12 @@ class PropertyRepoImpl implements PropertyRepo {
   @override
   ResultFuture<Map<String, dynamic>> uploadPropertyImages({
     required List<File> images,
-    required String ownerEmail,
   }) async {
     try {
+      final email = await firebase.getOwnerEmail();
       final result = await dataSource.uploadPropertyImages(
         images: images,
-        ownerEmail: ownerEmail,
+        ownerEmail: email,
       );
       return Right(result);
     } on AppwriteException catch (e) {

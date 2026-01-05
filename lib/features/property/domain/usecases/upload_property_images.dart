@@ -12,19 +12,15 @@ class UploadPropertyImages
 
   @override
   ResultFuture<Map<String, dynamic>> call(UploadImagesParam params) async {
-    return await repository.uploadPropertyImages(
-      images: params.images,
-      ownerEmail: params.ownerEmail,
-    );
+    return await repository.uploadPropertyImages(images: params.images);
   }
 }
 
 class UploadImagesParam extends Equatable {
   final List<File> images;
-  final String ownerEmail;
 
-  const UploadImagesParam({required this.images, required this.ownerEmail});
+  const UploadImagesParam({required this.images});
 
   @override
-  List<Object> get props => [images, ownerEmail];
+  List<Object> get props => [images];
 }

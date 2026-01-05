@@ -7,13 +7,11 @@ abstract interface class PropertyRepo {
   // upload property images
   ResultFuture<Map<String, dynamic>> uploadPropertyImages({
     required List<File> images,
-    required String ownerEmail,
   });
 
   // upload property cover image
   ResultFuture<Map<String, String>> uploadCoverImage({
     required File image,
-    required String ownerEmail,
     required String folderType, // 'profile', 'cover', or 'gallery'
   });
 
