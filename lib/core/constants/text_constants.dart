@@ -29,4 +29,11 @@ class TextConstants {
       "No internet connection. Please try again";
   static final String uploadSingleFileError = "Please upload image";
   static final String uploadManyFileError = "Please upload property images";
+
+  // collection for firebase database
+  static final String properties = "properties";
+  static final String users = "users";
+  static final String notify = "notifications";
+  static final String chats = "chats";
+  static final String messages = "messages";
 }
