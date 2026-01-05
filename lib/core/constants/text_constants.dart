@@ -2,7 +2,7 @@ class TextConstants {
   TextConstants._();
 
   // urls
-  static final String appwriteUrl = "https://sgp.cloud.appwrite.io/v1";
+  static final String appwriteUrl = "https://sgp.cloud.appwrite.io/v1/";
 
   // bottom nav bar item labels
   static final String home = "Home";
