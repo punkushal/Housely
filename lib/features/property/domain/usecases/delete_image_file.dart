@@ -9,19 +9,15 @@ class DeleteImageFile implements UseCase<void, DeleteParam> {
   DeleteImageFile({required this.repo});
   @override
   ResultFuture<void> call(params) async {
-    return await repo.deleteImageFile(
-      bucketId: params.bucketId,
-      fileId: params.fileId,
-    );
+    return await repo.deleteImageFile(fileId: params.fileId);
   }
 }
 
 class DeleteParam extends Equatable {
-  final String bucketId;
   final String fileId;
 
-  const DeleteParam({required this.bucketId, required this.fileId});
+  const DeleteParam({required this.fileId});
 
   @override
-  List<Object?> get props => [bucketId, fileId];
+  List<Object?> get props => [fileId];
 }
