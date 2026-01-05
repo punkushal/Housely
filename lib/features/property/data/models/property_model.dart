@@ -40,7 +40,7 @@ class PropertyModel extends Property {
       ),
       media: PropertyMedia(
         coverImage: json['media']['coverImage'],
-        gallery: List<String>.from(json['media']['gallery']),
+        gallery: json['media']['gallery'],
       ),
       facilities: List<String>.from(json['facilities']),
       owner: PropertyOwner(
