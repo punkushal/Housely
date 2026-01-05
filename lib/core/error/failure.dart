@@ -56,7 +56,7 @@ final class UserNotFoundFailure extends Failure {
 }
 
 final class UnknownFailure extends Failure {
-  const UnknownFailure() : super("Something went wrong. Please try again");
+  const UnknownFailure(super.message);
 }
 
 final class AuthFailure extends Failure {
@@ -78,6 +78,10 @@ final class StorageDeleteFailure extends Failure {
 
 final class InvalidFileFailure extends Failure {
   const InvalidFileFailure(super.message);
+}
+
+final class UnauthorizedFailure extends Failure {
+  const UnauthorizedFailure(super.message);
 }
 
 // failure related to firebase firestore
