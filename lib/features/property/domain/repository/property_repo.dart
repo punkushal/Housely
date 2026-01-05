@@ -5,22 +5,23 @@ import 'package:housely/features/property/domain/entities/property.dart';
 
 abstract interface class PropertyRepo {
   // upload property images
-  ResultFuture<List<String>> uploadPropertyImages(List<File> images);
+  ResultFuture<Map<String, dynamic>> uploadPropertyImages({
+    required List<File> images,
+    required String ownerEmail,
+  });
 
   // upload property cover image
-  ResultFuture<String> uploadCoverImage(File image);
+  ResultFuture<Map<String, String>> uploadCoverImage({
+    required File image,
+    required String ownerEmail,
+    required String folderType, // 'profile', 'cover', or 'gallery'
+  });
 
   // delete property images
-  ResultVoid deleteImageFile({
-    required String bucketId,
-    required String fileId,
-  });
+  ResultVoid deleteImageFile({required String fileId});
 
   // update image file and reture image url
-  ResultFuture<String> updateImageFile({
-    required String bucketId,
-    required String fileId,
-  });
+  ResultFuture<Map<String, String>> updateImageFile({required String fileId});
 
   // add new property
   ResultVoid createProperty(Property property);
