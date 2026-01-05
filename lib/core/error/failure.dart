@@ -79,3 +79,12 @@ final class StorageDeleteFailure extends Failure {
 final class InvalidFileFailure extends Failure {
   const InvalidFileFailure(super.message);
 }
+
+// failure related to firebase firestore
+final class ResourceExceedFailure extends Failure {
+  const ResourceExceedFailure(super.message);
+}
+
+final class DeadlineExceedFailure extends Failure {
+  const DeadlineExceedFailure(super.message);
+}
