@@ -99,7 +99,6 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<PropertyRepo>(
     () => PropertyRepoImpl(
       dataSource: sl<AppwriteStorageDataSource>(),
-      repo: sl<PropertyRepo>(),
       firebase: sl<FirebaseRemoteDataSource>(),
     ),
   );
