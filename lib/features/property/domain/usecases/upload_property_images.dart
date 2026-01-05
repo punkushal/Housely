@@ -5,13 +5,13 @@ import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/property/domain/repository/property_repo.dart';
 
 class UploadPropertyImages
-    implements UseCase<Map<String, String>, UploadImagesParam> {
+    implements UseCase<Map<String, dynamic>, UploadImagesParam> {
   final PropertyRepo repository;
 
   UploadPropertyImages(this.repository);
 
   @override
-  ResultFuture<Map<String, String>> call(UploadImagesParam params) async {
+  ResultFuture<Map<String, dynamic>> call(UploadImagesParam params) async {
     return await repository.uploadPropertyImages(
       images: params.images,
       ownerEmail: params.ownerEmail,
