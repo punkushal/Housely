@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:housely/features/property/domain/entities/property_owner.dart';
 
 /// Such as per month, per night etc
@@ -47,8 +48,8 @@ class PropertySpecs {
 
 /// Property media (images)
 class PropertyMedia {
-  final String coverImage;
-  final List<String> gallery;
+  final Map<String, String> coverImage;
+  final Map<String, dynamic> gallery;
 
   PropertyMedia({required this.coverImage, required this.gallery});
 }
@@ -83,4 +84,36 @@ class Property {
     required this.createdAt,
     required this.updatedAt,
   });
+
+  Property copyWith({
+    String? id,
+    String? name,
+    String? description,
+    PropertyOwner? owner,
+    PropertyLocation? location,
+    PropertyPrice? price,
+    PropertyStatus? status,
+    PropertyType? type,
+    PropertySpecs? specs,
+    PropertyMedia? media,
+    List<String>? facilities,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Property(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      owner: owner ?? this.owner,
+      location: location ?? this.location,
+      price: price ?? this.price,
+      status: status ?? this.status,
+      type: type ?? this.type,
+      specs: specs ?? this.specs,
+      media: media ?? this.media,
+      facilities: facilities ?? this.facilities,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
