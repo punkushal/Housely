@@ -37,13 +37,18 @@ import 'package:housely/features/onboarding/domain/usecases/set_onboarding_statu
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:housely/features/property/data/datasources/app_write_data_source.dart';
 import 'package:housely/features/property/data/datasources/firebase_remote_data_source.dart';
+import 'package:housely/features/property/data/repository/owner_repo_impl.dart';
 import 'package:housely/features/property/data/repository/property_repo_impl.dart';
+import 'package:housely/features/property/domain/repository/owner_repo.dart';
 import 'package:housely/features/property/domain/repository/property_repo.dart';
+import 'package:housely/features/property/domain/usecases/create_owner_profile.dart';
 import 'package:housely/features/property/domain/usecases/create_property.dart';
 import 'package:housely/features/property/domain/usecases/delete_image_file.dart';
+import 'package:housely/features/property/domain/usecases/get_owner_profile.dart';
 import 'package:housely/features/property/domain/usecases/update_image_file.dart';
 import 'package:housely/features/property/domain/usecases/upload_cover_image.dart';
 import 'package:housely/features/property/domain/usecases/upload_property_images.dart';
+import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -103,6 +108,10 @@ Future<void> initializeDependencies() async {
     ),
   );
 
+  sl.registerLazySingleton<OwnerRepo>(
+    () => OwnerRepoImpl(firebase: sl(), dataSource: sl()),
+  );
+
   sl.registerLazySingleton<LocationLocalDataSource>(
     () => LocationLocalDataSourceImpl(),
   );
@@ -139,6 +148,10 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => DeleteImageFile(repo: sl()));
   sl.registerLazySingleton(() => UpdateImageFile(repo: sl()));
   sl.registerLazySingleton(() => CreateProperty(repo: sl()));
+
+  // owner use case
+  sl.registerLazySingleton(() => CreateOwnerProfile(sl()));
+  sl.registerLazySingleton(() => GetOwnerProfile(sl()));
 
   // location use cases
   sl.registerLazySingleton(
@@ -182,6 +195,14 @@ Future<void> initializeDependencies() async {
       deleteImageFile: sl(),
       createProperty: sl(),
       updateImageFile: sl(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => OwnerCubit(
+      createOwnerProfile: sl(),
+      uploadCoverImage: sl(),
+      getOwnerProfile: sl(),
     ),
   );
 
