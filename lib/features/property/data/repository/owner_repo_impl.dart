@@ -56,7 +56,6 @@ class OwnerRepoImpl implements OwnerRepo {
         image: image,
         ownerEmail: email,
         folderType: "profile",
-        bucketId: "profile_$email",
       );
 
       return Right(result);
