@@ -34,11 +34,13 @@ class FirebaseRemoteDataSource {
   // Property owner
   Future<void> createOwnerProfile(PropertyOwnerModel owner) async {
     try {
+      // added uid for owner id
+      final model = owner.copyWith(ownerId: auth.currentUser!.uid);
       final docId = auth.currentUser!.email;
       await firestore
           .collection(TextConstants.owners)
           .doc(docId!)
-          .set(owner.toJson());
+          .set(model.toJson());
     } catch (e) {
       throw Exception('Failed to create owner profile: $e');
     }
