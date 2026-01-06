@@ -19,17 +19,18 @@ class PropertyOwnerModel extends PropertyOwner {
   }
 
   // to firestore
-  Map<String, String> toJson() => {
+  Map<String, dynamic> toJson() => {
     'ownerId': ownerId,
     'name': name,
     'phone': phone,
     'profileImage': profileImage ?? "no profile",
   };
 
+  @override
   PropertyOwnerModel copyWith({
     String? name,
     String? ownerId,
-    String? profileImage,
+    Map<String, String>? profileImage,
     String? phone,
   }) {
     return PropertyOwnerModel(
