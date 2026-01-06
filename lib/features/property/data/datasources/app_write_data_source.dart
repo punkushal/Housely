@@ -12,7 +12,6 @@ abstract interface class AppwriteStorageDataSource {
     required File image,
     required String ownerEmail,
     required String folderType, // 'profile', 'cover', or 'gallery'
-    String? bucketId,
   });
 
   // delete property images
@@ -48,7 +47,7 @@ class AppwriteStorageDataSourceImpl implements AppwriteStorageDataSource {
       );
 
       final fileUrl =
-          '${TextConstants.appwriteUrl}storage/buckets/$_bucketId/files/${file.$id}/view?project=$_projectId';
+          '${TextConstants.appwriteUrl}/storage/buckets/$_bucketId/files/${file.$id}/view?project=$_projectId';
 
       return {"url": fileUrl, "id": file.$id};
     } catch (e) {
@@ -61,7 +60,6 @@ class AppwriteStorageDataSourceImpl implements AppwriteStorageDataSource {
     required File image,
     required String ownerEmail,
     required String folderType,
-    String? bucketId,
   }) async {
     try {
       final sanitizedEmail = ownerEmail.replaceAll(
@@ -71,14 +69,14 @@ class AppwriteStorageDataSourceImpl implements AppwriteStorageDataSource {
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final fileName = '${sanitizedEmail}_${folderType}_$timestamp';
       final file = await storage.createFile(
-        bucketId: bucketId ?? _bucketId,
+        bucketId: _bucketId,
         fileId: ID.unique(),
         file: InputFile.fromPath(path: image.path, filename: fileName),
         permissions: [Permission.read(Role.any())],
       );
-      final customBucketId = bucketId ?? _bucketId;
+
       final fileUrl =
-          '${TextConstants.appwriteUrl}storage/buckets/$customBucketId/files/${file.$id}/view?project=$_projectId';
+          '${TextConstants.appwriteUrl}/storage/buckets/$_bucketId/files/${file.$id}/view?project=$_projectId';
 
       return {"url": fileUrl, "id": file.$id};
     } catch (e) {
