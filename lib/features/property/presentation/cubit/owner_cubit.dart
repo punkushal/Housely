@@ -54,7 +54,7 @@ class OwnerCubit extends Cubit<OwnerState> {
 
     result.fold(
       (f) => emit(OwnerError(f.message)),
-      (_) => emit(OwnerCreated(owner)),
+      (_) => emit(OwnerLoaded(owner: owner)),
     );
   }
 

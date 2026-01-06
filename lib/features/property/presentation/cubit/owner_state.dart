@@ -11,12 +11,6 @@ final class OwnerInitial extends OwnerState {}
 
 final class OwnerLoading extends OwnerState {}
 
-final class OwnerCreated extends OwnerState {
-  final PropertyOwner owner;
-
-  const OwnerCreated(this.owner);
-}
-
 final class OwnerProfileUploaded extends OwnerState {
   const OwnerProfileUploaded();
 }
