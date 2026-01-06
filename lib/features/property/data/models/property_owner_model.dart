@@ -14,7 +14,7 @@ class PropertyOwnerModel extends PropertyOwner {
       ownerId: json['ownerId'],
       name: json['name'],
       phone: json['phone'],
-      profileImage: json['profileImage'] ?? "no profile",
+      profileImage: json['profileImage'],
     );
   }
 
@@ -23,7 +23,7 @@ class PropertyOwnerModel extends PropertyOwner {
     'ownerId': ownerId,
     'name': name,
     'phone': phone,
-    'profileImage': profileImage ?? "no profile",
+    'profileImage': profileImage,
   };
 
   @override
