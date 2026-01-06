@@ -9,4 +9,7 @@ abstract interface class OwnerRepo {
 
   // create owner profile
   ResultVoid createOwnerProfile({required PropertyOwner owner});
+
+  // fetch owner profile
+  ResultFuture<PropertyOwner?> getOwnerProfile();
 }
