@@ -184,6 +184,24 @@ class FormValidators {
     return null;
   }
 
+  // full name validator
+  static String? validateFullName(String? value) {
+    //  Check if empty
+    if (value == null || value.trim().isEmpty) {
+      return 'Please enter your full name';
+    }
+
+    //  Check for at least two words (First Name + Last Name)
+    // Logic: distinct words separated by a space, each at least 2 chars long.
+    final nameRegExp = RegExp(r"^[a-zA-Z]{2,}(\s+[a-zA-Z]{2,})+$");
+
+    if (!nameRegExp.hasMatch(value.trim())) {
+      return 'Please enter a valid full name (e.g. Kushal Pun)';
+    }
+
+    return null;
+  }
+
   // Phone Number Validator
   static String? validatePhoneNumber(String? value) {
     if (value == null || value.isEmpty) {
