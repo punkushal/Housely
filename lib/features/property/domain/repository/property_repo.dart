@@ -23,4 +23,7 @@ abstract interface class PropertyRepo {
 
   // add new property
   ResultVoid createProperty(Property property);
+
+  // fetch all properties
+  ResultFuture<List<Property>> fetchAllProperties();
 }
