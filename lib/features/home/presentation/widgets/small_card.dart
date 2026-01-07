@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +6,7 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 
@@ -47,11 +47,10 @@ class SmallCard extends StatelessWidget {
             // image container
             ClipRRect(
               borderRadius: ResponsiveDimensions.borderRadiusSmall(context),
-              child: CachedNetworkImage(
+              child: CustomCacheContainer(
                 imageUrl: property.media.coverImage['url'],
-                fit: .cover,
-                width: ResponsiveDimensions.getSize(context, 80),
-                height: ResponsiveDimensions.getHeight(context, 74),
+                width: 80,
+                height: 74,
               ),
             ),
 
