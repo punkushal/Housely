@@ -87,6 +87,9 @@ dependencies:
 
   # To store image files
   appwrite: ^20.3.2
+
+  # For caching network image
+  cached_network_image: ^3.4.1
   
 
 dev_dependencies:
