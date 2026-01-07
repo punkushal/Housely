@@ -56,7 +56,11 @@ class _CompleteOwnerProfilePageState extends State<CompleteOwnerProfilePage> {
         .checkConnectivityForAction();
 
     if (!isConnected) {
-      SnackbarHelper.showError(context, TextConstants.internetError);
+      SnackbarHelper.showError(
+        context,
+        TextConstants.internetError,
+        showTop: true,
+      );
       return;
     }
     if (_formKey.currentState!.validate()) {
@@ -70,7 +74,11 @@ class _CompleteOwnerProfilePageState extends State<CompleteOwnerProfilePage> {
         );
         context.read<OwnerCubit>().createProfile(owner, profileImage);
       } else {
-        SnackbarHelper.showError(context, "Please pick your profile image");
+        SnackbarHelper.showError(
+          context,
+          "Please pick your profile image",
+          showTop: true,
+        );
       }
     }
   }
@@ -80,10 +88,14 @@ class _CompleteOwnerProfilePageState extends State<CompleteOwnerProfilePage> {
     return BlocListener<OwnerCubit, OwnerState>(
       listener: (context, state) {
         if (state is OwnerLoaded && state.owner != null) {
-          SnackbarHelper.showSuccess(context, TextConstants.profileComplete);
+          SnackbarHelper.showSuccess(
+            context,
+            TextConstants.profileComplete,
+            showTop: true,
+          );
           context.pop();
         } else if (state is OwnerError) {
-          SnackbarHelper.showError(context, state.message);
+          SnackbarHelper.showError(context, state.message, showTop: true);
         }
       },
       child: Scaffold(

@@ -180,6 +180,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                     SnackbarHelper.showError(
                       context,
                       TextConstants.internetError,
+                      showTop: true,
                     );
                   }
                 },
@@ -188,11 +189,16 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
               BlocListener<PropertyCubit, PropertyState>(
                 listener: (context, state) {
                   if (state is PropertyError) {
-                    SnackbarHelper.showError(context, state.message);
+                    SnackbarHelper.showError(
+                      context,
+                      state.message,
+                      showTop: true,
+                    );
                   } else if (state is PropertyCreated) {
                     SnackbarHelper.showSuccess(
                       context,
                       "Successfully created new property",
+                      showTop: true,
                     );
                     context.pop();
                   }
@@ -206,7 +212,11 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                       _showCompleteProfileDialog(context);
                     }
                   } else if (state is OwnerError) {
-                    SnackbarHelper.showError(context, state.message);
+                    SnackbarHelper.showError(
+                      context,
+                      state.message,
+                      showTop: true,
+                    );
                   }
                 },
               ),
