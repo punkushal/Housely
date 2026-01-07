@@ -1,25 +1,35 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
+import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
+import 'package:housely/features/property/domain/entities/property.dart';
 
 class SmallCard extends StatelessWidget {
-  /// for now there is hard coded value , later i'll implement
-  /// dynamic values
-  const SmallCard({super.key, this.onTap, this.height, this.navigateTo});
+  const SmallCard({
+    super.key,
+    this.favoriteToggle,
+    this.height,
+    this.navigateTo,
+    required this.property,
+  });
 
   /// favorite toggle function
-  final void Function()? onTap;
+  final void Function()? favoriteToggle;
 
   /// height of the card
   final double? height;
 
   /// navigation to detail page
   final void Function()? navigateTo;
+
+  /// property
+  final Property property;
 
   @override
   Widget build(BuildContext context) {
@@ -37,23 +47,23 @@ class SmallCard extends StatelessWidget {
             // image container
             ClipRRect(
               borderRadius: ResponsiveDimensions.borderRadiusSmall(context),
-              child: Image.asset(
-                ImageConstant.fourthVilla,
+              child: CachedNetworkImage(
+                imageUrl: property.media.coverImage['url'],
+                fit: .cover,
                 width: ResponsiveDimensions.getSize(context, 80),
                 height: ResponsiveDimensions.getHeight(context, 74),
-                fit: .cover,
               ),
             ),
 
             // Property detail section
             Column(
               crossAxisAlignment: .start,
-
+              mainAxisAlignment: .end,
               spacing: ResponsiveDimensions.getHeight(context, 5),
               children: [
                 // Property name
                 Text(
-                  "Takatea Homestay",
+                  property.name.capitalize,
                   style: AppTextStyle.bodySemiBold(context),
                 ),
 
@@ -65,7 +75,7 @@ class SmallCard extends StatelessWidget {
                     SizedBox(
                       width: ResponsiveDimensions.getSize(context, 112),
                       child: Text(
-                        "Jl. Tentara Pelajar No.47, RW.001",
+                        property.location.address,
                         style: AppTextStyle.bodyRegular(
                           context,
                           fontSize: 10,
@@ -80,7 +90,7 @@ class SmallCard extends StatelessWidget {
                 SizedBox(height: ResponsiveDimensions.getHeight(context, 5)),
                 // Property price
                 Text(
-                  "\$120/night",
+                  "\$${property.price.amount}/night",
                   style: AppTextStyle.labelSemiBold(
                     context,
                     fontSize: 10,
@@ -92,11 +102,11 @@ class SmallCard extends StatelessWidget {
             Spacer(),
             // favorite + rating section
             Column(
-              mainAxisAlignment: .spaceBetween,
+              mainAxisAlignment: .end,
               children: [
                 // favorite section
                 GestureDetector(
-                  onTap: onTap,
+                  onTap: favoriteToggle,
                   child:
                       BlocSelector<
                         FavoriteToggleCubit,
@@ -122,7 +132,7 @@ class SmallCard extends StatelessWidget {
                         },
                       ),
                 ),
-
+                Spacer(),
                 // rating container
                 Container(
                   width: ResponsiveDimensions.getSize(context, 47),
