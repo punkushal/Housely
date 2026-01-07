@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 class DetailImageCard extends StatelessWidget {
@@ -46,13 +48,13 @@ class DetailImageCard extends StatelessWidget {
         ),
       ),
       child: ClipRRect(
-        // TODO: later actual network image will be placed
         borderRadius: ResponsiveDimensions.borderRadiusMedium(
           context,
           size: radius,
         ),
-        child: Image.asset(
-          imgPath,
+        child: CachedNetworkImage(
+          placeholder: (context, url) => Container(color: AppColors.divider),
+          imageUrl: imgPath,
           width: imgWidth,
           height: imgHeight,
           fit: fit,
