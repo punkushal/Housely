@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -60,20 +61,6 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final ownerState = context.read<OwnerCubit>().state;
-
-      if (ownerState is OwnerLoaded) {
-        if (ownerState.owner == null) {
-          _showCompleteProfileDialog(context);
-        }
-      }
-    });
-  }
-
   // validation and profile check
   void _validateAndProfile(BuildContext context) {
     if (_formKey.currentState!.validate()) {
@@ -97,15 +84,16 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
         SnackbarHelper.showError(context, TextConstants.internetError);
         return;
       }
-      final ownerCubit = context.read<OwnerCubit>();
-      final state = ownerCubit.state;
 
-      if (state is OwnerLoaded && state.owner != null) {
-        addProperty(context, state.owner!);
+      final state = context.read<OwnerCubit>().state;
+      log("owner status: $state");
+      if (state is! OwnerLoaded) {
+        SnackbarHelper.showError(context, "Please wait, profile is loading..");
         return;
-      } else {
+      } else if (state.owner == null) {
         _showCompleteProfileDialog(context);
       }
+      addProperty(context, state.owner!);
     }
   }
 
@@ -166,7 +154,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
             onTap: () {
               // close the dialog box
               context.pop();
-              context.router.push(CompleteOwnerProfileRoute());
+              context.router.push<bool>(CompleteOwnerProfileRoute());
             },
             buttonLabel: "Go to Profile",
           ),
