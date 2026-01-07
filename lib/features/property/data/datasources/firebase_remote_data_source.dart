@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/features/property/data/models/property_model.dart';
 import 'package:housely/features/property/data/models/property_owner_model.dart';
+import 'package:housely/features/property/domain/entities/property.dart';
 
 class FirebaseRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -22,6 +23,22 @@ class FirebaseRemoteDataSource {
     }
   }
 
+  // fetch all the properties
+  Future<List<Property>> fetchAllProperties() async {
+    try {
+      final snapshot = await firestore
+          .collection(TextConstants.properties)
+          .get();
+      final jsonList = snapshot.docs;
+      final propertyList = jsonList
+          .map((doc) => PropertyModel.fromJson(doc.data(), doc.id))
+          .toList();
+      return propertyList;
+    } catch (e) {
+      throw Exception('Failed to fetch all properties: $e');
+    }
+  }
+
   // get currently logged in user's email
   Future<String> getOwnerEmail() async {
     try {
@@ -31,7 +48,7 @@ class FirebaseRemoteDataSource {
     }
   }
 
-  // Property owner
+  // create property owner profile data
   Future<void> createOwnerProfile(PropertyOwnerModel owner) async {
     try {
       // added uid for owner id
@@ -46,6 +63,7 @@ class FirebaseRemoteDataSource {
     }
   }
 
+  // get owner profile
   Future<PropertyOwnerModel?> getOwnerProfile() async {
     try {
       final docRef = firestore
