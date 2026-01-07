@@ -30,7 +30,7 @@ class PropertyOwnerModel extends PropertyOwner {
   PropertyOwnerModel copyWith({
     String? name,
     String? ownerId,
-    Map<String, String>? profileImage,
+    Map<String, dynamic>? profileImage,
     String? phone,
   }) {
     return PropertyOwnerModel(

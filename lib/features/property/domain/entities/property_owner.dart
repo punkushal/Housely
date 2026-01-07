@@ -2,7 +2,7 @@ class PropertyOwner {
   final String ownerId;
   final String name;
   final String phone;
-  final Map<String, String>? profileImage;
+  final Map<String, dynamic>? profileImage;
 
   const PropertyOwner({
     required this.ownerId,
@@ -15,7 +15,7 @@ class PropertyOwner {
     String? ownerId,
     String? name,
     String? phone,
-    Map<String, String>? profileImage,
+    Map<String, dynamic>? profileImage,
   }) {
     return PropertyOwner(
       ownerId: ownerId ?? this.ownerId,

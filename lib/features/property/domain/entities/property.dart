@@ -48,7 +48,7 @@ class PropertySpecs {
 
 /// Property media (images)
 class PropertyMedia {
-  final Map<String, String> coverImage;
+  final Map<String, dynamic> coverImage;
   final Map<String, dynamic> gallery;
 
   PropertyMedia({required this.coverImage, required this.gallery});
