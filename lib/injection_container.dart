@@ -44,10 +44,12 @@ import 'package:housely/features/property/domain/repository/property_repo.dart';
 import 'package:housely/features/property/domain/usecases/create_owner_profile.dart';
 import 'package:housely/features/property/domain/usecases/create_property.dart';
 import 'package:housely/features/property/domain/usecases/delete_image_file.dart';
+import 'package:housely/features/property/domain/usecases/fetch_all_properties.dart';
 import 'package:housely/features/property/domain/usecases/get_owner_profile.dart';
 import 'package:housely/features/property/domain/usecases/update_image_file.dart';
 import 'package:housely/features/property/domain/usecases/upload_cover_image.dart';
 import 'package:housely/features/property/domain/usecases/upload_property_images.dart';
+import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -148,6 +150,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => DeleteImageFile(repo: sl()));
   sl.registerLazySingleton(() => UpdateImageFile(repo: sl()));
   sl.registerLazySingleton(() => CreateProperty(repo: sl()));
+  sl.registerLazySingleton(() => FetchAllProperties(sl()));
 
   // owner use case
   sl.registerLazySingleton(() => CreateOwnerProfile(sl()));
@@ -197,6 +200,8 @@ Future<void> initializeDependencies() async {
       updateImageFile: sl(),
     ),
   );
+
+  sl.registerLazySingleton(() => PropertyBloc(sl()));
 
   sl.registerFactory(
     () => OwnerCubit(
