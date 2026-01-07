@@ -3,8 +3,9 @@
     <application
         android:label="housely"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
-        
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
+       
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyDzU2omVRnhNITQY0pc91_PI6yPNLexSRE"/>
          <!-- Add this inside the `<application>` tag, along side the existing `<activity>` tags -->
