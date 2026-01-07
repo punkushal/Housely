@@ -22,7 +22,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       final currentState = state as OnboardingPageChanged;
       if (!currentState.isLastPage) {
         controller.nextPage(
-          duration: Duration(milliseconds: 1000),
+          duration: Duration(milliseconds: 800),
           curve: Curves.easeInOut,
         );
       }
