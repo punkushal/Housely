@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -17,7 +18,13 @@ class OwnerCubit extends Cubit<OwnerState> {
     required this.createOwnerProfile,
     required this.uploadCoverImage,
     required this.getOwnerProfile,
-  }) : super(OwnerInitial());
+  }) : super(OwnerInitial()) {
+    _init();
+  }
+
+  Future<void> _init() async {
+    fetchProfile();
+  }
 
   // upload profile image
   Future<Map<String, String>?> _uploadImage({
@@ -48,13 +55,15 @@ class OwnerCubit extends Cubit<OwnerState> {
 
     final coverUrl = await _uploadImage(image: profile, folderType: "profile");
 
-    final param = OwnerParam(owner: owner.copyWith(profileImage: coverUrl));
+    final updatedOwner = owner.copyWith(profileImage: coverUrl);
+
+    final param = OwnerParam(owner: updatedOwner);
 
     final result = await createOwnerProfile(param);
 
     result.fold(
       (f) => emit(OwnerError(f.message)),
-      (_) => emit(OwnerLoaded(owner: owner)),
+      (_) => emit(OwnerLoaded(owner: updatedOwner)),
     );
   }
 
@@ -63,7 +72,7 @@ class OwnerCubit extends Cubit<OwnerState> {
     emit(OwnerLoading());
 
     final result = await getOwnerProfile();
-
+    log('from owner cubit (fetching user profile): $state');
     result.fold(
       (f) => emit(OwnerError(f.message)),
       (owner) => emit(OwnerLoaded(owner: owner)),
