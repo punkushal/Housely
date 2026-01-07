@@ -36,6 +36,8 @@ import 'package:housely/features/onboarding/presentation/pages/onboarding_page.d
     as _i12;
 import 'package:housely/features/onboarding/presentation/pages/splash_page.dart'
     as _i16;
+import 'package:housely/features/property/domain/entities/property.dart'
+    as _i19;
 import 'package:housely/features/property/presentation/pages/complete_owner_profile_page.dart'
     as _i2;
 import 'package:housely/features/property/presentation/pages/create_new_property_page.dart'
@@ -93,18 +95,49 @@ class CreateNewPropertyRoute extends _i17.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.DetailPage]
-class DetailRoute extends _i17.PageRouteInfo<void> {
-  const DetailRoute({List<_i17.PageRouteInfo>? children})
-    : super(DetailRoute.name, initialChildren: children);
+class DetailRoute extends _i17.PageRouteInfo<DetailRouteArgs> {
+  DetailRoute({
+    _i18.Key? key,
+    required _i19.Property property,
+    List<_i17.PageRouteInfo>? children,
+  }) : super(
+         DetailRoute.name,
+         args: DetailRouteArgs(key: key, property: property),
+         initialChildren: children,
+       );
 
   static const String name = 'DetailRoute';
 
   static _i17.PageInfo page = _i17.PageInfo(
     name,
     builder: (data) {
-      return const _i4.DetailPage();
+      final args = data.argsAs<DetailRouteArgs>();
+      return _i4.DetailPage(key: args.key, property: args.property);
     },
   );
+}
+
+class DetailRouteArgs {
+  const DetailRouteArgs({this.key, required this.property});
+
+  final _i18.Key? key;
+
+  final _i19.Property property;
+
+  @override
+  String toString() {
+    return 'DetailRouteArgs{key: $key, property: $property}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! DetailRouteArgs) return false;
+    return key == other.key && property == other.property;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ property.hashCode;
 }
 
 /// generated route for
