@@ -79,11 +79,9 @@ class _CompleteOwnerProfilePageState extends State<CompleteOwnerProfilePage> {
   Widget build(BuildContext context) {
     return BlocListener<OwnerCubit, OwnerState>(
       listener: (context, state) {
-        if (state is OwnerLoaded) {
-          if (state.owner != null) {
-            SnackbarHelper.showSuccess(context, "");
-            context.pop();
-          }
+        if (state is OwnerLoaded && state.owner != null) {
+          SnackbarHelper.showSuccess(context, TextConstants.profileComplete);
+          context.pop();
         } else if (state is OwnerError) {
           SnackbarHelper.showError(context, state.message);
         }
