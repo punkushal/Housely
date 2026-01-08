@@ -79,18 +79,52 @@ class CompleteOwnerProfileRoute extends _i17.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.CreateNewPropertyPage]
-class CreateNewPropertyRoute extends _i17.PageRouteInfo<void> {
-  const CreateNewPropertyRoute({List<_i17.PageRouteInfo>? children})
-    : super(CreateNewPropertyRoute.name, initialChildren: children);
+class CreateNewPropertyRoute
+    extends _i17.PageRouteInfo<CreateNewPropertyRouteArgs> {
+  CreateNewPropertyRoute({
+    _i18.Key? key,
+    _i19.Property? property,
+    List<_i17.PageRouteInfo>? children,
+  }) : super(
+         CreateNewPropertyRoute.name,
+         args: CreateNewPropertyRouteArgs(key: key, property: property),
+         initialChildren: children,
+       );
 
   static const String name = 'CreateNewPropertyRoute';
 
   static _i17.PageInfo page = _i17.PageInfo(
     name,
     builder: (data) {
-      return const _i3.CreateNewPropertyPage();
+      final args = data.argsAs<CreateNewPropertyRouteArgs>(
+        orElse: () => const CreateNewPropertyRouteArgs(),
+      );
+      return _i3.CreateNewPropertyPage(key: args.key, property: args.property);
     },
   );
+}
+
+class CreateNewPropertyRouteArgs {
+  const CreateNewPropertyRouteArgs({this.key, this.property});
+
+  final _i18.Key? key;
+
+  final _i19.Property? property;
+
+  @override
+  String toString() {
+    return 'CreateNewPropertyRouteArgs{key: $key, property: $property}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! CreateNewPropertyRouteArgs) return false;
+    return key == other.key && property == other.property;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ property.hashCode;
 }
 
 /// generated route for
