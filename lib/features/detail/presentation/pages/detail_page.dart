@@ -1,7 +1,9 @@
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
@@ -115,6 +117,19 @@ class DetailPage extends StatelessWidget {
                     ],
                   ),
                 ),
+              ),
+            ),
+            floatingActionButton: IconButton(
+              onPressed: () {
+                context.router.push(CreateNewPropertyRoute(property: property));
+              },
+              icon: Container(
+                padding: ResponsiveDimensions.paddingAll8(context),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.edit_rounded, color: AppColors.background),
               ),
             ),
           );
