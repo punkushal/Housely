@@ -46,7 +46,9 @@ class PropertyList extends StatelessWidget {
                   SmallCard(
                     property: propertyList[index],
                     height: ResponsiveDimensions.getSize(context, 72),
-                    navigateTo: () => context.router.push(DetailRoute()),
+                    navigateTo: () => context.router.push(
+                      DetailRoute(property: propertyList[index]),
+                    ),
                   ),
                   Divider(color: AppColors.divider),
                 ],
