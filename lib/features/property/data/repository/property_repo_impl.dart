@@ -118,4 +118,35 @@ class PropertyRepoImpl implements PropertyRepo {
       return Left(ServerFailure("An unexpected failure occur: $e"));
     }
   }
+
+  @override
+  ResultVoid updateProperty(Property property) async {
+    final model = PropertyModel(
+      id: property.id,
+      name: property.name,
+      description: property.description,
+      owner: property.owner,
+      location: property.location,
+      price: property.price,
+      status: property.status,
+      type: property.type,
+      specs: property.specs,
+      media: property.media,
+      facilities: property.facilities,
+      createdAt: property.createdAt,
+      updatedAt: property.updatedAt,
+    );
+    try {
+      await firebase.updateProperty(model);
+      return Right(null);
+    } on FirebaseAuthException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(
+        ServerFailure(
+          "An unexpected failure occur while updating the property: $e",
+        ),
+      );
+    }
+  }
 }
