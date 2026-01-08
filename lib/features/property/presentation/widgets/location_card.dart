@@ -14,35 +14,39 @@ class LocationCard extends StatelessWidget {
   final void Function()? navigateTo;
   @override
   Widget build(BuildContext context) {
-    return Column(
-      spacing: ResponsiveDimensions.spacing4(context),
-      crossAxisAlignment: .start,
-      children: [
-        Label(label: "Location"),
-        GestureDetector(
-          onTap: navigateTo,
-          child: address != null
-              ? BlocSelector<PropertyFormCubit, PropertyFormState, String?>(
-                  selector: (state) => state.address,
-                  builder: (context, state) {
-                    return state != null
-                        ? CustomTextField(initialValue: state)
-                        : CustomTextField(initialValue: address);
-                  },
-                )
-              : ClipRRect(
-                  borderRadius: ResponsiveDimensions.borderRadiusMedium(
-                    context,
-                  ),
-                  child: Image.asset(
-                    ImageConstant.mapPreviewImg,
-                    fit: .cover,
-                    height: ResponsiveDimensions.getHeight(context, 142),
-                    width: .infinity,
-                  ),
-                ),
-        ),
-      ],
+    return BlocSelector<PropertyFormCubit, PropertyFormState, String?>(
+      selector: (state) {
+        return state.address;
+      },
+      builder: (context, stateAddress) {
+        final effectiveAddress = stateAddress ?? address;
+        return Column(
+          spacing: ResponsiveDimensions.spacing4(context),
+          crossAxisAlignment: .start,
+          children: [
+            Label(label: "Location"),
+            GestureDetector(
+              onTap: navigateTo,
+              child: effectiveAddress != null
+                  ? CustomTextField(
+                      key: ValueKey(effectiveAddress),
+                      initialValue: effectiveAddress,
+                    )
+                  : ClipRRect(
+                      borderRadius: ResponsiveDimensions.borderRadiusMedium(
+                        context,
+                      ),
+                      child: Image.asset(
+                        ImageConstant.mapPreviewImg,
+                        fit: .cover,
+                        height: ResponsiveDimensions.getHeight(context, 142),
+                        width: .infinity,
+                      ),
+                    ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
