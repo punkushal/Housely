@@ -25,6 +25,8 @@ final class CoverImageUploaded extends PropertyState {
 
 final class PropertyCreated extends PropertyState {}
 
+final class PropertyUpdated extends PropertyState {}
+
 final class PropertyImageDeleted extends PropertyState {}
 
 final class PropertyImageUpdated extends PropertyState {

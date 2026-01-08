@@ -6,6 +6,7 @@ import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/usecases/create_property.dart';
 import 'package:housely/features/property/domain/usecases/delete_image_file.dart';
 import 'package:housely/features/property/domain/usecases/update_image_file.dart';
+import 'package:housely/features/property/domain/usecases/update_property.dart';
 import 'package:housely/features/property/domain/usecases/upload_cover_image.dart';
 import 'package:housely/features/property/domain/usecases/upload_property_images.dart';
 
@@ -13,6 +14,7 @@ part 'property_state.dart';
 
 class PropertyCubit extends Cubit<PropertyState> {
   final CreateProperty createProperty;
+  final UpdateProperty updateProperty;
   final UploadCoverImage uploadCoverImage;
   final DeleteImageFile deleteImageFile;
   final UploadPropertyImages uploadPropertyImages;
@@ -23,6 +25,7 @@ class PropertyCubit extends Cubit<PropertyState> {
     required this.deleteImageFile,
     required this.createProperty,
     required this.updateImageFile,
+    required this.updateProperty,
   }) : super(PropertyInitial());
 
   // upload cover image
@@ -112,11 +115,17 @@ class PropertyCubit extends Cubit<PropertyState> {
     emit(PropertyLoading());
     final coverUrl = await _uploadImage(image: image, folderType: "cover");
 
-    if (coverUrl == null) return;
+    if (coverUrl == null) {
+      emit(PropertyInitial());
+      return;
+    }
 
     final galleryUrl = await _uploadImages(images: images);
 
-    if (galleryUrl == null) return;
+    if (galleryUrl == null) {
+      emit(PropertyInitial());
+      return;
+    }
 
     final result = await createProperty(
       CreateParam(
@@ -129,6 +138,48 @@ class PropertyCubit extends Cubit<PropertyState> {
     result.fold(
       (failure) => emit(PropertyError(failure.message)),
       (_) => emit(PropertyCreated()),
+    );
+  }
+
+  // update property details
+  Future<void> updatePropertyDetails(
+    Property property, {
+    File? coverImage,
+    List<File>? galleryImages,
+  }) async {
+    emit(PropertyLoading());
+    Map<String, String>? updatedCoverUrl;
+    Map<String, dynamic>? updatedGalleryUrls;
+
+    // Upload new cover image if provided
+    if (coverImage != null) {
+      updatedCoverUrl = await _uploadImage(
+        image: coverImage,
+        folderType: "cover",
+      );
+      if (updatedCoverUrl == null) return;
+    }
+
+    // Upload new gallery images if provided
+    if (galleryImages != null && galleryImages.isNotEmpty) {
+      updatedGalleryUrls = await _uploadImages(images: galleryImages);
+      if (updatedGalleryUrls == null) return;
+    }
+
+    // Update property with new image URLs if they were uploaded
+    final updatedProperty = property.copyWith(
+      media: PropertyMedia(
+        coverImage: updatedCoverUrl ?? property.media.coverImage,
+        gallery: updatedGalleryUrls ?? property.media.gallery,
+      ),
+    );
+
+    final param = UpdateParams(updatedProperty);
+    final result = await updateProperty(param);
+
+    result.fold(
+      (failure) => emit(PropertyError(failure.message)),
+      (_) => emit(PropertyUpdated()),
     );
   }
 }
