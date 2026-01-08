@@ -39,6 +39,18 @@ class FirebaseRemoteDataSource {
     }
   }
 
+  // update property
+  Future<void> updateProperty(PropertyModel property) async {
+    try {
+      await firestore
+          .collection(TextConstants.properties)
+          .doc(property.id)
+          .update(property.toJson());
+    } catch (e) {
+      throw Exception('Failed to update reqeuest property: $e');
+    }
+  }
+
   // get currently logged in user's email
   Future<String> getOwnerEmail() async {
     try {
