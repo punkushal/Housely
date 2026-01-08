@@ -25,8 +25,8 @@ class CustomCacheContainer extends StatelessWidget {
       placeholder: (context, url) => Container(color: AppColors.divider),
       imageUrl: imageUrl,
       fit: .cover,
-      width: ResponsiveDimensions.getSize(context, 80),
-      height: ResponsiveDimensions.getHeight(context, 74),
+      width: ResponsiveDimensions.getSize(context, width),
+      height: ResponsiveDimensions.getHeight(context, height),
     );
   }
 }
