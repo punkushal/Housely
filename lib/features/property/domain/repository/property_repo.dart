@@ -26,4 +26,7 @@ abstract interface class PropertyRepo {
 
   // fetch all properties
   ResultFuture<List<Property>> fetchAllProperties();
+
+  // update individual property
+  ResultVoid updateProperty(Property property);
 }
