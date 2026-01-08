@@ -18,6 +18,7 @@ class CustomTextField extends StatelessWidget {
     this.maxLines,
     this.readOnly = false,
     this.initialValue,
+    this.fieldKey,
   });
 
   /// [TextEditingController] controller
@@ -61,9 +62,13 @@ class CustomTextField extends StatelessWidget {
 
   /// initial value if controller not used
   final String? initialValue;
+
+  /// field key
+  final Key? fieldKey;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      key: fieldKey,
       initialValue: initialValue,
       readOnly: readOnly,
       style: style ?? AppTextStyle.bodyRegular(context, fontSize: 14),
