@@ -7,8 +7,11 @@ import 'package:housely/features/property/presentation/cubit/property_form_cubit
 import 'package:housely/features/property/presentation/widgets/label.dart';
 
 class LocationCard extends StatelessWidget {
-  const LocationCard({super.key, this.address});
+  const LocationCard({super.key, this.address, this.navigateTo});
   final String? address;
+
+  /// navigate to map picker
+  final void Function()? navigateTo;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -16,24 +19,28 @@ class LocationCard extends StatelessWidget {
       crossAxisAlignment: .start,
       children: [
         Label(label: "Location"),
-        BlocSelector<PropertyFormCubit, PropertyFormState, String?>(
-          selector: (state) {
-            return state.address;
-          },
-          builder: (context, address) {
-            if (address != null) {
-              return CustomTextField(initialValue: address);
-            }
-            return ClipRRect(
-              borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
-              child: Image.asset(
-                ImageConstant.mapPreviewImg,
-                fit: .cover,
-                height: ResponsiveDimensions.getHeight(context, 142),
-                width: .infinity,
-              ),
-            );
-          },
+        GestureDetector(
+          onTap: navigateTo,
+          child: address != null
+              ? BlocSelector<PropertyFormCubit, PropertyFormState, String?>(
+                  selector: (state) => state.address,
+                  builder: (context, state) {
+                    return state != null
+                        ? CustomTextField(initialValue: state)
+                        : CustomTextField(initialValue: address);
+                  },
+                )
+              : ClipRRect(
+                  borderRadius: ResponsiveDimensions.borderRadiusMedium(
+                    context,
+                  ),
+                  child: Image.asset(
+                    ImageConstant.mapPreviewImg,
+                    fit: .cover,
+                    height: ResponsiveDimensions.getHeight(context, 142),
+                    width: .infinity,
+                  ),
+                ),
         ),
       ],
     );
