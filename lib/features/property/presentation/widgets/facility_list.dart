@@ -6,8 +6,8 @@ import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
 
 class FacilityList extends StatefulWidget {
-  const FacilityList({super.key});
-
+  const FacilityList({super.key, this.existedFacilites});
+  final List<String>? existedFacilites;
   @override
   State<FacilityList> createState() => _FacilityListState();
 }
@@ -15,12 +15,13 @@ class FacilityList extends StatefulWidget {
 class _FacilityListState extends State<FacilityList> {
   // The available options to display
   final _facilityOptions = [
-    'Wifi',
     'AC',
-    'parking',
+    'Parking',
     'Gym',
     'Gas station',
     "Swimming Pool",
+    "Mall",
+    "Hospital",
   ];
 
   // The list where we store what the user selects
@@ -28,10 +29,12 @@ class _FacilityListState extends State<FacilityList> {
   @override
   Widget build(BuildContext context) {
     return FormField<List<String>>(
-      initialValue: _selectedFacilites,
+      initialValue: widget.existedFacilites ?? _selectedFacilites,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'Please select at least one facility';
+          return 'Please select facilities';
+        } else if (value.length < 2) {
+          return 'Please select at least two facilities';
         }
         return null;
       },
@@ -44,7 +47,9 @@ class _FacilityListState extends State<FacilityList> {
               spacing: 8,
               runSpacing: 6,
               children: _facilityOptions.map((facility) {
-                final isSelected = _selectedFacilites.contains(facility);
+                final isSelected = widget.existedFacilites != null
+                    ? widget.existedFacilites!.contains(facility)
+                    : _selectedFacilites.contains(facility);
 
                 return FilterChip(
                   label: Text(facility),
@@ -59,9 +64,13 @@ class _FacilityListState extends State<FacilityList> {
                   onSelected: (selected) {
                     setState(() {
                       if (selected) {
-                        _selectedFacilites.add(facility);
+                        widget.existedFacilites != null
+                            ? widget.existedFacilites!.add(facility)
+                            : _selectedFacilites.add(facility);
                       } else {
-                        _selectedFacilites.remove(facility);
+                        widget.existedFacilites != null
+                            ? widget.existedFacilites!.remove(facility)
+                            : _selectedFacilites.remove(facility);
                       }
                     });
 
@@ -69,7 +78,7 @@ class _FacilityListState extends State<FacilityList> {
 
                     // update form cubit to store the selected facilites
                     context.read<PropertyFormCubit>().updateFacilities(
-                      _selectedFacilites,
+                      widget.existedFacilites ?? _selectedFacilites,
                     );
                   },
                 );
