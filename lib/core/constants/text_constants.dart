@@ -24,6 +24,8 @@ class TextConstants {
   static final String submit = "Submit Review";
   static final String addProperty = "Add Property";
   static final String complete = "Complete";
+  static final String delete = "Delete";
+  static final String update = "Update";
 
   // error messages
   static final String internetError =
