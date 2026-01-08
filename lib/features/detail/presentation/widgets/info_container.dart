@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 class InfoContainer extends StatelessWidget {
@@ -35,7 +36,7 @@ class InfoContainer extends StatelessWidget {
         ),
 
         Text(
-          number != null ? number.toString() : infoText,
+          number != null ? number.toString() : "For ${infoText.capitalize}",
           style: AppTextStyle.labelSemiBold(
             context,
             fontSize: 12,
