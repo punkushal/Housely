@@ -6,13 +6,26 @@ import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
+import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
 import 'package:housely/features/property/presentation/widgets/default_upload_content.dart';
 import 'package:housely/features/property/presentation/widgets/images_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UploadContainer extends StatelessWidget {
-  UploadContainer({super.key, required this.labelText, this.hasMany = false});
+  UploadContainer({
+    super.key,
+    required this.labelText,
+    this.hasMany = false,
+    this.coverUrl,
+    required this.imageUrls,
+  });
+
+  /// existed cover image network url
+  final String? coverUrl;
+
+  /// other property images url
+  final List<dynamic> imageUrls;
 
   /// Label text
   final String labelText;
@@ -87,15 +100,29 @@ class UploadContainer extends StatelessWidget {
                 ),
                 child: BlocBuilder<PropertyFormCubit, PropertyFormState>(
                   builder: (context, state) {
-                    if (state.image != null && !hasMany) {
+                    if (coverUrl != null) {
+                      return ClipRRect(
+                        borderRadius: ResponsiveDimensions.borderRadiusSmall(
+                          context,
+                        ),
+                        child: CustomCacheContainer(
+                          imageUrl: coverUrl!,
+                          height: 0,
+                          width: 0,
+                        ),
+                      );
+                    } else if (state.image != null && !hasMany) {
                       return ClipRRect(
                         borderRadius: ResponsiveDimensions.borderRadiusSmall(
                           context,
                         ),
                         child: Image.file(state.image!, fit: .cover),
                       );
-                    } else if (state.imageList.isNotEmpty && hasMany) {
-                      return ImagesGridView(multipleImages: state.imageList);
+                    } else if (hasMany) {
+                      return ImagesGridView(
+                        multipleImages: state.imageList,
+                        imageUrls: imageUrls,
+                      );
                     }
                     return DefaultUploadContent();
                   },
