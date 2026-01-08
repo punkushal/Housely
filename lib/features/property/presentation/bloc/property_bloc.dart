@@ -6,9 +6,9 @@ import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/usecases/fetch_all_properties.dart';
 
 part 'property_event.dart';
-part 'property_state.dart';
+part 'property_fetch_state.dart';
 
-class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
+class PropertyBloc extends Bloc<PropertyEvent, PropertyFetchState> {
   final FetchAllProperties fetchAllProperties;
   PropertyBloc(this.fetchAllProperties) : super(PropertyInitial()) {
     on<GetAllProperties>(_fetchAll);
@@ -16,11 +16,11 @@ class PropertyBloc extends Bloc<PropertyEvent, PropertyState> {
 
   Future<void> _fetchAll(
     GetAllProperties event,
-    Emitter<PropertyState> emit,
+    Emitter<PropertyFetchState> emit,
   ) async {
-    emit(PropertyLoading());
+    emit(PropertyFetchLoading());
     final result = await fetchAllProperties();
-    result.fold((f) => emit(PropertyError(f.message)), (properties) {
+    result.fold((f) => emit(PropertyFetchError(f.message)), (properties) {
       emit(PropertyLoaded(properties));
     });
   }
