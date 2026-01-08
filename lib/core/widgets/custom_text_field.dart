@@ -19,6 +19,7 @@ class CustomTextField extends StatelessWidget {
     this.readOnly = false,
     this.initialValue,
     this.fieldKey,
+    this.onTap,
   });
 
   /// [TextEditingController] controller
@@ -65,6 +66,9 @@ class CustomTextField extends StatelessWidget {
 
   /// field key
   final Key? fieldKey;
+
+  /// on tap if any tapping functionality needed
+  final void Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -78,6 +82,7 @@ class CustomTextField extends StatelessWidget {
       validator: validator,
       onChanged: onChanged,
       maxLines: maxLines,
+      onTap: onTap,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: hintStyle,
