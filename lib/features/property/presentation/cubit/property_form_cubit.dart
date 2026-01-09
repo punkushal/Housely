@@ -34,7 +34,18 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
 
   // Reset form when finished
   void resetForm() {
-    emit(PropertyFormState());
+    emit(
+      state.copyWith(
+        propertyType: null,
+        propertyStatus: null,
+        image: null,
+        imageList: const [],
+        facilities: const [],
+        existingNetworkImages: const [],
+        imageError: null,
+        address: null,
+      ),
+    );
   }
 
   void changePropertyType(String value) {

@@ -54,7 +54,6 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (widget.property != null) {
-        context.read<PropertyFormCubit>().setInitialValues(widget.property!);
         _titleController.text = widget.property!.name;
         _descController.text = widget.property!.description;
         _yearController.text = widget.property!.specs.builtYear;
@@ -73,13 +72,32 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
     });
   }
 
-  void reset() {
+  void _resetForm() {
+    // Clear all text controllers
+    _titleController.clear();
+    _descController.clear();
+    _priceController.clear();
+    _typeController.clear();
+    _roomController.clear();
+    _tubController.clear();
+    _areaController.clear();
+    _statusController.clear();
+    _yearController.clear();
+
+    // Clear location
     location = null;
+
+    // Reset the form key
+    _formKey.currentState?.reset();
+
+    if (widget.property == null) {
+      // Reset the PropertyFormCubit
+      context.read<PropertyFormCubit>().resetForm();
+    }
   }
 
   @override
   void dispose() {
-    reset();
     _titleController.dispose();
     _descController.dispose();
     _tubController.dispose();
@@ -248,7 +266,20 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   Widget build(BuildContext context) {
     final property = widget.property;
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => sl<PropertyCubit>())],
+      providers: [
+        BlocProvider(create: (context) => sl<PropertyCubit>()),
+        BlocProvider(
+          create: (context) {
+            final cubit = sl<PropertyFormCubit>();
+
+            if (widget.property != null) {
+              cubit.setInitialValues(widget.property!);
+            }
+
+            return cubit;
+          },
+        ),
+      ],
       child: Builder(
         builder: (context) {
           return MultiBlocListener(
@@ -274,7 +305,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                       showTop: true,
                     );
                   } else if (state is PropertyCreated) {
-                    context.read<PropertyFormCubit>().resetForm();
+                    _resetForm();
                     // Trigger a refresh of the list before going back
                     context.read<PropertyBloc>().add(GetAllProperties());
 
@@ -297,6 +328,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                       "Property details updated successfully",
                       showTop: true,
                     );
+                    _resetForm();
                     context.pop(true);
                   }
                 },
