@@ -6,6 +6,7 @@ class PropertyFormState {
   final File? image;
   final List<File> imageList;
   final List<String> facilities;
+  final List<Map<String, dynamic>> existingNetworkImages;
   final String? imageError;
   final String? address;
 
@@ -14,6 +15,7 @@ class PropertyFormState {
     this.image,
     this.imageList = const [],
     this.facilities = const [],
+    this.existingNetworkImages = const [],
     this.propertyStatus,
     this.imageError,
     this.address,
@@ -26,6 +28,7 @@ class PropertyFormState {
     File? image,
     List<File>? imageList,
     List<String>? facilities,
+    List<Map<String, dynamic>>? existingNetworkImages,
     String? address,
   }) {
     return PropertyFormState(
@@ -35,6 +38,8 @@ class PropertyFormState {
       imageList: imageList ?? this.imageList,
       imageError: imageError ?? this.imageError,
       facilities: facilities ?? this.facilities,
+      existingNetworkImages:
+          existingNetworkImages ?? this.existingNetworkImages,
       address: address ?? this.address,
     );
   }
