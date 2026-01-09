@@ -33,11 +33,10 @@ class PropertyCubit extends Cubit<PropertyState> {
     required File image,
     required String folderType,
   }) async {
-    emit(PropertyLoading());
     final param = UploadImageParam(image: image, folderType: folderType);
     final result = await uploadCoverImage(param);
 
-    final uploaded = result.fold(
+    return result.fold(
       (failure) {
         emit(PropertyError(failure.message));
         return null;
@@ -47,18 +46,15 @@ class PropertyCubit extends Cubit<PropertyState> {
         return imageUrl;
       },
     );
-    return uploaded;
   }
 
   // upload property images
   Future<Map<String, dynamic>?> _uploadImages({
     required List<File> images,
   }) async {
-    emit(PropertyLoading());
     final param = UploadImagesParam(images: images);
     final result = await uploadPropertyImages(param);
-
-    final uploadedImages = result.fold(
+    return result.fold(
       (failure) {
         emit(PropertyError(failure.message));
         return null;
@@ -68,8 +64,46 @@ class PropertyCubit extends Cubit<PropertyState> {
         return imageUrl;
       },
     );
+  }
 
-    return uploadedImages;
+  // deletes from appwrite and updates firestore to remove the link
+  Future<void> deleteGalleryImage({
+    required Property property,
+    required String fileId,
+  }) async {
+    emit(PropertyLoading());
+
+    // Deleting from Appwrite Storage
+    final param = DeleteParam(fileId: fileId);
+    final deleteResult = await deleteImageFile(param);
+
+    await deleteResult.fold(
+      (failure) async => emit(PropertyError(failure.message)),
+      (_) async {
+        // If storage delete success, remove from Property Object
+        // Get current list safely
+        final currentImages = List<Map<String, dynamic>>.from(
+          property.media.gallery['images'] ?? [],
+        );
+
+        // Removing the item that matches the ID
+        currentImages.removeWhere((img) => img['id'] == fileId);
+
+        // Creating updated Property object
+        final updatedProperty = property.copyWith(
+          media: property.media.copyWith(gallery: {'images': currentImages}),
+        );
+
+        // Updating Firestore with the clean list
+        final updateParam = UpdateParams(updatedProperty);
+        final dbResult = await updateProperty(updateParam);
+
+        dbResult.fold(
+          (failure) => emit(PropertyError(failure.message)),
+          (_) => emit(PropertyImageDeleted()),
+        );
+      },
+    );
   }
 
   // upadte image
@@ -149,7 +183,7 @@ class PropertyCubit extends Cubit<PropertyState> {
   }) async {
     emit(PropertyLoading());
     Map<String, String>? updatedCoverUrl;
-    Map<String, dynamic>? updatedGalleryUrls;
+    List<dynamic> combinedGalleryList = [];
 
     // Upload new cover image if provided
     if (coverImage != null) {
@@ -160,17 +194,27 @@ class PropertyCubit extends Cubit<PropertyState> {
       if (updatedCoverUrl == null) return;
     }
 
-    // Upload new gallery images if provided
+    // handling gallery images update
+    // starting with existing images from the property
+    if (property.media.gallery['images'] != null) {
+      combinedGalleryList.addAll(property.media.gallery['images']);
+    }
+
+    //if new files exist, then upload them and append to list
     if (galleryImages != null && galleryImages.isNotEmpty) {
-      updatedGalleryUrls = await _uploadImages(images: galleryImages);
-      if (updatedGalleryUrls == null) return;
+      final newUploadedMap = await _uploadImages(images: galleryImages);
+      if (newUploadedMap == null) return; // upload failed
+
+      if (newUploadedMap['images'] != null) {
+        combinedGalleryList.addAll(newUploadedMap['images']);
+      }
     }
 
     // Update property with new image URLs if they were uploaded
     final updatedProperty = property.copyWith(
       media: PropertyMedia(
         coverImage: updatedCoverUrl ?? property.media.coverImage,
-        gallery: updatedGalleryUrls ?? property.media.gallery,
+        gallery: {'images': combinedGalleryList},
       ),
     );
 
