@@ -7,6 +7,7 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
+import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
 import 'package:housely/features/property/presentation/widgets/default_upload_content.dart';
 import 'package:housely/features/property/presentation/widgets/images_grid_view.dart';
@@ -19,6 +20,7 @@ class UploadContainer extends StatelessWidget {
     this.hasMany = false,
     this.coverUrl,
     required this.imageUrls,
+    this.property,
   });
 
   /// existed cover image network url
@@ -32,6 +34,8 @@ class UploadContainer extends StatelessWidget {
 
   /// Checker to enable multiple image selection
   final bool hasMany;
+
+  final Property? property;
 
   final _picker = ImagePicker();
 
@@ -118,10 +122,12 @@ class UploadContainer extends StatelessWidget {
                           width: 0,
                         ),
                       );
-                    } else if (hasMany) {
+                    } else if (hasMany &&
+                        (state.imageList.isNotEmpty || imageUrls.isNotEmpty)) {
                       return ImagesGridView(
                         localImages: state.imageList,
                         networkImages: imageUrls,
+                        property: property,
                       );
                     }
                     return DefaultUploadContent();

@@ -29,13 +29,7 @@ class ImagesGridView extends StatelessWidget {
     final totalCount = networkImages.length + localImages.length;
     return BlocListener<PropertyCubit, PropertyState>(
       listener: (context, state) {
-        if (state is PropertyLoading) {
-          SnackbarHelper.showInfo(
-            context,
-            "Deleting network image can take some time...",
-            showTop: true,
-          );
-        } else if (state is PropertyImageDeleted) {
+        if (state is PropertyImageDeleted) {
           SnackbarHelper.showSuccess(
             context,
             "Network image deleted",
