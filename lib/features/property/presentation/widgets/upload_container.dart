@@ -100,7 +100,14 @@ class UploadContainer extends StatelessWidget {
                 ),
                 child: BlocBuilder<PropertyFormCubit, PropertyFormState>(
                   builder: (context, state) {
-                    if (coverUrl != null) {
+                    if (state.image != null && !hasMany) {
+                      return ClipRRect(
+                        borderRadius: ResponsiveDimensions.borderRadiusSmall(
+                          context,
+                        ),
+                        child: Image.file(state.image!, fit: .cover),
+                      );
+                    } else if (coverUrl != null && !hasMany) {
                       return ClipRRect(
                         borderRadius: ResponsiveDimensions.borderRadiusSmall(
                           context,
@@ -111,17 +118,10 @@ class UploadContainer extends StatelessWidget {
                           width: 0,
                         ),
                       );
-                    } else if (state.image != null && !hasMany) {
-                      return ClipRRect(
-                        borderRadius: ResponsiveDimensions.borderRadiusSmall(
-                          context,
-                        ),
-                        child: Image.file(state.image!, fit: .cover),
-                      );
                     } else if (hasMany) {
                       return ImagesGridView(
-                        multipleImages: state.imageList,
-                        imageUrls: imageUrls,
+                        localImages: state.imageList,
+                        networkImages: imageUrls,
                       );
                     }
                     return DefaultUploadContent();
