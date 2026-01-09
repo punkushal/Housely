@@ -48,10 +48,20 @@ class PropertySpecs {
 
 /// Property media (images)
 class PropertyMedia {
-  final Map<String, dynamic> coverImage;
-  final Map<String, dynamic> gallery;
+  Map<String, dynamic> coverImage;
+  Map<String, dynamic> gallery;
 
   PropertyMedia({required this.coverImage, required this.gallery});
+
+  PropertyMedia copyWith({
+    Map<String, dynamic>? coverImage,
+    Map<String, dynamic>? gallery,
+  }) {
+    return PropertyMedia(
+      coverImage: coverImage ?? this.coverImage,
+      gallery: gallery ?? this.gallery,
+    );
+  }
 }
 
 class Property {
