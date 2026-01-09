@@ -9,7 +9,6 @@ import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
-import 'package:housely/core/utils/file_utils.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/validator/form_validator.dart';
 import 'package:housely/core/widgets/custom_button.dart';
@@ -18,6 +17,7 @@ import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/location/domain/entities/location.dart';
 import 'package:housely/features/property/domain/entities/property_owner.dart';
+import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
@@ -29,8 +29,8 @@ import 'package:housely/injection_container.dart';
 
 @RoutePage()
 class CreateNewPropertyPage extends StatefulWidget {
-  const CreateNewPropertyPage({super.key});
-
+  const CreateNewPropertyPage({super.key, this.property});
+  final Property? property;
   @override
   State<CreateNewPropertyPage> createState() => _CreateNewPropertyPageState();
 }
@@ -47,6 +47,28 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   final _yearController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   Location? location;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.property != null) {
+      _titleController.text = widget.property!.name;
+      _descController.text = widget.property!.description;
+      _yearController.text = widget.property!.specs.builtYear;
+      _roomController.text = widget.property!.specs.bedrooms.toString();
+      _tubController.text = widget.property!.specs.bathrooms.toString();
+      _typeController.text = widget.property!.type.name.capitalize;
+      _statusController.text = widget.property!.status.name.capitalize;
+      _priceController.text = widget.property!.price.amount.toString();
+      _areaController.text = widget.property!.specs.area.toString();
+      location = Location(
+        latitude: widget.property!.location.latitude,
+        longitude: widget.property!.location.longitude,
+        address: widget.property!.location.address,
+      );
+    }
+  }
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -92,8 +114,49 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
         return;
       } else if (state.owner == null) {
         _showCompleteProfileDialog(context);
+      } else if (widget.property != null) {
+        updateProperty(context);
       }
       addProperty(context, state.owner!);
+    }
+  }
+
+  // update existed property details
+  void updateProperty(BuildContext context) {
+    final formState = context.read<PropertyFormCubit>().state;
+    final File? coverImg = formState.image;
+    final List<File> newUpdatedGalleryImages = formState.imageList;
+    if (widget.property != null) {
+      context.read<PropertyCubit>().updatePropertyDetails(
+        widget.property!.copyWith(
+          name: _titleController.text.trim(),
+          description: _descController.text.trim(),
+          location: PropertyLocation(
+            address: location!.address!,
+            latitude: location!.latitude,
+            longitude: location!.longitude,
+          ),
+          price: PropertyPrice(
+            amount: double.parse(_priceController.text.trim()),
+          ),
+          status: PropertyStatus.values.byName(
+            _statusController.text.trim().toLowerCase(),
+          ),
+          type: PropertyType.values.byName(
+            _typeController.text.trim().toLowerCase(),
+          ),
+          specs: PropertySpecs(
+            area: double.parse(_areaController.text.trim()),
+            builtYear: _yearController.text.trim(),
+            bedrooms: int.parse(_roomController.text.trim()),
+            bathrooms: int.parse(_tubController.text.trim()),
+          ),
+          facilities: formState.facilities,
+          updatedAt: DateTime.now(),
+        ),
+        coverImage: coverImg,
+        galleryImages: newUpdatedGalleryImages,
+      );
     }
   }
 
@@ -165,6 +228,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
 
   @override
   Widget build(BuildContext context) {
+    final property = widget.property;
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => PropertyFormCubit()),
@@ -200,6 +264,28 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                       "Successfully created new property",
                       showTop: true,
                     );
+                    // Trigger a refresh of the list before going back
+                    context.read<PropertyBloc>().add(GetAllProperties());
+
+                    context.router.maybePop();
+                  } else if (state is CoverImageUploaded) {
+                    SnackbarHelper.showSuccess(
+                      context,
+                      "Cover image uploaded",
+                      showTop: true,
+                    );
+                  } else if (state is GalleryImagesUploaded) {
+                    SnackbarHelper.showSuccess(
+                      context,
+                      "Gallery images uploaded",
+                      showTop: true,
+                    );
+                  } else if (state is PropertyUpdated) {
+                    SnackbarHelper.showSuccess(
+                      context,
+                      "Property details updated successfully",
+                      showTop: true,
+                    );
                     context.pop();
                   }
                 },
@@ -222,7 +308,13 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
               ),
             ],
             child: Scaffold(
-              appBar: AppBar(title: Text('Add new property')),
+              appBar: AppBar(
+                title: Text(
+                  property != null
+                      ? "${TextConstants.update} property"
+                      : '${TextConstants.add} new property',
+                ),
+              ),
               body: Padding(
                 padding: ResponsiveDimensions.paddingSymmetric(
                   context,
@@ -362,30 +454,26 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                         ),
 
                         // upload profile image
-                        UploadContainer(labelText: "Property Cover Image"),
+                        UploadContainer(
+                          labelText: "Property Cover Image",
+                          coverUrl: property?.media.coverImage['url'],
+                          imageUrls: [],
+                        ),
 
                         // upload property images
-                        BlocSelector<
-                          PropertyFormCubit,
-                          PropertyFormState,
-                          List<File>
-                        >(
-                          selector: (state) {
-                            return state.imageList;
-                          },
-                          builder: (context, state) {
-                            final usedMb = FileUtils.getTotalSizeInMB(state);
-                            return UploadContainer(
-                              labelText:
-                                  "Property Images (${usedMb.toStringAsFixed(2)} mb)",
-                              hasMany: true,
-                            );
-                          },
+                        UploadContainer(
+                          labelText: "Property Images",
+                          hasMany: true,
+                          imageUrls: property != null
+                              ? property.media.gallery['images']
+                              : [],
+                          property: property,
                         ),
 
                         // location
-                        GestureDetector(
-                          onTap: () async {
+                        LocationCard(
+                          address: property?.location.address,
+                          navigateTo: () async {
                             location = await context.router.push(
                               MapPickerRoute(isOwner: true),
                             );
@@ -395,7 +483,6 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                               );
                             }
                           },
-                          child: LocationCard(),
                         ),
 
                         // property status
@@ -411,7 +498,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                               }
                               return null;
                             },
-                            suffixIcon:
+                            prefixIcon:
                                 BlocSelector<
                                   PropertyFormCubit,
                                   PropertyFormState,
@@ -449,7 +536,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
 
                         // facility section
                         Label(label: "Facilites"),
-                        FacilityList(),
+                        FacilityList(existedFacilites: property?.facilities),
                         SizedBox(
                           height: ResponsiveDimensions.getSize(context, 4),
                         ),
@@ -457,8 +544,12 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                           builder: (context, state) {
                             bool isLoading = state is PropertyLoading;
                             return CustomButton(
-                              onTap: () => _validateAndProfile(context),
-                              buttonLabel: TextConstants.addProperty,
+                              onTap: () => property != null
+                                  ? updateProperty(context)
+                                  : _validateAndProfile(context),
+                              buttonLabel: widget.property != null
+                                  ? "Update Property"
+                                  : TextConstants.addProperty,
                               isLoading: isLoading,
                             );
                           },

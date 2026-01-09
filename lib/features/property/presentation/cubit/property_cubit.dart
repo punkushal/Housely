@@ -187,6 +187,7 @@ class PropertyCubit extends Cubit<PropertyState> {
 
     // Upload new cover image if provided
     if (coverImage != null) {
+      await deleteImage(fileId: property.media.coverImage['id']);
       updatedCoverUrl = await _uploadImage(
         image: coverImage,
         folderType: "cover",
