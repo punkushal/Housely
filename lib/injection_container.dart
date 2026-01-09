@@ -53,6 +53,7 @@ import 'package:housely/features/property/domain/usecases/upload_property_images
 import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
@@ -203,6 +204,7 @@ Future<void> initializeDependencies() async {
       updateProperty: sl(),
     ),
   );
+  sl.registerFactory(() => PropertyFormCubit());
   sl.registerLazySingleton(() => PropertyBloc(sl()));
 
   sl.registerFactory(
