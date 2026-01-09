@@ -177,54 +177,62 @@ class PropertyCubit extends Cubit<PropertyState> {
 
   // update property details
   Future<void> updatePropertyDetails(
-    Property property, {
+    Property updatedProperty, {
+    required List<Map<String, dynamic>> originalGallery,
     File? coverImage,
     List<File>? galleryImages,
   }) async {
     emit(PropertyLoading());
-    Map<String, String>? updatedCoverUrl;
-    List<dynamic> combinedGalleryList = [];
 
-    // Upload new cover image if provided
-    if (coverImage != null) {
-      await deleteImage(fileId: property.media.coverImage['id']);
-      updatedCoverUrl = await _uploadImage(
-        image: coverImage,
-        folderType: "cover",
-      );
-      if (updatedCoverUrl == null) return;
-    }
+    try {
+      //Finding images removed in UI and delete from Appwrite
+      final remainingIds = (updatedProperty.media.gallery['images'] as List)
+          .map((img) => img['id'])
+          .toSet();
 
-    // handling gallery images update
-    // starting with existing images from the property
-    if (property.media.gallery['images'] != null) {
-      combinedGalleryList.addAll(property.media.gallery['images']);
-    }
-
-    //if new files exist, then upload them and append to list
-    if (galleryImages != null && galleryImages.isNotEmpty) {
-      final newUploadedMap = await _uploadImages(images: galleryImages);
-      if (newUploadedMap == null) return; // upload failed
-
-      if (newUploadedMap['images'] != null) {
-        combinedGalleryList.addAll(newUploadedMap['images']);
+      for (var original in originalGallery) {
+        if (!remainingIds.contains(original['id'])) {
+          // If the original ID is NOT in the remaining list, delete it
+          await deleteImageFile(DeleteParam(fileId: original['id']));
+        }
       }
+
+      // UPLOAD NEW COVER (if picked)
+      Map<String, String>? updatedCoverUrl;
+      if (coverImage != null) {
+        updatedCoverUrl = await _uploadImage(
+          image: coverImage,
+          folderType: "cover",
+        );
+      }
+
+      //UPLOAD NEW GALLERY (if picked) and MERGE
+      List<dynamic> combinedGallery = List.from(
+        updatedProperty.media.gallery['images'],
+      );
+      if (galleryImages != null && galleryImages.isNotEmpty) {
+        final newUploads = await _uploadImages(images: galleryImages);
+        if (newUploads != null && newUploads['images'] != null) {
+          combinedGallery.addAll(newUploads['images']);
+        }
+      }
+
+      final finalProperty = updatedProperty.copyWith(
+        media: updatedProperty.media.copyWith(
+          coverImage: updatedCoverUrl ?? updatedProperty.media.coverImage,
+          gallery: {'images': combinedGallery},
+        ),
+      );
+
+      //UPDATE FIRESTORE
+      final result = await updateProperty(UpdateParams(finalProperty));
+
+      result.fold(
+        (failure) => emit(PropertyError(failure.message)),
+        (_) => emit(PropertyUpdated()),
+      );
+    } catch (e) {
+      emit(PropertyError(e.toString()));
     }
-
-    // Update property with new image URLs if they were uploaded
-    final updatedProperty = property.copyWith(
-      media: PropertyMedia(
-        coverImage: updatedCoverUrl ?? property.media.coverImage,
-        gallery: {'images': combinedGalleryList},
-      ),
-    );
-
-    final param = UpdateParams(updatedProperty);
-    final result = await updateProperty(param);
-
-    result.fold(
-      (failure) => emit(PropertyError(failure.message)),
-      (_) => emit(PropertyUpdated()),
-    );
   }
 }

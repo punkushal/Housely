@@ -51,22 +51,25 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.property != null) {
-      _titleController.text = widget.property!.name;
-      _descController.text = widget.property!.description;
-      _yearController.text = widget.property!.specs.builtYear;
-      _roomController.text = widget.property!.specs.bedrooms.toString();
-      _tubController.text = widget.property!.specs.bathrooms.toString();
-      _typeController.text = widget.property!.type.name.capitalize;
-      _statusController.text = widget.property!.status.name.capitalize;
-      _priceController.text = widget.property!.price.amount.toString();
-      _areaController.text = widget.property!.specs.area.toString();
-      location = Location(
-        latitude: widget.property!.location.latitude,
-        longitude: widget.property!.location.longitude,
-        address: widget.property!.location.address,
-      );
-    }
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (widget.property != null) {
+        context.read<PropertyFormCubit>().setInitialValues(widget.property!);
+        _titleController.text = widget.property!.name;
+        _descController.text = widget.property!.description;
+        _yearController.text = widget.property!.specs.builtYear;
+        _roomController.text = widget.property!.specs.bedrooms.toString();
+        _tubController.text = widget.property!.specs.bathrooms.toString();
+        _typeController.text = widget.property!.type.name.capitalize;
+        _statusController.text = widget.property!.status.name.capitalize;
+        _priceController.text = widget.property!.price.amount.toString();
+        _areaController.text = widget.property!.specs.area.toString();
+        location = Location(
+          latitude: widget.property!.location.latitude,
+          longitude: widget.property!.location.longitude,
+          address: widget.property!.location.address,
+        );
+      }
+    });
   }
 
   @override
@@ -84,7 +87,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   }
 
   // validation and profile check
-  void _validateAndProfile(BuildContext context) {
+  Future<void> _validateAndProfile(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       final formState = context.read<PropertyFormCubit>().state;
       if (formState.image == null) {
@@ -115,19 +118,20 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
       } else if (state.owner == null) {
         _showCompleteProfileDialog(context);
       } else if (widget.property != null) {
-        updateProperty(context);
+        await updateProperty(context);
+        return;
       }
-      addProperty(context, state.owner!);
+      await addProperty(context, state.owner!);
     }
   }
 
   // update existed property details
-  void updateProperty(BuildContext context) {
+  Future<void> updateProperty(BuildContext context) async {
     final formState = context.read<PropertyFormCubit>().state;
     final File? coverImg = formState.image;
     final List<File> newUpdatedGalleryImages = formState.imageList;
     if (widget.property != null) {
-      context.read<PropertyCubit>().updatePropertyDetails(
+      await context.read<PropertyCubit>().updatePropertyDetails(
         widget.property!.copyWith(
           name: _titleController.text.trim(),
           description: _descController.text.trim(),
@@ -152,15 +156,23 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
             bathrooms: int.parse(_tubController.text.trim()),
           ),
           facilities: formState.facilities,
+          media: widget.property!.media.copyWith(
+            // Pass the filtered list currently held in the FormState
+            gallery: {'images': formState.existingNetworkImages},
+          ),
           updatedAt: DateTime.now(),
         ),
         coverImage: coverImg,
         galleryImages: newUpdatedGalleryImages,
+        // Sending the real database original list for cleanup comparison
+        originalGallery: List<Map<String, dynamic>>.from(
+          widget.property!.media.gallery['images'],
+        ),
       );
     }
   }
 
-  void addProperty(BuildContext context, PropertyOwner owner) {
+  Future<void> addProperty(BuildContext context, PropertyOwner owner) async {
     final formState = context.read<PropertyFormCubit>().state;
     final property = Property(
       id: "",
@@ -191,7 +203,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
       updatedAt: DateTime.now(),
     );
 
-    context.read<PropertyCubit>().addProperty(
+    await context.read<PropertyCubit>().addProperty(
       property: property,
       image: formState.image!,
       images: formState.imageList,
@@ -230,10 +242,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   Widget build(BuildContext context) {
     final property = widget.property;
     return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => PropertyFormCubit()),
-        BlocProvider(create: (context) => sl<PropertyCubit>()),
-      ],
+      providers: [BlocProvider(create: (context) => sl<PropertyCubit>())],
       child: Builder(
         builder: (context) {
           return MultiBlocListener(
@@ -259,15 +268,11 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                       showTop: true,
                     );
                   } else if (state is PropertyCreated) {
-                    SnackbarHelper.showSuccess(
-                      context,
-                      "Successfully created new property",
-                      showTop: true,
-                    );
+                    context.read<PropertyFormCubit>().resetForm();
                     // Trigger a refresh of the list before going back
                     context.read<PropertyBloc>().add(GetAllProperties());
 
-                    context.router.maybePop();
+                    context.router.pop(true);
                   } else if (state is CoverImageUploaded) {
                     SnackbarHelper.showSuccess(
                       context,
@@ -286,7 +291,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                       "Property details updated successfully",
                       showTop: true,
                     );
-                    context.pop();
+                    context.pop(true);
                   }
                 },
               ),
@@ -307,258 +312,267 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                 },
               ),
             ],
-            child: Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  property != null
-                      ? "${TextConstants.update} property"
-                      : '${TextConstants.add} new property',
+            child: PopScope(
+              canPop: context.read<PropertyCubit>().state is! PropertyLoading,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: Text(
+                    property != null
+                        ? "${TextConstants.update} property"
+                        : '${TextConstants.add} new property',
+                  ),
                 ),
-              ),
-              body: Padding(
-                padding: ResponsiveDimensions.paddingSymmetric(
-                  context,
-                  horizontal: 24,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      spacing: ResponsiveDimensions.getSize(context, 12),
-                      children: [
-                        // title input
-                        CustomLabelTextField(
-                          labelText: "Title",
-                          customTextField: CustomTextField(
-                            controller: _titleController,
-                            hintText: "Property Title",
-                            validator: (value) => FormValidators.title(value),
+                body: Padding(
+                  padding: ResponsiveDimensions.paddingSymmetric(
+                    context,
+                    horizontal: 24,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: .start,
+                        spacing: ResponsiveDimensions.getSize(context, 12),
+                        children: [
+                          // title input
+                          CustomLabelTextField(
+                            labelText: "Title",
+                            customTextField: CustomTextField(
+                              controller: _titleController,
+                              hintText: "Property Title",
+                              validator: (value) => FormValidators.title(value),
+                            ),
                           ),
-                        ),
 
-                        // description input
-                        CustomLabelTextField(
-                          labelText: "Description",
-                          customTextField: CustomTextField(
-                            controller: _descController,
-                            hintText: "Property Description",
-                            maxLines: 4,
-                            validator: (value) =>
-                                FormValidators.description(value),
+                          // description input
+                          CustomLabelTextField(
+                            labelText: "Description",
+                            customTextField: CustomTextField(
+                              controller: _descController,
+                              hintText: "Property Description",
+                              maxLines: 4,
+                              validator: (value) =>
+                                  FormValidators.description(value),
+                            ),
                           ),
-                        ),
 
-                        // price input
-                        CustomLabelTextField(
-                          labelText: "Price",
-                          customTextField: CustomTextField(
-                            controller: _priceController,
-                            hintText: "Price",
-                            keyboardType: .number,
-                            validator: (value) => FormValidators.price(value),
+                          // price input
+                          CustomLabelTextField(
+                            labelText: "Price",
+                            customTextField: CustomTextField(
+                              controller: _priceController,
+                              hintText: "Price",
+                              keyboardType: .number,
+                              validator: (value) => FormValidators.price(value),
+                            ),
                           ),
-                        ),
 
-                        // property type
-                        BlocSelector<
-                          PropertyFormCubit,
-                          PropertyFormState,
-                          String?
-                        >(
-                          selector: (state) {
-                            return state.propertyType;
-                          },
-                          builder: (context, state) {
-                            return CustomLabelTextField(
-                              labelText: "Property Type",
-                              customTextField: CustomTextField(
-                                readOnly: true,
-                                controller: _typeController,
-                                hintText: "Select Property Type",
-                                suffixIcon: DropdownButton(
-                                  // to hide the underline
-                                  underline: SizedBox.shrink(),
-                                  items: PropertyType.values
-                                      .map(
-                                        (type) => DropdownMenuItem(
-                                          value: type,
-                                          child: Text(type.name.capitalize),
-                                        ),
-                                      )
-                                      .toList(),
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      context
-                                          .read<PropertyFormCubit>()
-                                          .changePropertyType(value.name);
-                                      _typeController.text =
-                                          value.name.capitalize;
-                                    }
-                                  },
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return "Please select property type";
-                                  }
-                                  return null;
-                                },
-                              ),
-                            );
-                          },
-                        ),
-
-                        // bedrooms input
-                        CustomLabelTextField(
-                          labelText: "Bedrooms",
-                          customTextField: CustomTextField(
-                            controller: _roomController,
-                            hintText: "Number of Bedrooms",
-                            keyboardType: .number,
-                          ),
-                        ),
-
-                        // bathtubs input
-                        CustomLabelTextField(
-                          labelText: "Bathtubs",
-                          customTextField: CustomTextField(
-                            controller: _tubController,
-                            hintText: "Number of Bathtubs",
-                            keyboardType: .number,
-                            validator: (value) =>
-                                FormValidators.rooms(value, label: "Bathtubs"),
-                          ),
-                        ),
-
-                        // area input
-                        CustomLabelTextField(
-                          labelText: "Area (sq ft)",
-                          customTextField: CustomTextField(
-                            controller: _areaController,
-                            hintText: "Area in square feet",
-                            keyboardType: .number,
-                            validator: (value) => FormValidators.area(value),
-                          ),
-                        ),
-
-                        // build year input
-                        CustomLabelTextField(
-                          labelText: "Build Year",
-                          customTextField: CustomTextField(
-                            controller: _yearController,
-                            hintText: "e.g 2020",
-                            keyboardType: .number,
-                            validator: (value) =>
-                                FormValidators.buildYear(value),
-                          ),
-                        ),
-
-                        // upload profile image
-                        UploadContainer(
-                          labelText: "Property Cover Image",
-                          coverUrl: property?.media.coverImage['url'],
-                          imageUrls: [],
-                        ),
-
-                        // upload property images
-                        UploadContainer(
-                          labelText: "Property Images",
-                          hasMany: true,
-                          imageUrls: property != null
-                              ? property.media.gallery['images']
-                              : [],
-                          property: property,
-                        ),
-
-                        // location
-                        LocationCard(
-                          address: property?.location.address,
-                          navigateTo: () async {
-                            location = await context.router.push(
-                              MapPickerRoute(isOwner: true),
-                            );
-                            if (context.mounted && location != null) {
-                              context.read<PropertyFormCubit>().setAddress(
-                                location!.address!,
-                              );
-                            }
-                          },
-                        ),
-
-                        // property status
-                        CustomLabelTextField(
-                          labelText: "Property Status",
-                          customTextField: CustomTextField(
-                            controller: _statusController,
-                            readOnly: true,
-                            hintText: "Select Property Status",
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please select property status";
-                              }
-                              return null;
+                          // property type
+                          BlocSelector<
+                            PropertyFormCubit,
+                            PropertyFormState,
+                            String?
+                          >(
+                            selector: (state) {
+                              return state.propertyType;
                             },
-                            prefixIcon:
-                                BlocSelector<
-                                  PropertyFormCubit,
-                                  PropertyFormState,
-                                  String?
-                                >(
-                                  selector: (state) {
-                                    return state.propertyType;
-                                  },
-                                  builder: (context, state) {
-                                    return DropdownButton(
-                                      // to hide the underline
-                                      underline: SizedBox.shrink(),
-                                      items: PropertyStatus.values
-                                          .map(
-                                            (type) => DropdownMenuItem(
-                                              value: type,
-                                              child: Text(type.name.capitalize),
-                                            ),
-                                          )
-                                          .toList(),
-                                      onChanged: (value) {
-                                        if (value != null) {
-                                          context
-                                              .read<PropertyFormCubit>()
-                                              .changePropertyStatus(value.name);
-                                          _statusController.text =
-                                              value.name.capitalize;
-                                        }
-                                      },
-                                    );
+                            builder: (context, state) {
+                              return CustomLabelTextField(
+                                labelText: "Property Type",
+                                customTextField: CustomTextField(
+                                  readOnly: true,
+                                  controller: _typeController,
+                                  hintText: "Select Property Type",
+                                  suffixIcon: DropdownButton(
+                                    // to hide the underline
+                                    underline: SizedBox.shrink(),
+                                    items: PropertyType.values
+                                        .map(
+                                          (type) => DropdownMenuItem(
+                                            value: type,
+                                            child: Text(type.name.capitalize),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        context
+                                            .read<PropertyFormCubit>()
+                                            .changePropertyType(value.name);
+                                        _typeController.text =
+                                            value.name.capitalize;
+                                      }
+                                    },
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return "Please select property type";
+                                    }
+                                    return null;
                                   },
                                 ),
+                              );
+                            },
                           ),
-                        ),
 
-                        // facility section
-                        Label(label: "Facilites"),
-                        FacilityList(existedFacilites: property?.facilities),
-                        SizedBox(
-                          height: ResponsiveDimensions.getSize(context, 4),
-                        ),
-                        BlocBuilder<PropertyCubit, PropertyState>(
-                          builder: (context, state) {
-                            bool isLoading = state is PropertyLoading;
-                            return CustomButton(
-                              onTap: () => property != null
-                                  ? updateProperty(context)
-                                  : _validateAndProfile(context),
-                              buttonLabel: widget.property != null
-                                  ? "Update Property"
-                                  : TextConstants.addProperty,
-                              isLoading: isLoading,
-                            );
-                          },
-                        ),
+                          // bedrooms input
+                          CustomLabelTextField(
+                            labelText: "Bedrooms",
+                            customTextField: CustomTextField(
+                              controller: _roomController,
+                              hintText: "Number of Bedrooms",
+                              keyboardType: .number,
+                            ),
+                          ),
 
-                        SizedBox(
-                          height: ResponsiveDimensions.getSize(context, 6),
-                        ),
-                      ],
+                          // bathtubs input
+                          CustomLabelTextField(
+                            labelText: "Bathtubs",
+                            customTextField: CustomTextField(
+                              controller: _tubController,
+                              hintText: "Number of Bathtubs",
+                              keyboardType: .number,
+                              validator: (value) => FormValidators.rooms(
+                                value,
+                                label: "Bathtubs",
+                              ),
+                            ),
+                          ),
+
+                          // area input
+                          CustomLabelTextField(
+                            labelText: "Area (sq ft)",
+                            customTextField: CustomTextField(
+                              controller: _areaController,
+                              hintText: "Area in square feet",
+                              keyboardType: .number,
+                              validator: (value) => FormValidators.area(value),
+                            ),
+                          ),
+
+                          // build year input
+                          CustomLabelTextField(
+                            labelText: "Build Year",
+                            customTextField: CustomTextField(
+                              controller: _yearController,
+                              hintText: "e.g 2020",
+                              keyboardType: .number,
+                              validator: (value) =>
+                                  FormValidators.buildYear(value),
+                            ),
+                          ),
+
+                          // upload profile image
+                          UploadContainer(
+                            labelText: "Property Cover Image",
+                            coverUrl: property?.media.coverImage['url'],
+                            imageUrls: [],
+                          ),
+
+                          // upload property images
+                          UploadContainer(
+                            labelText: "Property Images",
+                            hasMany: true,
+                            imageUrls: property != null
+                                ? property.media.gallery['images']
+                                : [],
+                            property: property,
+                          ),
+
+                          // location
+                          LocationCard(
+                            address: property?.location.address,
+                            navigateTo: () async {
+                              location = await context.router.push(
+                                MapPickerRoute(isOwner: true),
+                              );
+                              if (context.mounted && location != null) {
+                                context.read<PropertyFormCubit>().setAddress(
+                                  location!.address!,
+                                );
+                              }
+                            },
+                          ),
+
+                          // property status
+                          CustomLabelTextField(
+                            labelText: "Property Status",
+                            customTextField: CustomTextField(
+                              controller: _statusController,
+                              readOnly: true,
+                              hintText: "Select Property Status",
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Please select property status";
+                                }
+                                return null;
+                              },
+                              prefixIcon:
+                                  BlocSelector<
+                                    PropertyFormCubit,
+                                    PropertyFormState,
+                                    String?
+                                  >(
+                                    selector: (state) {
+                                      return state.propertyType;
+                                    },
+                                    builder: (context, state) {
+                                      return DropdownButton(
+                                        // to hide the underline
+                                        underline: SizedBox.shrink(),
+                                        items: PropertyStatus.values
+                                            .map(
+                                              (type) => DropdownMenuItem(
+                                                value: type,
+                                                child: Text(
+                                                  type.name.capitalize,
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                        onChanged: (value) {
+                                          if (value != null) {
+                                            context
+                                                .read<PropertyFormCubit>()
+                                                .changePropertyStatus(
+                                                  value.name,
+                                                );
+                                            _statusController.text =
+                                                value.name.capitalize;
+                                          }
+                                        },
+                                      );
+                                    },
+                                  ),
+                            ),
+                          ),
+
+                          // facility section
+                          Label(label: "Facilites"),
+                          FacilityList(existedFacilites: property?.facilities),
+                          SizedBox(
+                            height: ResponsiveDimensions.getSize(context, 4),
+                          ),
+                          BlocBuilder<PropertyCubit, PropertyState>(
+                            builder: (context, state) {
+                              bool isLoading = state is PropertyLoading;
+                              return CustomButton(
+                                onTap: () => property != null
+                                    ? updateProperty(context)
+                                    : _validateAndProfile(context),
+                                buttonLabel: widget.property != null
+                                    ? "Update Property"
+                                    : TextConstants.addProperty,
+                                isLoading: isLoading,
+                              );
+                            },
+                          ),
+
+                          SizedBox(
+                            height: ResponsiveDimensions.getSize(context, 6),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

@@ -83,9 +83,8 @@ class ImagesGridView extends StatelessWidget {
                   onTap: () {
                     if (isNetworkImage) {
                       if (property != null) {
-                        context.read<PropertyCubit>().deleteGalleryImage(
-                          fileId: networkImages[fileIndex]['id'],
-                          property: property!,
+                        context.read<PropertyFormCubit>().removeNetworkImage(
+                          fileIndex,
                         );
                       }
                     } else {
