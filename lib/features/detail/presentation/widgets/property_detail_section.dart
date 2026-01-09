@@ -87,12 +87,16 @@ class PropertyDetailSection extends StatelessWidget {
               spacing: ResponsiveDimensions.getHeight(context, 4),
               children: [
                 // property title
-                Text(
-                  property.name.capitalize,
-                  style: AppTextStyle.bodySemiBold(
-                    context,
-                    fontSize: 20,
-                    lineHeight: 26,
+                SizedBox(
+                  width: ResponsiveDimensions.getSize(context, 180),
+                  child: Text(
+                    property.name.capitalize,
+                    overflow: .ellipsis,
+                    style: AppTextStyle.bodySemiBold(
+                      context,
+                      fontSize: 20,
+                      lineHeight: 26,
+                    ),
                   ),
                 ),
 

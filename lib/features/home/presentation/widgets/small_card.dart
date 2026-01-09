@@ -33,6 +33,9 @@ class SmallCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMonth =
+        property.type.name.toLowerCase() ==
+        PropertyType.house.name.toLowerCase();
     return GestureDetector(
       onTap: navigateTo,
       child: Container(
@@ -55,48 +58,53 @@ class SmallCard extends StatelessWidget {
             ),
 
             // Property detail section
-            Column(
-              crossAxisAlignment: .start,
-              mainAxisAlignment: .end,
-              spacing: ResponsiveDimensions.getHeight(context, 5),
-              children: [
-                // Property name
-                Text(
-                  property.name.capitalize,
-                  style: AppTextStyle.bodySemiBold(context),
-                ),
-
-                // Property location
-                Row(
-                  spacing: ResponsiveDimensions.getSize(context, 4),
-                  children: [
-                    SvgPicture.asset(ImageConstant.locationIcon),
-                    SizedBox(
-                      width: ResponsiveDimensions.getSize(context, 112),
-                      child: Text(
-                        property.location.address,
-                        style: AppTextStyle.bodyRegular(
-                          context,
-                          fontSize: 10,
-                          lineHeight: 14,
-                          color: AppColors.textHint,
-                        ),
-                        overflow: .ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 5)),
-                // Property price
-                Text(
-                  "\$${property.price.amount}/night",
-                  style: AppTextStyle.labelSemiBold(
-                    context,
-                    fontSize: 10,
-                    lineHeight: 14,
+            SizedBox(
+              width: ResponsiveDimensions.getSize(context, 152),
+              child: Column(
+                crossAxisAlignment: .start,
+                mainAxisAlignment: .end,
+                spacing: ResponsiveDimensions.getHeight(context, 5),
+                children: [
+                  // Property name
+                  Text(
+                    property.name.capitalize,
+                    overflow: .ellipsis,
+                    style: AppTextStyle.bodySemiBold(context),
                   ),
-                ),
-              ],
+
+                  // Property location
+                  Row(
+                    mainAxisSize: .min,
+                    spacing: ResponsiveDimensions.getSize(context, 4),
+                    children: [
+                      SvgPicture.asset(ImageConstant.locationIcon),
+                      SizedBox(
+                        width: ResponsiveDimensions.getSize(context, 112),
+                        child: Text(
+                          property.location.address,
+                          style: AppTextStyle.bodyRegular(
+                            context,
+                            fontSize: 10,
+                            lineHeight: 14,
+                            color: AppColors.textHint,
+                          ),
+                          overflow: .ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: ResponsiveDimensions.getHeight(context, 5)),
+                  // Property price
+                  Text(
+                    "\$${property.price.amount}/${isMonth ? "month" : "night"}",
+                    style: AppTextStyle.labelSemiBold(
+                      context,
+                      fontSize: 10,
+                      lineHeight: 14,
+                    ),
+                  ),
+                ],
+              ),
             ),
             Spacer(),
             // favorite + rating section
