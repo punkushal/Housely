@@ -2,11 +2,40 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/app_limits.dart';
 import 'package:housely/core/utils/file_utils.dart';
+import 'package:housely/features/property/domain/entities/property.dart';
 
 part 'property_form_state.dart';
 
 class PropertyFormCubit extends Cubit<PropertyFormState> {
   PropertyFormCubit() : super(PropertyFormState());
+
+  // Initialize form with existing property data
+  void setInitialValues(Property property) {
+    emit(
+      state.copyWith(
+        propertyType: property.type.name,
+        propertyStatus: property.status.name,
+        address: property.location.address,
+        facilities: property.facilities,
+        existingNetworkImages: List<Map<String, dynamic>>.from(
+          property.media.gallery['images'] ?? [],
+        ),
+      ),
+    );
+  }
+
+  // Removing network image from current session (UI only)
+  void removeNetworkImage(int index) {
+    final updatedList = List<Map<String, dynamic>>.from(
+      state.existingNetworkImages,
+    )..removeAt(index);
+    emit(state.copyWith(existingNetworkImages: updatedList));
+  }
+
+  // Reset form when finished
+  void resetForm() {
+    emit(PropertyFormState());
+  }
 
   void changePropertyType(String value) {
     emit(state.copyWith(propertyType: value));
