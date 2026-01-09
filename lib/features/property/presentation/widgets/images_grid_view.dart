@@ -13,19 +13,23 @@ class ImagesGridView extends StatelessWidget {
   const ImagesGridView({
     super.key,
     required this.localImages,
-    required this.networkImages,
+    // required this.networkImages,
     this.property,
   });
   final List<File> localImages;
 
   /// network image urls for other properties
-  final List<dynamic> networkImages;
+  // final List<dynamic> networkImages;
 
   /// to update the gallery images from it
   final Property? property;
 
   @override
   Widget build(BuildContext context) {
+    final networkImages = context
+        .read<PropertyFormCubit>()
+        .state
+        .existingNetworkImages;
     final totalCount = networkImages.length + localImages.length;
     return BlocListener<PropertyCubit, PropertyState>(
       listener: (context, state) {
@@ -42,6 +46,7 @@ class ImagesGridView extends StatelessWidget {
       child: GridView.builder(
         itemCount: totalCount,
         shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           crossAxisSpacing: 8,

@@ -19,15 +19,11 @@ class UploadContainer extends StatelessWidget {
     required this.labelText,
     this.hasMany = false,
     this.coverUrl,
-    required this.imageUrls,
     this.property,
   });
 
   /// existed cover image network url
   final String? coverUrl;
-
-  /// other property images url
-  final List<dynamic> imageUrls;
 
   /// Label text
   final String labelText;
@@ -123,10 +119,14 @@ class UploadContainer extends StatelessWidget {
                         ),
                       );
                     } else if (hasMany &&
-                        (state.imageList.isNotEmpty || imageUrls.isNotEmpty)) {
+                        (state.imageList.isNotEmpty ||
+                            context
+                                .read<PropertyFormCubit>()
+                                .state
+                                .existingNetworkImages
+                                .isNotEmpty)) {
                       return ImagesGridView(
                         localImages: state.imageList,
-                        networkImages: imageUrls,
                         property: property,
                       );
                     }

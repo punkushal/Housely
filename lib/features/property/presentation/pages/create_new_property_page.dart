@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
+import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/extensions/string_extension.dart';
@@ -72,8 +73,13 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
     });
   }
 
+  void reset() {
+    location = null;
+  }
+
   @override
   void dispose() {
+    reset();
     _titleController.dispose();
     _descController.dispose();
     _tubController.dispose();
@@ -377,38 +383,34 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                               return state.propertyType;
                             },
                             builder: (context, state) {
-                              return CustomLabelTextField(
-                                labelText: "Property Type",
-                                customTextField: CustomTextField(
-                                  readOnly: true,
-                                  controller: _typeController,
-                                  hintText: "Select Property Type",
-                                  suffixIcon: DropdownButton(
-                                    // to hide the underline
-                                    underline: SizedBox.shrink(),
-                                    items: PropertyType.values
-                                        .map(
-                                          (type) => DropdownMenuItem(
-                                            value: type,
-                                            child: Text(type.name.capitalize),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        context
-                                            .read<PropertyFormCubit>()
-                                            .changePropertyType(value.name);
-                                        _typeController.text =
-                                            value.name.capitalize;
-                                      }
-                                    },
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return "Please select property type";
+                              return Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: AppColors.border),
+                                  borderRadius:
+                                      ResponsiveDimensions.borderRadiusMedium(
+                                        context,
+                                      ),
+                                ),
+                                child: DropdownButton(
+                                  // to hide the underline
+                                  underline: SizedBox.shrink(),
+                                  items: PropertyType.values
+                                      .map(
+                                        (type) => DropdownMenuItem(
+                                          value: type,
+                                          child: Text(type.name.capitalize),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      context
+                                          .read<PropertyFormCubit>()
+                                          .changePropertyType(value.name);
+                                      _typeController.text =
+                                          value.name.capitalize;
                                     }
-                                    return null;
                                   },
                                 ),
                               );
@@ -466,16 +468,12 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                           UploadContainer(
                             labelText: "Property Cover Image",
                             coverUrl: property?.media.coverImage['url'],
-                            imageUrls: [],
                           ),
 
                           // upload property images
                           UploadContainer(
                             labelText: "Property Images",
                             hasMany: true,
-                            imageUrls: property != null
-                                ? property.media.gallery['images']
-                                : [],
                             property: property,
                           ),
 
@@ -560,7 +558,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                                 onTap: () => property != null
                                     ? updateProperty(context)
                                     : _validateAndProfile(context),
-                                buttonLabel: widget.property != null
+                                buttonLabel: property != null
                                     ? "Update Property"
                                     : TextConstants.addProperty,
                                 isLoading: isLoading,
