@@ -3,7 +3,7 @@ import 'package:housely/features/property/domain/entities/property_owner.dart';
 
 class PropertyModel extends Property {
   PropertyModel({
-    required super.id,
+    super.id,
     required super.name,
     required super.description,
     required super.owner,
@@ -19,9 +19,9 @@ class PropertyModel extends Property {
   });
 
   // FROM FIRESTORE
-  factory PropertyModel.fromJson(Map<String, dynamic> json, String documentId) {
+  factory PropertyModel.fromJson(Map<String, dynamic> json) {
     return PropertyModel(
-      id: documentId,
+      id: json['id'],
       name: json['name'],
       description: json['description'],
       status: PropertyStatus.values.byName(json['status']),
@@ -85,5 +85,38 @@ class PropertyModel extends Property {
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
+  }
+
+  @override
+  PropertyModel copyWith({
+    String? id,
+    String? name,
+    String? description,
+    PropertyOwner? owner,
+    PropertyLocation? location,
+    PropertyPrice? price,
+    PropertyStatus? status,
+    PropertyType? type,
+    PropertySpecs? specs,
+    PropertyMedia? media,
+    List<String>? facilities,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return PropertyModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      owner: owner ?? this.owner,
+      location: location ?? this.location,
+      price: price ?? this.price,
+      status: status ?? this.status,
+      type: type ?? this.type,
+      specs: specs ?? this.specs,
+      media: media ?? this.media,
+      facilities: facilities ?? this.facilities,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
   }
 }

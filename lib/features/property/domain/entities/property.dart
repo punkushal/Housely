@@ -65,7 +65,7 @@ class PropertyMedia {
 }
 
 class Property {
-  final String id;
+  String? id;
   final String name;
   final String description;
   final PropertyOwner owner;
@@ -80,7 +80,7 @@ class Property {
   final DateTime updatedAt;
 
   Property({
-    required this.id,
+    this.id,
     required this.name,
     required this.description,
     required this.owner,
