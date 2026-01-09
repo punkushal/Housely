@@ -107,12 +107,16 @@ class PropertyDetailSection extends StatelessWidget {
                       colorFilter: ColorFilter.mode(AppColors.textHint, .srcIn),
                     ),
 
-                    Text(
-                      property.location.address,
-                      style: AppTextStyle.bodyRegular(
-                        context,
-                        fontSize: 14,
-                        color: AppColors.textHint,
+                    SizedBox(
+                      width: ResponsiveDimensions.getSize(context, 180),
+                      child: Text(
+                        property.location.address,
+                        overflow: .ellipsis,
+                        style: AppTextStyle.bodyRegular(
+                          context,
+                          fontSize: 14,
+                          color: AppColors.textHint,
+                        ),
                       ),
                     ),
                   ],
@@ -128,10 +132,15 @@ class PropertyDetailSection extends StatelessWidget {
                   context,
                   lineHeight: 18,
                   color: AppColors.primaryPressed,
+                  fontSize: 10,
                 ),
                 children: [
                   TextSpan(
-                    text: "/month",
+                    text:
+                        property.type.name.toLowerCase() ==
+                            PropertyType.house.name.toLowerCase()
+                        ? "/month"
+                        : "/night",
                     style: AppTextStyle.bodyRegular(
                       context,
                       lineHeight: 14,
