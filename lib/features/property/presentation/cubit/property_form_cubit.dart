@@ -17,6 +17,7 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
         propertyStatus: property.status.name,
         address: property.location.address,
         facilities: property.facilities,
+        year: property.specs.builtYear,
         existingNetworkImages: List<Map<String, dynamic>>.from(
           property.media.gallery['images'] ?? [],
         ),
@@ -44,6 +45,7 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
         existingNetworkImages: const [],
         imageError: null,
         address: null,
+        year: null,
       ),
     );
   }
@@ -58,6 +60,10 @@ class PropertyFormCubit extends Cubit<PropertyFormState> {
 
   void setAddress(String address) {
     emit(state.copyWith(address: address));
+  }
+
+  void setBuiltInYear(String year) {
+    emit(state.copyWith(year: year));
   }
 
   void setSingleImage(File image) {

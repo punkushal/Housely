@@ -9,6 +9,7 @@ class PropertyFormState {
   final List<Map<String, dynamic>> existingNetworkImages;
   final String? imageError;
   final String? address;
+  final String? year;
 
   PropertyFormState({
     this.propertyType,
@@ -19,6 +20,7 @@ class PropertyFormState {
     this.propertyStatus,
     this.imageError,
     this.address,
+    this.year,
   });
 
   PropertyFormState copyWith({
@@ -30,6 +32,7 @@ class PropertyFormState {
     List<String>? facilities,
     List<Map<String, dynamic>>? existingNetworkImages,
     String? address,
+    String? year,
   }) {
     return PropertyFormState(
       propertyType: propertyType ?? this.propertyType,
@@ -41,6 +44,7 @@ class PropertyFormState {
       existingNetworkImages:
           existingNetworkImages ?? this.existingNetworkImages,
       address: address ?? this.address,
+      year: year ?? this.year,
     );
   }
 }

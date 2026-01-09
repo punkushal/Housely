@@ -4,7 +4,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
-import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/extensions/string_extension.dart';
@@ -22,10 +21,12 @@ import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
+import 'package:housely/features/property/presentation/widgets/enum_drop_down.dart';
 import 'package:housely/features/property/presentation/widgets/facility_list.dart';
 import 'package:housely/features/property/presentation/widgets/label.dart';
 import 'package:housely/features/property/presentation/widgets/location_card.dart';
 import 'package:housely/features/property/presentation/widgets/upload_container.dart';
+import 'package:housely/features/property/presentation/widgets/year_picker_form_field.dart';
 import 'package:housely/injection_container.dart';
 
 @RoutePage()
@@ -48,7 +49,9 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   final _yearController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   Location? location;
-
+  PropertyType? selectedType;
+  PropertyStatus? selectedStatus;
+  int? selectedYear;
   @override
   void initState() {
     super.initState();
@@ -265,6 +268,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   @override
   Widget build(BuildContext context) {
     final property = widget.property;
+    log("selected year: ${_yearController.text}");
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => sl<PropertyCubit>()),
@@ -415,26 +419,10 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                               return state.propertyType;
                             },
                             builder: (context, state) {
-                              return Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: AppColors.border),
-                                  borderRadius:
-                                      ResponsiveDimensions.borderRadiusMedium(
-                                        context,
-                                      ),
-                                ),
-                                child: DropdownButton(
-                                  // to hide the underline
-                                  underline: SizedBox.shrink(),
-                                  items: PropertyType.values
-                                      .map(
-                                        (type) => DropdownMenuItem(
-                                          value: type,
-                                          child: Text(type.name.capitalize),
-                                        ),
-                                      )
-                                      .toList(),
+                              return CustomLabelTextField(
+                                labelText: "Property Type",
+                                customTextField: EnumDropdown(
+                                  items: PropertyType.values,
                                   onChanged: (value) {
                                     if (value != null) {
                                       context
@@ -443,6 +431,13 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                                       _typeController.text =
                                           value.name.capitalize;
                                     }
+                                  },
+                                  hintText: "Select your property type",
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return "Please select your property type";
+                                    }
+                                    return null;
                                   },
                                 ),
                               );
@@ -456,6 +451,10 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                               controller: _roomController,
                               hintText: "Number of Bedrooms",
                               keyboardType: .number,
+                              validator: (value) => FormValidators.rooms(
+                                value,
+                                label: "Bedrooms",
+                              ),
                             ),
                           ),
 
@@ -485,15 +484,37 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                           ),
 
                           // build year input
-                          CustomLabelTextField(
-                            labelText: "Build Year",
-                            customTextField: CustomTextField(
-                              controller: _yearController,
-                              hintText: "e.g 2020",
-                              keyboardType: .number,
-                              validator: (value) =>
-                                  FormValidators.buildYear(value),
-                            ),
+                          BlocSelector<
+                            PropertyFormCubit,
+                            PropertyFormState,
+                            String?
+                          >(
+                            selector: (state) {
+                              return state.year;
+                            },
+                            builder: (context, year) {
+                              return CustomLabelTextField(
+                                labelText: "Build Year",
+                                customTextField: YearPickerFormField(
+                                  context: context,
+                                  initialValue: selectedYear,
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return "Please select built in year";
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    context
+                                        .read<PropertyFormCubit>()
+                                        .setBuiltInYear(value.toString());
+                                    if (year != null) {
+                                      _yearController.text = year;
+                                    }
+                                  },
+                                ),
+                              );
+                            },
                           ),
 
                           // upload profile image
@@ -525,56 +546,39 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                           ),
 
                           // property status
-                          CustomLabelTextField(
-                            labelText: "Property Status",
-                            customTextField: CustomTextField(
-                              controller: _statusController,
-                              readOnly: true,
-                              hintText: "Select Property Status",
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Please select property status";
-                                }
-                                return null;
-                              },
-                              prefixIcon:
-                                  BlocSelector<
-                                    PropertyFormCubit,
-                                    PropertyFormState,
-                                    String?
-                                  >(
-                                    selector: (state) {
-                                      return state.propertyType;
-                                    },
-                                    builder: (context, state) {
-                                      return DropdownButton(
-                                        // to hide the underline
-                                        underline: SizedBox.shrink(),
-                                        items: PropertyStatus.values
-                                            .map(
-                                              (type) => DropdownMenuItem(
-                                                value: type,
-                                                child: Text(
-                                                  type.name.capitalize,
-                                                ),
-                                              ),
-                                            )
-                                            .toList(),
-                                        onChanged: (value) {
-                                          if (value != null) {
-                                            context
-                                                .read<PropertyFormCubit>()
-                                                .changePropertyStatus(
-                                                  value.name,
-                                                );
-                                            _statusController.text =
-                                                value.name.capitalize;
-                                          }
-                                        },
-                                      );
-                                    },
-                                  ),
-                            ),
+                          BlocSelector<
+                            PropertyFormCubit,
+                            PropertyFormState,
+                            String?
+                          >(
+                            selector: (state) {
+                              return state.propertyStatus;
+                            },
+                            builder: (context, status) {
+                              return CustomLabelTextField(
+                                labelText: "Property Status",
+                                customTextField: EnumDropdown(
+                                  value: selectedStatus,
+                                  items: PropertyStatus.values,
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      context
+                                          .read<PropertyFormCubit>()
+                                          .changePropertyStatus(value.name);
+                                      _statusController.text =
+                                          value.name.capitalize;
+                                    }
+                                  },
+                                  hintText: "Select your property status",
+                                  validator: (value) {
+                                    if (value == null) {
+                                      return "Please select property status";
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              );
+                            },
                           ),
 
                           // facility section
