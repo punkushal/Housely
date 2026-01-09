@@ -12,6 +12,7 @@ import 'package:housely/features/detail/presentation/widgets/image_list.dart';
 import 'package:housely/features/detail/presentation/widgets/property_detail_section.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
+import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 
 @RoutePage()
@@ -120,8 +121,13 @@ class DetailPage extends StatelessWidget {
               ),
             ),
             floatingActionButton: IconButton(
-              onPressed: () {
-                context.router.push(CreateNewPropertyRoute(property: property));
+              onPressed: () async {
+                await context.router.push(
+                  CreateNewPropertyRoute(property: property),
+                );
+                if (context.mounted) {
+                  context.read<PropertyBloc>().add(GetAllProperties());
+                }
               },
               icon: Container(
                 padding: ResponsiveDimensions.paddingAll8(context),
