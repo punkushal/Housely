@@ -31,6 +31,8 @@ class LocationCard extends StatelessWidget {
                   ? CustomTextField(
                       key: ValueKey(effectiveAddress),
                       initialValue: effectiveAddress,
+                      readOnly: true,
+                      onTap: navigateTo,
                     )
                   : ClipRRect(
                       borderRadius: ResponsiveDimensions.borderRadiusMedium(
