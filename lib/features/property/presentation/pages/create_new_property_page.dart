@@ -30,11 +30,32 @@ import 'package:housely/features/property/presentation/widgets/year_picker_form_
 import 'package:housely/injection_container.dart';
 
 @RoutePage()
-class CreateNewPropertyPage extends StatefulWidget {
+class CreateNewPropertyPage extends StatefulWidget implements AutoRouteWrapper {
   const CreateNewPropertyPage({super.key, this.property});
   final Property? property;
   @override
   State<CreateNewPropertyPage> createState() => _CreateNewPropertyPageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => sl<PropertyCubit>()),
+        BlocProvider(
+          create: (context) {
+            final cubit = sl<PropertyFormCubit>();
+
+            if (property != null) {
+              cubit.setInitialValues(property!);
+            }
+
+            return cubit;
+          },
+        ),
+      ],
+      child: this,
+    );
+  }
 }
 
 class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
@@ -51,7 +72,6 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   Location? location;
   PropertyType? selectedType;
   PropertyStatus? selectedStatus;
-  int? selectedYear;
   @override
   void initState() {
     super.initState();
@@ -62,7 +82,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
         _yearController.text = widget.property!.specs.builtYear;
         _roomController.text = widget.property!.specs.bedrooms.toString();
         _tubController.text = widget.property!.specs.bathrooms.toString();
-        _typeController.text = widget.property!.type.name.capitalize;
+        _typeController.text = widget.property!.type.name;
         _statusController.text = widget.property!.status.name.capitalize;
         _priceController.text = widget.property!.price.amount.toString();
         _areaController.text = widget.property!.specs.area.toString();
@@ -118,14 +138,28 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
     if (_formKey.currentState!.validate()) {
       final formState = context.read<PropertyFormCubit>().state;
       if (formState.image == null) {
-        SnackbarHelper.showError(context, "Please upload cover image");
+        SnackbarHelper.showError(
+          context,
+          "Please upload cover image",
+          showTop: true,
+        );
+        return;
       }
       if (formState.imageList.isEmpty) {
-        SnackbarHelper.showError(context, TextConstants.uploadManyFileError);
+        SnackbarHelper.showError(
+          context,
+          TextConstants.uploadManyFileError,
+          showTop: true,
+        );
+        return;
       }
 
       if (location == null) {
-        SnackbarHelper.showError(context, "Please choose your location");
+        SnackbarHelper.showError(
+          context,
+          "Please choose your location",
+          showTop: true,
+        );
         return;
       }
       final isConnected = context
@@ -157,6 +191,13 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
     final formState = context.read<PropertyFormCubit>().state;
     final File? coverImg = formState.image;
     final List<File> newUpdatedGalleryImages = formState.imageList;
+    if (formState.facilities.isEmpty || formState.facilities.length < 2) {
+      return SnackbarHelper.showError(
+        context,
+        "Please select at least one facility",
+        showTop: true,
+      );
+    }
     if (widget.property != null) {
       await context.read<PropertyCubit>().updatePropertyDetails(
         widget.property!.copyWith(
@@ -269,351 +310,322 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   Widget build(BuildContext context) {
     final property = widget.property;
     log("selected year: ${_yearController.text}");
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => sl<PropertyCubit>()),
-        BlocProvider(
-          create: (context) {
-            final cubit = sl<PropertyFormCubit>();
-
-            if (widget.property != null) {
-              cubit.setInitialValues(widget.property!);
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ConnectivityCubit, ConnectivityState>(
+          listener: (context, state) {
+            if (state is ConnectivityDisconnected) {
+              SnackbarHelper.showError(
+                context,
+                TextConstants.internetError,
+                showTop: true,
+              );
             }
+          },
+        ),
 
-            return cubit;
+        BlocListener<PropertyCubit, PropertyState>(
+          listener: (context, state) {
+            if (state is PropertyError) {
+              SnackbarHelper.showError(context, state.message, showTop: true);
+            } else if (state is PropertyCreated) {
+              SnackbarHelper.showSuccess(
+                context,
+                "Successfully created new property",
+                showTop: true,
+              );
+              _resetForm();
+              // Trigger a refresh of the list before going back
+              context.read<PropertyBloc>().add(GetAllProperties());
+
+              context.pop(true);
+            } else if (state is CoverImageUploaded) {
+              SnackbarHelper.showSuccess(
+                context,
+                "Cover image uploaded",
+                showTop: true,
+              );
+            } else if (state is GalleryImagesUploaded) {
+              SnackbarHelper.showSuccess(
+                context,
+                "Gallery images uploaded",
+                showTop: true,
+              );
+            } else if (state is PropertyUpdated) {
+              SnackbarHelper.showSuccess(
+                context,
+                "Property details updated successfully",
+                showTop: true,
+              );
+              _resetForm();
+              context.pop(true);
+            }
+          },
+        ),
+
+        BlocListener<OwnerCubit, OwnerState>(
+          listener: (context, state) {
+            if (state is OwnerLoaded) {
+              if (state.owner == null) {
+                _showCompleteProfileDialog(context);
+              }
+            } else if (state is OwnerError) {
+              SnackbarHelper.showError(context, state.message, showTop: true);
+            }
           },
         ),
       ],
-      child: Builder(
-        builder: (context) {
-          return MultiBlocListener(
-            listeners: [
-              BlocListener<ConnectivityCubit, ConnectivityState>(
-                listener: (context, state) {
-                  if (state is ConnectivityDisconnected) {
-                    SnackbarHelper.showError(
-                      context,
-                      TextConstants.internetError,
-                      showTop: true,
-                    );
-                  }
-                },
-              ),
-
-              BlocListener<PropertyCubit, PropertyState>(
-                listener: (context, state) {
-                  if (state is PropertyError) {
-                    SnackbarHelper.showError(
-                      context,
-                      state.message,
-                      showTop: true,
-                    );
-                  } else if (state is PropertyCreated) {
-                    _resetForm();
-                    // Trigger a refresh of the list before going back
-                    context.read<PropertyBloc>().add(GetAllProperties());
-
-                    context.router.pop(true);
-                  } else if (state is CoverImageUploaded) {
-                    SnackbarHelper.showSuccess(
-                      context,
-                      "Cover image uploaded",
-                      showTop: true,
-                    );
-                  } else if (state is GalleryImagesUploaded) {
-                    SnackbarHelper.showSuccess(
-                      context,
-                      "Gallery images uploaded",
-                      showTop: true,
-                    );
-                  } else if (state is PropertyUpdated) {
-                    SnackbarHelper.showSuccess(
-                      context,
-                      "Property details updated successfully",
-                      showTop: true,
-                    );
-                    _resetForm();
-                    context.pop(true);
-                  }
-                },
-              ),
-
-              BlocListener<OwnerCubit, OwnerState>(
-                listener: (context, state) {
-                  if (state is OwnerLoaded) {
-                    if (state.owner == null) {
-                      _showCompleteProfileDialog(context);
-                    }
-                  } else if (state is OwnerError) {
-                    SnackbarHelper.showError(
-                      context,
-                      state.message,
-                      showTop: true,
-                    );
-                  }
-                },
-              ),
-            ],
-            child: PopScope(
-              canPop: context.read<PropertyCubit>().state is! PropertyLoading,
-              child: Scaffold(
-                appBar: AppBar(
-                  title: Text(
-                    property != null
-                        ? "${TextConstants.update} property"
-                        : '${TextConstants.add} new property',
-                  ),
-                ),
-                body: Padding(
-                  padding: ResponsiveDimensions.paddingSymmetric(
-                    context,
-                    horizontal: 24,
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        spacing: ResponsiveDimensions.getSize(context, 12),
-                        children: [
-                          // title input
-                          CustomLabelTextField(
-                            labelText: "Title",
-                            customTextField: CustomTextField(
-                              controller: _titleController,
-                              hintText: "Property Title",
-                              validator: (value) => FormValidators.title(value),
-                            ),
-                          ),
-
-                          // description input
-                          CustomLabelTextField(
-                            labelText: "Description",
-                            customTextField: CustomTextField(
-                              controller: _descController,
-                              hintText: "Property Description",
-                              maxLines: 4,
-                              validator: (value) =>
-                                  FormValidators.description(value),
-                            ),
-                          ),
-
-                          // price input
-                          CustomLabelTextField(
-                            labelText: "Price",
-                            customTextField: CustomTextField(
-                              controller: _priceController,
-                              hintText: "Price",
-                              keyboardType: .number,
-                              validator: (value) => FormValidators.price(value),
-                            ),
-                          ),
-
-                          // property type
-                          BlocSelector<
-                            PropertyFormCubit,
-                            PropertyFormState,
-                            String?
-                          >(
-                            selector: (state) {
-                              return state.propertyType;
-                            },
-                            builder: (context, state) {
-                              return CustomLabelTextField(
-                                labelText: "Property Type",
-                                customTextField: EnumDropdown(
-                                  items: PropertyType.values,
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      context
-                                          .read<PropertyFormCubit>()
-                                          .changePropertyType(value.name);
-                                      _typeController.text =
-                                          value.name.capitalize;
-                                    }
-                                  },
-                                  hintText: "Select your property type",
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return "Please select your property type";
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-
-                          // bedrooms input
-                          CustomLabelTextField(
-                            labelText: "Bedrooms",
-                            customTextField: CustomTextField(
-                              controller: _roomController,
-                              hintText: "Number of Bedrooms",
-                              keyboardType: .number,
-                              validator: (value) => FormValidators.rooms(
-                                value,
-                                label: "Bedrooms",
-                              ),
-                            ),
-                          ),
-
-                          // bathtubs input
-                          CustomLabelTextField(
-                            labelText: "Bathtubs",
-                            customTextField: CustomTextField(
-                              controller: _tubController,
-                              hintText: "Number of Bathtubs",
-                              keyboardType: .number,
-                              validator: (value) => FormValidators.rooms(
-                                value,
-                                label: "Bathtubs",
-                              ),
-                            ),
-                          ),
-
-                          // area input
-                          CustomLabelTextField(
-                            labelText: "Area (sq ft)",
-                            customTextField: CustomTextField(
-                              controller: _areaController,
-                              hintText: "Area in square feet",
-                              keyboardType: .number,
-                              validator: (value) => FormValidators.area(value),
-                            ),
-                          ),
-
-                          // build year input
-                          BlocSelector<
-                            PropertyFormCubit,
-                            PropertyFormState,
-                            String?
-                          >(
-                            selector: (state) {
-                              return state.year;
-                            },
-                            builder: (context, year) {
-                              return CustomLabelTextField(
-                                labelText: "Build Year",
-                                customTextField: YearPickerFormField(
-                                  context: context,
-                                  initialValue: selectedYear,
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return "Please select built in year";
-                                    }
-                                    return null;
-                                  },
-                                  onChanged: (value) {
-                                    context
-                                        .read<PropertyFormCubit>()
-                                        .setBuiltInYear(value.toString());
-                                    if (year != null) {
-                                      _yearController.text = year;
-                                    }
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-
-                          // upload profile image
-                          UploadContainer(
-                            labelText: "Property Cover Image",
-                            coverUrl: property?.media.coverImage['url'],
-                          ),
-
-                          // upload property images
-                          UploadContainer(
-                            labelText: "Property Images",
-                            hasMany: true,
-                            property: property,
-                          ),
-
-                          // location
-                          LocationCard(
-                            address: property?.location.address,
-                            navigateTo: () async {
-                              location = await context.router.push(
-                                MapPickerRoute(isOwner: true),
-                              );
-                              if (context.mounted && location != null) {
-                                context.read<PropertyFormCubit>().setAddress(
-                                  location!.address!,
-                                );
-                              }
-                            },
-                          ),
-
-                          // property status
-                          BlocSelector<
-                            PropertyFormCubit,
-                            PropertyFormState,
-                            String?
-                          >(
-                            selector: (state) {
-                              return state.propertyStatus;
-                            },
-                            builder: (context, status) {
-                              return CustomLabelTextField(
-                                labelText: "Property Status",
-                                customTextField: EnumDropdown(
-                                  value: selectedStatus,
-                                  items: PropertyStatus.values,
-                                  onChanged: (value) {
-                                    if (value != null) {
-                                      context
-                                          .read<PropertyFormCubit>()
-                                          .changePropertyStatus(value.name);
-                                      _statusController.text =
-                                          value.name.capitalize;
-                                    }
-                                  },
-                                  hintText: "Select your property status",
-                                  validator: (value) {
-                                    if (value == null) {
-                                      return "Please select property status";
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              );
-                            },
-                          ),
-
-                          // facility section
-                          Label(label: "Facilites"),
-                          FacilityList(existedFacilites: property?.facilities),
-                          SizedBox(
-                            height: ResponsiveDimensions.getSize(context, 4),
-                          ),
-                          BlocBuilder<PropertyCubit, PropertyState>(
-                            builder: (context, state) {
-                              bool isLoading = state is PropertyLoading;
-                              return CustomButton(
-                                onTap: () => property != null
-                                    ? updateProperty(context)
-                                    : _validateAndProfile(context),
-                                buttonLabel: property != null
-                                    ? "Update Property"
-                                    : TextConstants.addProperty,
-                                isLoading: isLoading,
-                              );
-                            },
-                          ),
-
-                          SizedBox(
-                            height: ResponsiveDimensions.getSize(context, 6),
-                          ),
-                        ],
-                      ),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            property != null
+                ? "${TextConstants.update} property"
+                : '${TextConstants.add} new property',
+          ),
+        ),
+        body: Padding(
+          padding: ResponsiveDimensions.paddingSymmetric(
+            context,
+            horizontal: 24,
+          ),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: .start,
+                spacing: ResponsiveDimensions.getSize(context, 12),
+                children: [
+                  // title input
+                  CustomLabelTextField(
+                    labelText: "Title",
+                    customTextField: CustomTextField(
+                      controller: _titleController,
+                      hintText: "Property Title",
+                      validator: (value) => FormValidators.title(value),
                     ),
                   ),
-                ),
+
+                  // description input
+                  CustomLabelTextField(
+                    labelText: "Description",
+                    customTextField: CustomTextField(
+                      controller: _descController,
+                      hintText: "Property Description",
+                      maxLines: 4,
+                      validator: (value) => FormValidators.description(value),
+                    ),
+                  ),
+
+                  // price input
+                  CustomLabelTextField(
+                    labelText: "Price",
+                    customTextField: CustomTextField(
+                      controller: _priceController,
+                      hintText: "Price",
+                      keyboardType: .number,
+                      validator: (value) => FormValidators.price(value),
+                    ),
+                  ),
+
+                  // property type
+                  BlocSelector<PropertyFormCubit, PropertyFormState, String?>(
+                    selector: (state) {
+                      return state.propertyType;
+                    },
+                    builder: (context, typeName) {
+                      return CustomLabelTextField(
+                        labelText: "Property Type",
+                        customTextField: EnumDropdown(
+                          value: typeName != null
+                              ? PropertyType.values.byName(typeName)
+                              : null,
+                          items: PropertyType.values,
+                          onChanged: (value) {
+                            if (value != null) {
+                              context
+                                  .read<PropertyFormCubit>()
+                                  .changePropertyType(value.name);
+                              _typeController.text = value.name.capitalize;
+                            }
+                          },
+                          hintText: "Select your property type",
+                          validator: (value) {
+                            if (value == null) {
+                              return "Please select your property type";
+                            }
+                            return null;
+                          },
+                        ),
+                      );
+                    },
+                  ),
+
+                  // bedrooms input
+                  CustomLabelTextField(
+                    labelText: "Bedrooms",
+                    customTextField: CustomTextField(
+                      controller: _roomController,
+                      hintText: "Number of Bedrooms",
+                      keyboardType: .number,
+                      validator: (value) =>
+                          FormValidators.rooms(value, label: "Bedrooms"),
+                    ),
+                  ),
+
+                  // bathtubs input
+                  CustomLabelTextField(
+                    labelText: "Bathtubs",
+                    customTextField: CustomTextField(
+                      controller: _tubController,
+                      hintText: "Number of Bathtubs",
+                      keyboardType: .number,
+                      validator: (value) =>
+                          FormValidators.rooms(value, label: "Bathtubs"),
+                    ),
+                  ),
+
+                  // area input
+                  CustomLabelTextField(
+                    labelText: "Area (sq ft)",
+                    customTextField: CustomTextField(
+                      controller: _areaController,
+                      hintText: "Area in square feet",
+                      keyboardType: .number,
+                      validator: (value) => FormValidators.area(value),
+                    ),
+                  ),
+
+                  // build year input
+                  BlocSelector<PropertyFormCubit, PropertyFormState, String?>(
+                    selector: (state) {
+                      return state.year;
+                    },
+                    builder: (context, year) {
+                      // converting String? from Cubit to int? for the form field
+                      final int? yearInt = year != null
+                          ? int.tryParse(year)
+                          : null;
+                      return CustomLabelTextField(
+                        labelText: "Build Year",
+                        customTextField: YearPickerFormField(
+                          context: context,
+                          initialValue: yearInt,
+                          hintText: "Select Year",
+                          validator: (value) {
+                            if (value == null) {
+                              return "Please select built in year";
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            context.read<PropertyFormCubit>().setBuiltInYear(
+                              value.toString(),
+                            );
+                            _yearController.text = value.toString();
+                          },
+                        ),
+                      );
+                    },
+                  ),
+
+                  // upload profile image
+                  UploadContainer(
+                    labelText: "Property Cover Image",
+                    coverUrl: property?.media.coverImage['url'],
+                  ),
+
+                  // upload property images
+                  UploadContainer(
+                    labelText: "Property Images",
+                    hasMany: true,
+                    property: property,
+                  ),
+
+                  // location
+                  LocationCard(
+                    address: property?.location.address,
+                    navigateTo: () async {
+                      final currentLocation =
+                          location ??
+                          (property != null
+                              ? Location(
+                                  latitude: property.location.latitude,
+                                  longitude: property.location.longitude,
+                                  address: property.location.address,
+                                )
+                              : null);
+                      location = await context.router.push(
+                        MapPickerRoute(
+                          isOwner: true,
+                          initialLocation: currentLocation,
+                        ),
+                      );
+                      if (context.mounted && location != null) {
+                        context.read<PropertyFormCubit>().setAddress(
+                          location!.address!,
+                        );
+                      }
+                    },
+                  ),
+
+                  // property status
+                  BlocSelector<PropertyFormCubit, PropertyFormState, String?>(
+                    selector: (state) {
+                      return state.propertyStatus;
+                    },
+                    builder: (context, status) {
+                      return CustomLabelTextField(
+                        labelText: "Property Status",
+                        customTextField: EnumDropdown(
+                          value: status != null
+                              ? PropertyStatus.values.byName(status)
+                              : null,
+                          items: PropertyStatus.values,
+                          onChanged: (value) {
+                            if (value != null) {
+                              context
+                                  .read<PropertyFormCubit>()
+                                  .changePropertyStatus(value.name);
+                              _statusController.text = value.name.capitalize;
+                            }
+                          },
+                          hintText: "Select your property status",
+                          validator: (value) {
+                            if (value == null) {
+                              return "Please select property status";
+                            }
+                            return null;
+                          },
+                        ),
+                      );
+                    },
+                  ),
+
+                  // facility section
+                  Label(label: "Facilites"),
+                  FacilityList(existedFacilites: property?.facilities),
+                  SizedBox(height: ResponsiveDimensions.getSize(context, 4)),
+                  BlocBuilder<PropertyCubit, PropertyState>(
+                    builder: (context, state) {
+                      bool isLoading = state is PropertyLoading;
+                      return CustomButton(
+                        onTap: () => property != null
+                            ? updateProperty(context)
+                            : _validateAndProfile(context),
+                        buttonLabel: property != null
+                            ? "Update Property"
+                            : TextConstants.addProperty,
+                        isLoading: isLoading,
+                      );
+                    },
+                  ),
+
+                  SizedBox(height: ResponsiveDimensions.getSize(context, 6)),
+                ],
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

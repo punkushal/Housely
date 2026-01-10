@@ -18,6 +18,7 @@ import 'package:housely/features/detail/presentation/widgets/info_container.dart
 import 'package:housely/features/detail/presentation/widgets/read_more_text.dart';
 import 'package:housely/features/detail/presentation/widgets/review_list.dart';
 import 'package:housely/features/home/presentation/widgets/heading_section.dart';
+import 'package:housely/features/location/domain/entities/location.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 
@@ -268,7 +269,16 @@ class PropertyDetailSection extends StatelessWidget {
 
         // map preview image
         GestureDetector(
-          onTap: () => context.router.push(MapPickerRoute()),
+          onTap: () => context.router.push(
+            MapPickerRoute(
+              initialLocation: Location(
+                latitude: property.location.latitude,
+                longitude: property.location.longitude,
+                address: property.location.address,
+              ),
+              isVisitor: true,
+            ),
+          ),
           child: ClipRRect(
             borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
             child: Image.asset(

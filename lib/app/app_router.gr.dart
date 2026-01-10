@@ -28,6 +28,8 @@ import 'package:housely/features/home/presentation/pages/profile_page.dart'
     as _i13;
 import 'package:housely/features/home/presentation/pages/see_all_list_page.dart'
     as _i14;
+import 'package:housely/features/location/domain/entities/location.dart'
+    as _i20;
 import 'package:housely/features/location/presentation/pages/location_page.dart'
     as _i8;
 import 'package:housely/features/location/presentation/pages/map_picker_page.dart'
@@ -99,7 +101,12 @@ class CreateNewPropertyRoute
       final args = data.argsAs<CreateNewPropertyRouteArgs>(
         orElse: () => const CreateNewPropertyRouteArgs(),
       );
-      return _i3.CreateNewPropertyPage(key: args.key, property: args.property);
+      return _i17.WrappedRoute(
+        child: _i3.CreateNewPropertyPage(
+          key: args.key,
+          property: args.property,
+        ),
+      );
     },
   );
 }
@@ -293,10 +300,17 @@ class MapPickerRoute extends _i17.PageRouteInfo<MapPickerRouteArgs> {
   MapPickerRoute({
     _i18.Key? key,
     bool isOwner = false,
+    _i20.Location? initialLocation,
+    bool isVisitor = false,
     List<_i17.PageRouteInfo>? children,
   }) : super(
          MapPickerRoute.name,
-         args: MapPickerRouteArgs(key: key, isOwner: isOwner),
+         args: MapPickerRouteArgs(
+           key: key,
+           isOwner: isOwner,
+           initialLocation: initialLocation,
+           isVisitor: isVisitor,
+         ),
          initialChildren: children,
        );
 
@@ -308,32 +322,55 @@ class MapPickerRoute extends _i17.PageRouteInfo<MapPickerRouteArgs> {
       final args = data.argsAs<MapPickerRouteArgs>(
         orElse: () => const MapPickerRouteArgs(),
       );
-      return _i10.MapPickerPage(key: args.key, isOwner: args.isOwner);
+      return _i17.WrappedRoute(
+        child: _i10.MapPickerPage(
+          key: args.key,
+          isOwner: args.isOwner,
+          initialLocation: args.initialLocation,
+          isVisitor: args.isVisitor,
+        ),
+      );
     },
   );
 }
 
 class MapPickerRouteArgs {
-  const MapPickerRouteArgs({this.key, this.isOwner = false});
+  const MapPickerRouteArgs({
+    this.key,
+    this.isOwner = false,
+    this.initialLocation,
+    this.isVisitor = false,
+  });
 
   final _i18.Key? key;
 
   final bool isOwner;
 
+  final _i20.Location? initialLocation;
+
+  final bool isVisitor;
+
   @override
   String toString() {
-    return 'MapPickerRouteArgs{key: $key, isOwner: $isOwner}';
+    return 'MapPickerRouteArgs{key: $key, isOwner: $isOwner, initialLocation: $initialLocation, isVisitor: $isVisitor}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! MapPickerRouteArgs) return false;
-    return key == other.key && isOwner == other.isOwner;
+    return key == other.key &&
+        isOwner == other.isOwner &&
+        initialLocation == other.initialLocation &&
+        isVisitor == other.isVisitor;
   }
 
   @override
-  int get hashCode => key.hashCode ^ isOwner.hashCode;
+  int get hashCode =>
+      key.hashCode ^
+      isOwner.hashCode ^
+      initialLocation.hashCode ^
+      isVisitor.hashCode;
 }
 
 /// generated route for
