@@ -13,11 +13,13 @@ class FirebaseRemoteDataSource {
   // add newly created property data
   Future<void> addNewProperty(PropertyModel property) async {
     try {
-      final docId = auth.currentUser!.email;
-      await firestore
+      final docRef = firestore
           .collection(TextConstants.properties)
-          .doc(docId)
-          .set(property.toJson());
+          .doc(); // it will auto generate id for property
+
+      final updatedProperty = property.copyWith(id: docRef.id);
+
+      await docRef.set(updatedProperty.toJson());
     } catch (e) {
       throw Exception('Failed to add new property: $e');
     }
@@ -31,7 +33,7 @@ class FirebaseRemoteDataSource {
           .get();
       final jsonList = snapshot.docs;
       final propertyList = jsonList
-          .map((doc) => PropertyModel.fromJson(doc.data(), doc.id))
+          .map((doc) => PropertyModel.fromJson(doc.data()))
           .toList();
       return propertyList;
     } catch (e) {
