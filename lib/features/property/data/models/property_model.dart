@@ -57,6 +57,7 @@ class PropertyModel extends Property {
   // TO FIRESTORE
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'description': description,
       'status': status.name,
