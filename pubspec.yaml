@@ -41,6 +41,7 @@ dependencies:
   # Firebase
   firebase_auth: ^6.1.2
   firebase_core: ^4.2.1
+  cloud_firestore: ^6.1.1
 
   # Date formating
   intl: ^0.20.2
@@ -77,6 +78,18 @@ dependencies:
 
   # Carousel
   carousel_slider: ^5.1.1
+
+  # Border
+  dotted_border: ^3.1.0
+
+  # For picking image
+  image_picker: ^1.2.1
+
+  # To store image files
+  appwrite: ^20.3.2
+
+  # For caching network image
+  cached_network_image: ^3.4.1
   
 
 dev_dependencies:

@@ -26,7 +26,7 @@ class NearbyList extends StatelessWidget {
           return Column(
             spacing: ResponsiveDimensions.getHeight(context, 12),
             children: [
-              NearbyCard(navigateTo: () => context.router.push(DetailRoute())),
+              // NearbyCard(navigateTo: () => context.router.push(DetailRoute())),
               Divider(color: AppColors.divider),
             ],
           );

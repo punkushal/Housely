@@ -3,11 +3,20 @@
     <application
         android:label="housely"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
-        
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true">
+       
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyDzU2omVRnhNITQY0pc91_PI6yPNLexSRE"/>
-        
+         <!-- Add this inside the `<application>` tag, along side the existing `<activity>` tags -->
+        <activity android:name="coma.linusu.flutter_web_auth_2.CallbackActivity" android:exported="true">
+        <intent-filter android:label="flutter_web_auth_2">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="appwrite-callback-6954b11a00214cb8b35f" />
+        </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"

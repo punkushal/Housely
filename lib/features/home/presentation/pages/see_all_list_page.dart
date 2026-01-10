@@ -15,7 +15,7 @@ class SeeAllListPage extends StatelessWidget {
       create: (context) => FavoriteToggleCubit(),
       child: Scaffold(
         appBar: AppBar(title: Text(appBarTitle)),
-        body: SafeArea(child: PropertyList()),
+        // body: SafeArea(child: PropertyList()),
       ),
     );
   }

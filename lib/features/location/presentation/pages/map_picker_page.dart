@@ -11,31 +11,72 @@ import 'package:housely/features/location/presentation/cubit/location_cubit.dart
 import 'package:housely/features/location/presentation/widgets/drop_shadow.dart';
 import 'package:housely/features/location/presentation/widgets/location_detail.dart';
 import 'package:housely/injection_container.dart';
+import 'package:housely/features/location/domain/entities/location.dart'
+    as custom_location;
 
 @RoutePage()
-class LocationWrapper extends StatelessWidget {
-  const LocationWrapper({super.key});
+class MapPickerPage extends StatefulWidget implements AutoRouteWrapper {
+  const MapPickerPage({
+    super.key,
+    this.isOwner = false,
+    this.initialLocation,
+    this.isVisitor = false,
+  });
+
+  /// check whether a normal user or property owner visits
+  /// the map page. Default to normal user
+  /// and if not then it is property owner
+  final bool isOwner;
+
+  // for visitor who visits through detail page section
+  // i have to hide button and location detail card
+  final bool isVisitor;
+
+  /// initial location to show on the map (if available)
+  final custom_location.Location? initialLocation;
 
   @override
-  Widget build(BuildContext context) {
+  State<MapPickerPage> createState() => _MapPickerPageState();
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<LocationCubit>(),
-      child: MapPickerPage(),
+      create: (context) {
+        final cubit = sl<LocationCubit>();
+
+        if (initialLocation != null && initialLocation!.address != null) {
+          cubit.updateLocationFromMap(
+            initialLocation!.latitude,
+            initialLocation!.longitude,
+            address: initialLocation!.address,
+          );
+        }
+        return cubit;
+      },
+      child: this,
     );
   }
 }
 
-class MapPickerPage extends StatefulWidget {
-  const MapPickerPage({super.key});
+class _MapPickerPageState extends State<MapPickerPage> {
+  late LatLng myLocation;
+  GoogleMapController? _mapController;
 
   @override
-  State<MapPickerPage> createState() => _MapPickerPageState();
-}
+  void initState() {
+    super.initState();
 
-class _MapPickerPageState extends State<MapPickerPage> {
-  final myLocation = LatLng(27.6983, 83.4653);
+    if (widget.initialLocation != null) {
+      myLocation = LatLng(
+        widget.initialLocation!.latitude,
+        widget.initialLocation!.longitude,
+      );
+    } else {
+      myLocation = LatLng(27.6983, 83.4653);
+    }
+  }
 
-  Future<void> setMarker(LatLng position) async {
+  Future<void> setMarker(LatLng position, BuildContext context) async {
     final cubit = context.read<LocationCubit>();
 
     List<Placemark> placemark = await placemarkFromCoordinates(
@@ -52,9 +93,13 @@ class _MapPickerPageState extends State<MapPickerPage> {
   }
 
   // handle back navigation
-  void _handleBackNavigation() {
+  void _handleBackNavigation(BuildContext context) {
     final state = context.read<LocationCubit>().state;
-    if (state is LocationLoaded && state.location.address != null) {
+    if (state is LocationLoaded &&
+        state.location.address != null &&
+        widget.isOwner) {
+      context.pop(state.location);
+    } else if (state is LocationLoaded && state.location.address != null) {
       context.router.replaceAll([TabWrapper(address: state.location.address)]);
     } else {
       SnackbarHelper.showInfo(context, "Please pick your location");
@@ -73,13 +118,16 @@ class _MapPickerPageState extends State<MapPickerPage> {
                 zoom: 14,
               ),
               zoomControlsEnabled: false,
+              onMapCreated: (controller) {
+                _mapController = controller;
+              },
               markers: {
                 Marker(
                   markerId: MarkerId('my home'),
                   draggable: true,
                   position: myLocation,
                   onDragEnd: (value) {
-                    setMarker(value);
+                    setMarker(value, context);
                   },
                 ),
               },
@@ -107,9 +155,12 @@ class _MapPickerPageState extends State<MapPickerPage> {
                           color: Color(0x1F2A372E),
                         ),
                       ],
-                      child: LocationDetail(
-                        address: state.location.address ?? "no location found",
-                      ),
+                      child: widget.isVisitor
+                          ? SizedBox.shrink()
+                          : LocationDetail(
+                              address:
+                                  state.location.address ?? "no location found",
+                            ),
                     ),
                   );
                 }
@@ -121,14 +172,22 @@ class _MapPickerPageState extends State<MapPickerPage> {
               bottom: ResponsiveDimensions.getHeight(context, 80),
               left: ResponsiveDimensions.getSize(context, 24),
               right: ResponsiveDimensions.getSize(context, 24),
-              child: CustomButton(
-                onTap: _handleBackNavigation,
-                buttonLabel: "Confirm location",
-              ),
+              child: widget.isVisitor
+                  ? SizedBox.shrink()
+                  : CustomButton(
+                      onTap: () => _handleBackNavigation(context),
+                      buttonLabel: "Confirm location",
+                    ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
   }
 }

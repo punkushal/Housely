@@ -35,7 +35,7 @@ class RecommendedList extends StatelessWidget {
                   // later implement add to favorite list
                   toggleFavorite(context);
                 },
-                navigateTo: () => context.router.push(DetailRoute()),
+                // navigateTo: () => context.router.push(DetailRoute()),
               ),
             );
           },

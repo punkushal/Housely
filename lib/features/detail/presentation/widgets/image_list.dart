@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/detail/presentation/widgets/detail_image_card.dart';
 
 class ImageList extends StatelessWidget {
-  const ImageList({super.key});
+  const ImageList({super.key, required this.imageUrls});
+
+  /// image url list
+  final List<String> imageUrls;
 
   // handle image preview
   void _previewImage(String imgPath, BuildContext context) {
@@ -14,11 +17,10 @@ class ImageList extends StatelessWidget {
         contentPadding: .zero,
         content: ClipRRect(
           borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
-          child: Image.asset(
-            imgPath,
-            height: ResponsiveDimensions.getSize(context, 188),
-            width: ResponsiveDimensions.getSize(context, 282),
-            fit: .cover,
+          child: CustomCacheContainer(
+            imageUrl: imgPath,
+            height: 188,
+            width: 282,
           ),
         ),
       ),
@@ -30,27 +32,19 @@ class ImageList extends StatelessWidget {
     return SizedBox(
       height: ResponsiveDimensions.getHeight(context, 86),
       child: ListView.builder(
-        // TODO: later data will be dynamic
         scrollDirection: .horizontal,
-        itemCount: 4,
+        itemCount: imageUrls.length,
         itemBuilder: (context, index) {
-          return Padding(
-            padding: ResponsiveDimensions.paddingOnly(
-              context,
-              // right: 8,
-              // bottom: 6,
-            ),
-            child: GestureDetector(
-              onTap: () {
-                _previewImage(ImageConstant.fourthVilla, context);
-              },
-              child: DetailImageCard(
-                imgPath: ImageConstant.fourthVilla,
-                width: ResponsiveDimensions.getSize(context, 76),
-                height: ResponsiveDimensions.getHeight(context, 72),
-                fit: .cover,
-                radius: 8,
-              ),
+          return GestureDetector(
+            onTap: () {
+              _previewImage(imageUrls[index], context);
+            },
+            child: DetailImageCard(
+              imgPath: imageUrls[index],
+              width: ResponsiveDimensions.getSize(context, 76),
+              height: ResponsiveDimensions.getHeight(context, 72),
+              fit: .cover,
+              radius: 8,
             ),
           );
         },

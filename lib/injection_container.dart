@@ -1,6 +1,9 @@
+import 'package:appwrite/appwrite.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:housely/features/auth/data/repositories/auth_repo_impl.dart';
@@ -32,6 +35,25 @@ import 'package:housely/features/onboarding/domain/repositories/onboarding_repos
 import 'package:housely/features/onboarding/domain/usecases/get_onboarding_status_usecase.dart';
 import 'package:housely/features/onboarding/domain/usecases/set_onboarding_status_usecase.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
+import 'package:housely/features/property/data/datasources/app_write_data_source.dart';
+import 'package:housely/features/property/data/datasources/firebase_remote_data_source.dart';
+import 'package:housely/features/property/data/repository/owner_repo_impl.dart';
+import 'package:housely/features/property/data/repository/property_repo_impl.dart';
+import 'package:housely/features/property/domain/repository/owner_repo.dart';
+import 'package:housely/features/property/domain/repository/property_repo.dart';
+import 'package:housely/features/property/domain/usecases/create_owner_profile.dart';
+import 'package:housely/features/property/domain/usecases/create_property.dart';
+import 'package:housely/features/property/domain/usecases/delete_image_file.dart';
+import 'package:housely/features/property/domain/usecases/fetch_all_properties.dart';
+import 'package:housely/features/property/domain/usecases/get_owner_profile.dart';
+import 'package:housely/features/property/domain/usecases/update_image_file.dart';
+import 'package:housely/features/property/domain/usecases/update_property.dart';
+import 'package:housely/features/property/domain/usecases/upload_cover_image.dart';
+import 'package:housely/features/property/domain/usecases/upload_property_images.dart';
+import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
+import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
@@ -39,10 +61,17 @@ final sl = GetIt.instance;
 Future<void> initializeDependencies() async {
   // ============= Network ================
   sl.registerLazySingleton(() => ConnectivityCubit());
+  sl.registerLazySingleton(
+    () => Client()
+        .setEndpoint(TextConstants.appwriteUrl)
+        .setProject("6954b11a00214cb8b35f"), //TODO: later add this id securely
+  );
+  sl.registerLazySingleton(() => Storage(sl<Client>()));
 
   // ============= External Dependencies ===============
   sl.registerLazySingleton(() => SharedPreferencesAsync());
   sl.registerLazySingleton(() => FirebaseAuth.instance);
+  sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => GoogleSignIn.instance);
 
   // ============= Data layer ==============
@@ -57,12 +86,34 @@ Future<void> initializeDependencies() async {
     ),
   );
 
+  sl.registerLazySingleton<AppwriteStorageDataSource>(
+    () => AppwriteStorageDataSourceImpl(storage: sl<Storage>()),
+  );
+
+  sl.registerLazySingleton(
+    () => FirebaseRemoteDataSource(
+      firestore: sl<FirebaseFirestore>(),
+      auth: sl<FirebaseAuth>(),
+    ),
+  );
+
   sl.registerLazySingleton<OnboardingRepository>(
     () => OnboardingRepoImpl(localDataSource: sl<OnboardingLocalDataSource>()),
   );
 
   sl.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(remoteDataSource: sl<AuthRemoteDataSource>()),
+  );
+
+  sl.registerLazySingleton<PropertyRepo>(
+    () => PropertyRepoImpl(
+      dataSource: sl<AppwriteStorageDataSource>(),
+      firebase: sl<FirebaseRemoteDataSource>(),
+    ),
+  );
+
+  sl.registerLazySingleton<OwnerRepo>(
+    () => OwnerRepoImpl(firebase: sl(), dataSource: sl()),
   );
 
   sl.registerLazySingleton<LocationLocalDataSource>(
@@ -86,6 +137,7 @@ Future<void> initializeDependencies() async {
     ),
   );
 
+  // auth use cases
   sl.registerLazySingleton(() => RegisterUsecase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => LoginUseCase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => LogOutUseCase(sl<AuthRepo>()));
@@ -93,6 +145,21 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => SendPasswordResetUsecase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => AuthStateChangeUsecase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => LoginStatusUsecase(sl<AuthRepo>()));
+
+  // property use cases
+  sl.registerLazySingleton(() => UploadCoverImage(sl()));
+  sl.registerLazySingleton(() => UploadPropertyImages(sl()));
+  sl.registerLazySingleton(() => DeleteImageFile(repo: sl()));
+  sl.registerLazySingleton(() => UpdateImageFile(repo: sl()));
+  sl.registerLazySingleton(() => CreateProperty(repo: sl()));
+  sl.registerLazySingleton(() => FetchAllProperties(sl()));
+  sl.registerLazySingleton(() => UpdateProperty(sl()));
+
+  // owner use case
+  sl.registerLazySingleton(() => CreateOwnerProfile(sl()));
+  sl.registerLazySingleton(() => GetOwnerProfile(sl()));
+
+  // location use cases
   sl.registerLazySingleton(
     () => GetCurrentLocationUseCase(locationRepo: sl<LocationRepo>()),
   );
@@ -125,6 +192,30 @@ Future<void> initializeDependencies() async {
   sl.registerFactory(
     () => GoogleSigninCubit(googleSigninUsecase: sl<GoogleSigninUsecase>()),
   );
+
+  // Property cubit
+  sl.registerFactory(
+    () => PropertyCubit(
+      uploadCoverImage: sl(),
+      uploadPropertyImages: sl(),
+      deleteImageFile: sl(),
+      createProperty: sl(),
+      updateImageFile: sl(),
+      updateProperty: sl(),
+    ),
+  );
+  sl.registerFactory(() => PropertyFormCubit());
+  sl.registerLazySingleton(() => PropertyBloc(sl()));
+
+  sl.registerFactory(
+    () => OwnerCubit(
+      createOwnerProfile: sl(),
+      uploadCoverImage: sl(),
+      getOwnerProfile: sl(),
+    ),
+  );
+
+  // Location cubit
   sl.registerFactory(
     () => LocationCubit(
       getCurrentLocationUseCase: sl<GetCurrentLocationUseCase>(),
