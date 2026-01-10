@@ -33,6 +33,7 @@ class PropertyCubit extends Cubit<PropertyState> {
     required File image,
     required String folderType,
   }) async {
+    emit(PropertyLoading());
     final param = UploadImageParam(image: image, folderType: folderType);
     final result = await uploadCoverImage(param);
 
@@ -52,6 +53,7 @@ class PropertyCubit extends Cubit<PropertyState> {
   Future<Map<String, dynamic>?> _uploadImages({
     required List<File> images,
   }) async {
+    emit(PropertyLoading());
     final param = UploadImagesParam(images: images);
     final result = await uploadPropertyImages(param);
     return result.fold(
