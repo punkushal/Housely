@@ -1,4 +1,3 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,14 +36,37 @@ class DetailPage extends StatelessWidget {
               title: Text('Details'),
               actionsPadding: ResponsiveDimensions.paddingOnly(
                 context,
-                right: 24,
+                right: 18,
               ),
               actions: [
                 // favorite icon button
                 BlocBuilder<OwnerCubit, OwnerState>(
                   builder: (context, state) {
                     if (state is OwnerLoaded && state.owner != null) {
-                      return SizedBox.shrink();
+                      return IconButton(
+                        onPressed: () async {
+                          await context.router.push(
+                            CreateNewPropertyRoute(property: property),
+                          );
+                          if (context.mounted) {
+                            context.read<PropertyBloc>().add(
+                              GetAllProperties(),
+                            );
+                          }
+                        },
+                        icon: Container(
+                          padding: ResponsiveDimensions.paddingAll8(context),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.edit_rounded,
+                            color: AppColors.background,
+                            size: ResponsiveDimensions.spacing20(context),
+                          ),
+                        ),
+                      );
                     }
                     return GestureDetector(
                       onTap: () {
@@ -118,24 +140,6 @@ class DetailPage extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-            ),
-            floatingActionButton: IconButton(
-              onPressed: () async {
-                await context.router.push(
-                  CreateNewPropertyRoute(property: property),
-                );
-                if (context.mounted) {
-                  context.read<PropertyBloc>().add(GetAllProperties());
-                }
-              },
-              icon: Container(
-                padding: ResponsiveDimensions.paddingAll8(context),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(Icons.edit_rounded, color: AppColors.background),
               ),
             ),
           );
