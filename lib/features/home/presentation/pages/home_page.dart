@@ -7,7 +7,6 @@ import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
-import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/home/data/bottom_nav_list.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
@@ -35,19 +34,8 @@ class TabWrapper extends StatelessWidget {
         ],
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            final result = await context.pushRoute<bool>(
-              CreateNewPropertyRoute(),
-            );
-            if (result != null) {
-              if (result && context.mounted) {
-                SnackbarHelper.showSuccess(
-                  context,
-                  "Successfully created new property",
-                  showTop: true,
-                );
-              }
-            }
+          onPressed: () {
+            context.pushRoute<bool>(CreateNewPropertyRoute());
           },
           shape: RoundedRectangleBorder(
             borderRadius: ResponsiveDimensions.borderRadiusLarge(
