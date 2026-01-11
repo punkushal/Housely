@@ -27,4 +27,7 @@ abstract interface class AuthRepo {
 
   // check current user logged in or not
   bool isLoggedIn();
+
+  // get current user
+  ResultFuture<AppUser?> getCurrentUser();
 }
