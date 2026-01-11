@@ -13,6 +13,8 @@ import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.d
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
+import 'package:housely/injection_container.dart';
 
 @RoutePage()
 class DetailPage extends StatelessWidget {
@@ -26,8 +28,12 @@ class DetailPage extends StatelessWidget {
         .where((element) => element.containsKey("url"))
         .map((item) => item['url'] as String)
         .toList();
-    return BlocProvider(
-      create: (context) => FavoriteToggleCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => FavoriteToggleCubit()),
+        BlocProvider(create: (context) => sl<PropertyCubit>()),
+      ],
+
       child: Builder(
         builder: (context) {
           return Scaffold(
