@@ -14,9 +14,3 @@ final class GetOwnerProperties extends PropertyEvent {
 
   const GetOwnerProperties({required this.propertyId});
 }
-
-final class DeleteProperty extends PropertyEvent {
-  final String propertyId;
-
-  const DeleteProperty({required this.propertyId});
-}
