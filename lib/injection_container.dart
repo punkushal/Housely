@@ -9,6 +9,7 @@ import 'package:housely/features/auth/data/datasources/auth_remote_data_source.d
 import 'package:housely/features/auth/data/repositories/auth_repo_impl.dart';
 import 'package:housely/features/auth/domain/repositories/auth_repo.dart';
 import 'package:housely/features/auth/domain/usecases/auth_state_change_usecase.dart';
+import 'package:housely/features/auth/domain/usecases/get_current_user_use_case.dart';
 import 'package:housely/features/auth/domain/usecases/google_signin_usecase.dart';
 import 'package:housely/features/auth/domain/usecases/login_status_usecase.dart';
 import 'package:housely/features/auth/domain/usecases/login_usecase.dart';
@@ -146,6 +147,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => SendPasswordResetUsecase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => AuthStateChangeUsecase(sl<AuthRepo>()));
   sl.registerLazySingleton(() => LoginStatusUsecase(sl<AuthRepo>()));
+  sl.registerLazySingleton(() => GetCurrentUserUseCase(sl<AuthRepo>()));
 
   // property use cases
   sl.registerLazySingleton(() => UploadCoverImage(sl()));
@@ -231,6 +233,7 @@ Future<void> initializeDependencies() async {
     () => AuthCubit(
       authStateChangeUsecase: sl<AuthStateChangeUsecase>(),
       statusUsecase: sl<LoginStatusUsecase>(),
+      getCurrentUserUseCase: sl<GetCurrentUserUseCase>(),
     ),
   );
 }
