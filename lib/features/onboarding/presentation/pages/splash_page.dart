@@ -103,13 +103,22 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<OnboardingCubit, OnboardingState>(
-      listener: (context, state) {
-        //  When state changes (checkStatus completes), try to navigate
-        if (_animationCompleted) {
-          _tryNavigate();
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<OnboardingCubit, OnboardingState>(
+          listener: (context, state) {
+            //  When state changes (checkStatus completes), try to navigate
+            if (_animationCompleted) {
+              _tryNavigate();
+            }
+          },
+        ),
+        BlocListener<AuthCubit, AuthState>(
+          listener: (context, state) {
+            if (_animationCompleted) _tryNavigate();
+          },
+        ),
+      ],
       child: Scaffold(
         body: Center(
           child: Column(
