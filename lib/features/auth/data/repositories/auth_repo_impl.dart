@@ -125,4 +125,14 @@ class AuthRepoImpl implements AuthRepo {
   bool isLoggedIn() {
     return remoteDataSource.isLoggedIn();
   }
+
+  @override
+  ResultFuture<AppUser?> getCurrentUser() async {
+    try {
+      final result = await remoteDataSource.getCurrentUser();
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure('Failed to get current user'));
+    }
+  }
 }
