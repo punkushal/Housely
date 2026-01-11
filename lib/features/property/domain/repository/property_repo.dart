@@ -29,4 +29,7 @@ abstract interface class PropertyRepo {
 
   // update individual property
   ResultVoid updateProperty(Property property);
+
+  // delete individual property
+  ResultVoid deleteProperty(String propertyId);
 }
