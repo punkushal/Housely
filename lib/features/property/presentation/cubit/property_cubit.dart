@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/usecases/create_property.dart';
 import 'package:housely/features/property/domain/usecases/delete_image_file.dart';
+import 'package:housely/features/property/domain/usecases/delete_property.dart';
 import 'package:housely/features/property/domain/usecases/update_image_file.dart';
 import 'package:housely/features/property/domain/usecases/update_property.dart';
 import 'package:housely/features/property/domain/usecases/upload_cover_image.dart';
@@ -19,6 +20,7 @@ class PropertyCubit extends Cubit<PropertyState> {
   final DeleteImageFile deleteImageFile;
   final UploadPropertyImages uploadPropertyImages;
   final UpdateImageFile updateImageFile;
+  final DeleteProperty deleteProperty;
   PropertyCubit({
     required this.uploadCoverImage,
     required this.uploadPropertyImages,
@@ -26,6 +28,7 @@ class PropertyCubit extends Cubit<PropertyState> {
     required this.createProperty,
     required this.updateImageFile,
     required this.updateProperty,
+    required this.deleteProperty,
   }) : super(PropertyInitial());
 
   // upload cover image
@@ -175,6 +178,48 @@ class PropertyCubit extends Cubit<PropertyState> {
       (failure) => emit(PropertyError(failure.message)),
       (_) => emit(PropertyCreated()),
     );
+  }
+
+  // delete property
+  Future<void> removeProperty(Property property) async {
+    emit(PropertyLoading());
+    try {
+      //For Collecting all Image IDs from the Property entity
+      final List<String> fileIdsToDelete = [];
+
+      // Adding Cover Image ID
+      if (property.media.coverImage.containsKey('id')) {
+        fileIdsToDelete.add(property.media.coverImage['id']!);
+      }
+
+      // Adding Gallery Image IDs
+      final gallery = property.media.gallery['images'] as List<dynamic>?;
+      if (gallery != null) {
+        for (var item in gallery) {
+          if (item is Map && item.containsKey('id')) {
+            fileIdsToDelete.add(item['id'].toString());
+          }
+        }
+      }
+
+      // Deleting from Appwrite Storage
+      // I use Future.wait to delete all images in parallel for better performance
+      await Future.wait(fileIdsToDelete.map((id) => deleteImage(fileId: id)));
+
+      // Deleting from Firebase Firestore
+      final result = await deleteProperty(DeletePropertyParam(property.id!));
+
+      result.fold(
+        (failure) => emit(PropertyError(failure.message)),
+        (_) => emit(PropertyDeleted()),
+      );
+    } catch (e) {
+      emit(
+        PropertyError(
+          "Failed to delete property and its images: ${e.toString()}",
+        ),
+      );
+    }
   }
 
   // update property details

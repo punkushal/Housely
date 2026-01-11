@@ -35,6 +35,8 @@ final class PropertyImageUpdated extends PropertyState {
   const PropertyImageUpdated({required this.imageUrl});
 }
 
+final class PropertyDeleted extends PropertyState {}
+
 final class PropertyError extends PropertyState {
   final String message;
 
