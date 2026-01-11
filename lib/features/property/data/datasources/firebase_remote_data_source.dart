@@ -25,6 +25,18 @@ class FirebaseRemoteDataSource {
     }
   }
 
+  // delete property
+  Future<void> deleteProperty(String propertyId) async {
+    try {
+      await firestore
+          .collection(TextConstants.properties)
+          .doc(propertyId)
+          .delete();
+    } catch (e) {
+      throw Exception('Failed to add new property: $e');
+    }
+  }
+
   // fetch all the properties
   Future<List<Property>> fetchAllProperties() async {
     try {
