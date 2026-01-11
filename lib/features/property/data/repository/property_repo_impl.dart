@@ -149,4 +149,16 @@ class PropertyRepoImpl implements PropertyRepo {
       );
     }
   }
+
+  @override
+  ResultVoid deleteProperty(String propertyId) async {
+    try {
+      await firebase.deleteProperty(propertyId);
+      return Right(null);
+    } on FirebaseAuthException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(UnknownFailure("Failed to deleted property: $e"));
+    }
+  }
 }
