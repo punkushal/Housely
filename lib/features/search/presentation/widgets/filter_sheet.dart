@@ -1,0 +1,147 @@
+import 'package:flutter/material.dart';
+import 'package:housely/core/constants/app_colors.dart';
+import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/widgets/custom_button.dart';
+import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
+import 'package:housely/features/search/domain/entity/check_option.dart';
+import 'package:housely/features/search/presentation/widgets/facitlity_filter_chip_list.dart';
+import 'package:housely/features/search/presentation/widgets/price_range_slider.dart';
+
+class FilterSheet extends StatelessWidget {
+  const FilterSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: ResponsiveDimensions.paddingSymmetric(context, horizontal: 24),
+      child: Column(
+        spacing: ResponsiveDimensions.spacing8(context),
+        children: [
+          SizedBox(height: ResponsiveDimensions.spacing8(context)),
+          HeadingLabel(label: "Filter"),
+
+          // check box for property status
+          FilterCheckboxContent(
+            label: "Looking for",
+            checkOptions: [
+              CheckOption(label: "For Rent"),
+              CheckOption(label: "For Sale"),
+            ],
+            onChanged: (updatedOptions) {
+              final selectedList = updatedOptions
+                  .where((option) => option.isSelected)
+                  .toList();
+
+              debugPrint(selectedList.toString());
+            },
+          ),
+
+          // check box for property type
+          FilterCheckboxContent(
+            label: "Property Type",
+            checkOptions: [
+              CheckOption(label: "Apartment"),
+              CheckOption(label: "Penthouse"),
+              CheckOption(label: "Hotel"),
+              CheckOption(label: "Villa"),
+              CheckOption(label: "House"),
+            ],
+            onChanged: (updatedOptions) {
+              final selectedList = updatedOptions
+                  .where((option) => option.isSelected)
+                  .toList();
+
+              debugPrint(selectedList.toString());
+            },
+          ),
+
+          // price range
+          PriceRangeSlider(),
+
+          // facility filter chip
+          FacitlityFilterChipList(),
+          SizedBox(height: ResponsiveDimensions.spacing12(context)),
+          Row(
+            children: [
+              // reset button
+              Expanded(
+                child: TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    "Reset",
+                    style: AppTextStyle.bodyMedium(
+                      context,
+                      fontSize: 18,
+                      lineHeight: 27,
+                      color: AppColors.textHint,
+                    ),
+                  ),
+                ),
+              ),
+
+              // apply button
+              Expanded(
+                child: CustomButton(onTap: () {}, buttonLabel: "Apply"),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// selection content
+class FilterCheckboxContent extends StatelessWidget {
+  const FilterCheckboxContent({
+    super.key,
+    required this.label,
+    required this.checkOptions,
+    required this.onChanged,
+  });
+
+  /// label text
+  final String label;
+
+  final List<CheckOption> checkOptions;
+
+  final ValueChanged<List<CheckOption>> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: .start,
+      spacing: ResponsiveDimensions.spacing16(context),
+      children: [
+        SizedBox(height: ResponsiveDimensions.spacing8(context)),
+        HeadingLabel(label: label),
+        Wrap(
+          children: checkOptions
+              .map(
+                (option) => Row(
+                  mainAxisAlignment: .spaceBetween,
+                  children: [
+                    Text(
+                      option.label,
+                      style: AppTextStyle.bodyRegular(context),
+                    ),
+                    Checkbox(
+                      value: option.isSelected,
+                      onChanged: (value) {
+                        option.isSelected = value ?? false;
+                        onChanged(checkOptions);
+                      },
+                      visualDensity: VisualDensity(
+                        vertical: VisualDensity.minimumDensity,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+}
