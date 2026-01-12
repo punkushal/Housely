@@ -21,8 +21,6 @@ import 'package:housely/features/detail/presentation/pages/detail_page.dart'
     as _i4;
 import 'package:housely/features/home/presentation/pages/booking_page.dart'
     as _i1;
-import 'package:housely/features/home/presentation/pages/explore_page.dart'
-    as _i5;
 import 'package:housely/features/home/presentation/pages/home_page.dart' as _i7;
 import 'package:housely/features/home/presentation/pages/profile_page.dart'
     as _i13;
@@ -46,6 +44,8 @@ import 'package:housely/features/property/presentation/pages/create_new_property
     as _i3;
 import 'package:housely/features/property/presentation/pages/my_property_list_page.dart'
     as _i11;
+import 'package:housely/features/search/presentation/page/explore_page.dart'
+    as _i5;
 
 /// generated route for
 /// [_i1.BookingPage]
