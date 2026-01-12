@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
-import 'package:housely/features/search/domain/entity/check_option.dart';
+import 'package:housely/features/search/presentation/cubit/search_filter_cubit.dart';
 import 'package:housely/features/search/presentation/widgets/facitlity_filter_chip_list.dart';
 import 'package:housely/features/search/presentation/widgets/price_range_slider.dart';
 
@@ -22,37 +23,32 @@ class FilterSheet extends StatelessWidget {
           HeadingLabel(label: "Filter"),
 
           // check box for property status
-          FilterCheckboxContent(
-            label: "Looking for",
-            checkOptions: [
-              CheckOption(label: "For Rent"),
-              CheckOption(label: "For Sale"),
-            ],
-            onChanged: (updatedOptions) {
-              final selectedList = updatedOptions
-                  .where((option) => option.isSelected)
-                  .toList();
-
-              debugPrint(selectedList.toString());
+          BlocBuilder<SearchFilterCubit, SearchFilterState>(
+            builder: (context, state) {
+              return FilterCheckboxContent(
+                label: "Looking for",
+                checkOptions: state.lookingFor,
+                onChanged: (updatedOptions) {
+                  context.read<SearchFilterCubit>().togglePropertyStatus(
+                    updatedOptions,
+                  );
+                },
+              );
             },
           ),
 
           // check box for property type
-          FilterCheckboxContent(
-            label: "Property Type",
-            checkOptions: [
-              CheckOption(label: "Apartment"),
-              CheckOption(label: "Penthouse"),
-              CheckOption(label: "Hotel"),
-              CheckOption(label: "Villa"),
-              CheckOption(label: "House"),
-            ],
-            onChanged: (updatedOptions) {
-              final selectedList = updatedOptions
-                  .where((option) => option.isSelected)
-                  .toList();
-
-              debugPrint(selectedList.toString());
+          BlocBuilder<SearchFilterCubit, SearchFilterState>(
+            builder: (context, state) {
+              return FilterCheckboxContent(
+                label: "Property Type",
+                checkOptions: state.propertyType,
+                onChanged: (updatedOptions) {
+                  context.read<SearchFilterCubit>().togglePropertyType(
+                    updatedOptions,
+                  );
+                },
+              );
             },
           ),
 
@@ -67,7 +63,9 @@ class FilterSheet extends StatelessWidget {
               // reset button
               Expanded(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.read<SearchFilterCubit>().resetFilters();
+                  },
                   child: Text(
                     "Reset",
                     style: AppTextStyle.bodyMedium(
@@ -84,6 +82,20 @@ class FilterSheet extends StatelessWidget {
               Expanded(
                 child: CustomButton(onTap: () {}, buttonLabel: "Apply"),
               ),
+
+              //               final filters = {
+              //   'lookingFor': state.lookingFor.entries
+              //       .where((e) => e.value)
+              //       .map((e) => e.key)
+              //       .toList(),
+              //   'propertyType': state.propertyType.entries
+              //       .where((e) => e.value)
+              //       .map((e) => e.key)
+              //       .toList(),
+              //   'priceMin': state.priceRange.start,
+              //   'priceMax': state.priceRange.end,
+              //   'facilities': state.facilities.toList(),
+              // };
             ],
           ),
         ],
@@ -104,9 +116,9 @@ class FilterCheckboxContent extends StatelessWidget {
   /// label text
   final String label;
 
-  final List<CheckOption> checkOptions;
+  final Map<String, bool> checkOptions;
 
-  final ValueChanged<List<CheckOption>> onChanged;
+  final Function(String key) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -117,20 +129,16 @@ class FilterCheckboxContent extends StatelessWidget {
         SizedBox(height: ResponsiveDimensions.spacing8(context)),
         HeadingLabel(label: label),
         Wrap(
-          children: checkOptions
+          children: checkOptions.entries
               .map(
                 (option) => Row(
                   mainAxisAlignment: .spaceBetween,
                   children: [
-                    Text(
-                      option.label,
-                      style: AppTextStyle.bodyRegular(context),
-                    ),
+                    Text(option.key, style: AppTextStyle.bodyRegular(context)),
                     Checkbox(
-                      value: option.isSelected,
+                      value: option.value,
                       onChanged: (value) {
-                        option.isSelected = value ?? false;
-                        onChanged(checkOptions);
+                        onChanged(option.key);
                       },
                       visualDensity: VisualDensity(
                         vertical: VisualDensity.minimumDensity,
