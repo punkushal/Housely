@@ -10,7 +10,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: LoginRoute.page),
     AutoRoute(page: SignupRoute.page),
     AutoRoute(page: ForgotPasswordRoute.page),
-    AutoRoute(page: LocationWrapper.page),
+    AutoRoute(page: MapPickerRoute.page),
     AutoRoute(page: LocationRoute.page),
     AutoRoute(
       page: TabWrapper.page,
@@ -19,10 +19,12 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: ProfileRoute.page),
         AutoRoute(page: ExploreRoute.page),
         AutoRoute(page: BookingRoute.page),
-        AutoRoute(page: CreateNewPropertyRoute.page),
       ],
     ),
+    AutoRoute(page: CreateNewPropertyRoute.page),
+    AutoRoute(page: CompleteOwnerProfileRoute.page),
     AutoRoute(page: SeeAllListRoute.page),
     AutoRoute(page: DetailRoute.page),
+    AutoRoute(page: MyPropertyListRoute.page),
   ];
 }

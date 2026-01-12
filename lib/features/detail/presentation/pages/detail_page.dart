@@ -1,7 +1,8 @@
-import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
@@ -9,56 +10,108 @@ import 'package:housely/features/detail/presentation/widgets/custom_carousel_sli
 import 'package:housely/features/detail/presentation/widgets/image_list.dart';
 import 'package:housely/features/detail/presentation/widgets/property_detail_section.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
+import 'package:housely/features/property/domain/entities/property.dart';
+import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
+import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
+import 'package:housely/injection_container.dart';
 
 @RoutePage()
 class DetailPage extends StatelessWidget {
-  const DetailPage({super.key});
+  const DetailPage({super.key, required this.property});
 
+  /// actual property data
+  final Property property;
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => FavoriteToggleCubit(),
+    final urls = (property.media.gallery['images'] as List)
+        .where((element) => element.containsKey("url"))
+        .map((item) => item['url'] as String)
+        .toList();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => FavoriteToggleCubit()),
+        BlocProvider(create: (context) => sl<PropertyCubit>()),
+      ],
+
       child: Builder(
         builder: (context) {
           return Scaffold(
             appBar: AppBar(
+              backgroundColor: Colors.transparent,
               title: Text('Details'),
               actionsPadding: ResponsiveDimensions.paddingOnly(
                 context,
-                right: 24,
+                right: 18,
               ),
               actions: [
                 // favorite icon button
-                GestureDetector(
-                  onTap: () {
-                    context.read<FavoriteToggleCubit>().toggleFavorite();
-                  },
-                  child:
-                      BlocSelector<
-                        FavoriteToggleCubit,
-                        FavoriteToggleState,
-                        bool
-                      >(
-                        selector: (state) {
-                          return state.isSelected;
-                        },
-                        builder: (context, state) {
-                          bool isFavorite = state;
-                          return SvgPicture.asset(
-                            isFavorite
-                                ? ImageConstant.favoriteFilledIcon
-                                : ImageConstant.favoriteIcon,
-                            width: ResponsiveDimensions.getSize(context, 24),
-                            height: ResponsiveDimensions.getHeight(context, 24),
-                            colorFilter: ColorFilter.mode(
-                              isFavorite
-                                  ? AppColors.error
-                                  : AppColors.textPrimary,
-                              .srcIn,
-                            ),
+                BlocBuilder<OwnerCubit, OwnerState>(
+                  builder: (context, state) {
+                    if (state is OwnerLoaded && state.owner != null) {
+                      return IconButton(
+                        onPressed: () async {
+                          await context.router.push(
+                            CreateNewPropertyRoute(property: property),
                           );
+                          if (context.mounted) {
+                            context.read<PropertyBloc>().add(
+                              GetAllProperties(),
+                            );
+                          }
                         },
-                      ),
+                        icon: Container(
+                          padding: ResponsiveDimensions.paddingAll8(context),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.edit_rounded,
+                            color: AppColors.background,
+                            size: ResponsiveDimensions.spacing20(context),
+                          ),
+                        ),
+                      );
+                    }
+                    return GestureDetector(
+                      onTap: () {
+                        context.read<FavoriteToggleCubit>().toggleFavorite();
+                      },
+                      child:
+                          BlocSelector<
+                            FavoriteToggleCubit,
+                            FavoriteToggleState,
+                            bool
+                          >(
+                            selector: (state) {
+                              return state.isSelected;
+                            },
+                            builder: (context, state) {
+                              bool isFavorite = state;
+                              return SvgPicture.asset(
+                                isFavorite
+                                    ? ImageConstant.favoriteFilledIcon
+                                    : ImageConstant.favoriteIcon,
+                                width: ResponsiveDimensions.getSize(
+                                  context,
+                                  24,
+                                ),
+                                height: ResponsiveDimensions.getHeight(
+                                  context,
+                                  24,
+                                ),
+                                colorFilter: ColorFilter.mode(
+                                  isFavorite
+                                      ? AppColors.error
+                                      : AppColors.textPrimary,
+                                  .srcIn,
+                                ),
+                              );
+                            },
+                          ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -73,17 +126,19 @@ class DetailPage extends StatelessWidget {
                     spacing: ResponsiveDimensions.getHeight(context, 12),
                     children: [
                       // property image carousel
-                      CustomCarouselSlider(),
+                      CustomCarouselSlider(
+                        imageUrls: [property.media.coverImage['url'], ...urls],
+                      ),
 
                       // images list
-                      ImageList(),
+                      ImageList(imageUrls: urls),
 
                       SizedBox(
                         height: ResponsiveDimensions.getHeight(context, 12),
                       ),
 
                       // Detail section
-                      PropertyDetailSection(),
+                      PropertyDetailSection(property: property),
 
                       SizedBox(
                         height: ResponsiveDimensions.getHeight(context, 6),

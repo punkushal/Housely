@@ -15,6 +15,11 @@ class CustomTextField extends StatelessWidget {
     this.onChanged,
     this.style,
     this.contentPadding,
+    this.maxLines,
+    this.readOnly = false,
+    this.initialValue,
+    this.fieldKey,
+    this.onTap,
   });
 
   /// [TextEditingController] controller
@@ -49,15 +54,35 @@ class CustomTextField extends StatelessWidget {
 
   /// content padding
   final EdgeInsetsGeometry? contentPadding;
+
+  /// max line for field
+  final int? maxLines;
+
+  /// enable read only
+  final bool readOnly;
+
+  /// initial value if controller not used
+  final String? initialValue;
+
+  /// field key
+  final Key? fieldKey;
+
+  /// on tap if any tapping functionality needed
+  final void Function()? onTap;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      key: fieldKey,
+      initialValue: initialValue,
+      readOnly: readOnly,
       style: style ?? AppTextStyle.bodyRegular(context, fontSize: 14),
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
       validator: validator,
       onChanged: onChanged,
+      maxLines: maxLines,
+      onTap: onTap,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: hintStyle,

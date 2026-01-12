@@ -14,7 +14,6 @@ import 'package:housely/features/home/presentation/widgets/custom_tab_item.dart'
 import 'package:housely/features/home/presentation/widgets/heading_section.dart';
 import 'package:housely/features/home/presentation/widgets/icon_wrapper.dart';
 import 'package:housely/features/home/presentation/widgets/nearby_list.dart';
-import 'package:housely/features/home/presentation/widgets/property_list.dart';
 import 'package:housely/features/home/presentation/widgets/recommended_list.dart';
 import 'package:housely/features/home/presentation/widgets/top_location_list.dart';
 
@@ -30,10 +29,22 @@ class TabWrapper extends StatelessWidget {
         routes: [
           HomeRoute(address: address),
           ExploreRoute(),
-          CreateNewPropertyRoute(),
           BookingRoute(),
           ProfileRoute(),
         ],
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.pushRoute<bool>(CreateNewPropertyRoute());
+          },
+          shape: RoundedRectangleBorder(
+            borderRadius: ResponsiveDimensions.borderRadiusLarge(
+              context,
+              size: 28,
+            ),
+          ),
+          child: Icon(Icons.add),
+        ),
         bottomNavigationBuilder: (_, tabsRouter) {
           return Container(
             decoration: BoxDecoration(
@@ -185,10 +196,10 @@ class _HomePageState extends State<HomePage> {
                 HeadingSection(title: "Popular for you", onTapText: "See all"),
 
                 // Popular property list
-                SizedBox(
-                  height: ResponsiveDimensions.getHeight(context, 400),
-                  child: PropertyList(horizontal: 0),
-                ),
+                // SizedBox(
+                //   height: ResponsiveDimensions.getHeight(context, 400),
+                //   child: PropertyList(horizontal: 0),
+                // ),
               ],
             ),
           ),

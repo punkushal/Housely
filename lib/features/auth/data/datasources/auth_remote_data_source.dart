@@ -21,6 +21,8 @@ abstract class AuthRemoteDataSource {
   Stream<AppUser?> get authStateChanges;
 
   bool isLoggedIn();
+
+  Future<AppUser?> getCurrentUser();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -167,5 +169,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   bool isLoggedIn() {
     return firebaseAuth.currentUser != null;
+  }
+
+  @override
+  Future<AppUser?> getCurrentUser() async {
+    try {
+      final hasCurrentUser = firebaseAuth.currentUser != null;
+      if (hasCurrentUser) {
+        return AppUser(
+          uid: firebaseAuth.currentUser!.uid,
+          email: firebaseAuth.currentUser!.email!,
+          username: firebaseAuth.currentUser!.displayName!,
+        );
+      }
+      return null;
+    } catch (e) {
+      throw ServerException('Failed to retrieve current user');
+    }
   }
 }

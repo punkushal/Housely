@@ -1,13 +1,17 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/constants/text_constants.dart';
+import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/detail/presentation/widgets/contact_container.dart';
 import 'package:housely/features/detail/presentation/widgets/facility_list.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
@@ -16,212 +20,332 @@ import 'package:housely/features/detail/presentation/widgets/info_container.dart
 import 'package:housely/features/detail/presentation/widgets/read_more_text.dart';
 import 'package:housely/features/detail/presentation/widgets/review_list.dart';
 import 'package:housely/features/home/presentation/widgets/heading_section.dart';
+import 'package:housely/features/location/domain/entities/location.dart';
+import 'package:housely/features/property/domain/entities/property.dart';
+import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
 
-// TODO: later value will be dynamic and access through variables
 class PropertyDetailSection extends StatelessWidget {
-  const PropertyDetailSection({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      spacing: ResponsiveDimensions.getHeight(context, 16),
-      mainAxisSize: .min,
-      crossAxisAlignment: .start,
-      children: [
-        Row(
-          mainAxisAlignment: .spaceBetween,
-          crossAxisAlignment: .start,
-          children: [
-            // property name and location
-            Column(
-              crossAxisAlignment: .start,
-              spacing: ResponsiveDimensions.getHeight(context, 4),
-              children: [
-                // property title
-                Text(
-                  "House of Mormon",
+  const PropertyDetailSection({super.key, required this.property});
+  final Property property;
+
+  // show dialog box before deleting
+  Future<bool> _showConfirmationDailog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text("Delete Property?"),
+        content: Text(
+          "This action cannot be undone, and all related data will be permanently removed.",
+          style: AppTextStyle.bodyRegular(context),
+        ),
+
+        actions: [
+          Row(
+            mainAxisAlignment: .center,
+            children: [
+              TextButton(
+                onPressed: () {
+                  context.pop(false);
+                },
+                child: Text(
+                  'Cancel',
+                  style: AppTextStyle.bodySemiBold(context),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.pop(true);
+                },
+                child: Text(
+                  'Delete',
                   style: AppTextStyle.bodySemiBold(
                     context,
-                    fontSize: 20,
-                    lineHeight: 26,
+                    color: AppColors.error,
                   ),
                 ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
-                // location
-                Row(
-                  spacing: ResponsiveDimensions.spacing4(context),
-                  children: [
-                    SvgPicture.asset(
-                      ImageConstant.locationIcon,
-                      width: ResponsiveDimensions.getSize(context, 24),
-                      height: ResponsiveDimensions.getHeight(context, 24),
-                      colorFilter: ColorFilter.mode(AppColors.textHint, .srcIn),
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<PropertyCubit, PropertyState>(
+      listener: (context, state) {
+        if (state is PropertyDeleted) {
+          context.pop();
+          SnackbarHelper.showSuccess(
+            context,
+            "The property is deleted",
+            showTop: true,
+          );
+        } else if (state is PropertyError) {
+          SnackbarHelper.showError(context, state.message);
+        }
+      },
+      child: Column(
+        spacing: ResponsiveDimensions.spacing16(context),
+        mainAxisSize: .min,
+        crossAxisAlignment: .start,
+        children: [
+          Row(
+            mainAxisAlignment: .spaceBetween,
+            crossAxisAlignment: .start,
+            children: [
+              // property name and location
+              Column(
+                crossAxisAlignment: .start,
+                spacing: ResponsiveDimensions.getHeight(context, 4),
+                children: [
+                  // property title
+                  SizedBox(
+                    width: ResponsiveDimensions.getSize(context, 180),
+                    child: Text(
+                      property.name.capitalize,
+                      overflow: .ellipsis,
+                      style: AppTextStyle.bodySemiBold(
+                        context,
+                        fontSize: 20,
+                        lineHeight: 26,
+                      ),
                     ),
+                  ),
 
-                    Text(
-                      'Denspasar, Bali',
+                  // location
+                  Row(
+                    spacing: ResponsiveDimensions.spacing4(context),
+                    children: [
+                      SvgPicture.asset(
+                        ImageConstant.locationIcon,
+                        width: ResponsiveDimensions.getSize(context, 24),
+                        height: ResponsiveDimensions.getHeight(context, 24),
+                        colorFilter: ColorFilter.mode(
+                          AppColors.textHint,
+                          .srcIn,
+                        ),
+                      ),
+
+                      SizedBox(
+                        width: ResponsiveDimensions.getSize(context, 180),
+                        child: Text(
+                          property.location.address,
+                          overflow: .ellipsis,
+                          style: AppTextStyle.bodyRegular(
+                            context,
+                            fontSize: 14,
+                            color: AppColors.textHint,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              // price
+              RichText(
+                text: TextSpan(
+                  text: "\$${property.price.amount.toStringAsFixed(2)}",
+                  style: AppTextStyle.labelBold(
+                    context,
+                    lineHeight: 18,
+                    color: AppColors.primaryPressed,
+                    fontSize: 10,
+                  ),
+                  children: [
+                    TextSpan(
+                      text:
+                          property.type.name.toLowerCase() ==
+                              PropertyType.house.name.toLowerCase()
+                          ? "/month"
+                          : "/night",
                       style: AppTextStyle.bodyRegular(
                         context,
-                        fontSize: 14,
+                        lineHeight: 14,
+                        fontSize: 9,
                         color: AppColors.textHint,
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
+          SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
 
-            // price
-            RichText(
-              text: TextSpan(
-                text: "\$310",
-                style: AppTextStyle.labelBold(
-                  context,
-                  lineHeight: 18,
-                  fontSize: 14,
-                  color: AppColors.primaryPressed,
-                ),
+          HeadingLabel(label: "Property Details"),
+
+          // Property details
+          Column(
+            crossAxisAlignment: .start,
+            spacing: ResponsiveDimensions.getHeight(context, 12),
+            children: [
+              Row(
+                mainAxisAlignment: .spaceBetween,
                 children: [
-                  TextSpan(
-                    text: "/month",
+                  IconInfoContainer(
+                    label: "Bedrooms",
+                    iconPath: ImageConstant.bedIcon,
+                    number: property.specs.bedrooms,
+                  ),
+                  IconInfoContainer(
+                    label: "Bathtub",
+                    iconPath: ImageConstant.bathTubIcon,
+                    number: property.specs.bathrooms,
+                  ),
+                  IconInfoContainer(
+                    label: "Bedrooms",
+                    iconPath: ImageConstant.areaIcon,
+                    number: property.specs.area.toInt(),
+                    isArea: true,
+                  ),
+                ],
+              ),
+
+              Row(
+                mainAxisAlignment: .spaceEvenly,
+                children: [
+                  InfoContainer(
+                    label: "Build",
+                    number: int.tryParse(property.specs.builtYear),
+                  ),
+                  Spacer(),
+                  InfoContainer(label: "Parking", number: 1),
+
+                  SizedBox(width: ResponsiveDimensions.getSize(context, 67)),
+                  InfoContainer(
+                    label: "Status",
+                    infoText: property.status.name,
+                  ),
+
+                  SizedBox(width: ResponsiveDimensions.getSize(context, 21)),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
+
+          // Description section
+          HeadingLabel(label: "Description"),
+          ReadMoreText(
+            text: property.description,
+            style: AppTextStyle.bodyRegular(context, color: AppColors.textHint),
+          ),
+
+          SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
+
+          // owner section
+          HeadingLabel(label: "Agent"),
+          Row(
+            spacing: ResponsiveDimensions.spacing16(context),
+            children: [
+              CircleAvatar(
+                radius: ResponsiveDimensions.radiusXLarge(context, size: 22),
+                backgroundColor: Colors.grey,
+                foregroundImage: NetworkImage(property.media.coverImage['url']),
+              ),
+
+              Column(
+                crossAxisAlignment: .start,
+                children: [
+                  // user name
+                  Text(
+                    property.owner.name.capitalize,
+                    style: AppTextStyle.bodySemiBold(context),
+                  ),
+
+                  // user role
+                  Text(
+                    "Owner",
                     style: AppTextStyle.bodyRegular(
                       context,
-                      lineHeight: 14,
                       color: AppColors.textHint,
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
+              Spacer(),
+              // contact section
+              Row(
+                spacing: ResponsiveDimensions.spacing8(context),
+                children: [
+                  ContactContainer(iconPath: ImageConstant.callIcon),
+                  ContactContainer(iconPath: ImageConstant.chatIcon),
+                ],
+              ),
+            ],
+          ),
 
-        HeadingLabel(label: "Property Details"),
+          SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
 
-        // Property details
-        Column(
-          crossAxisAlignment: .start,
-          spacing: ResponsiveDimensions.getHeight(context, 12),
-          children: [
-            Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                IconInfoContainer(
-                  label: "Bedrooms",
-                  iconPath: ImageConstant.bedIcon,
-                  number: 3,
+          // location & facility
+          HeadingLabel(label: "Location & Public Facilities"),
+
+          FacilityList(facilities: property.facilities),
+
+          // map preview image
+          GestureDetector(
+            onTap: () => context.router.push(
+              MapPickerRoute(
+                initialLocation: Location(
+                  latitude: property.location.latitude,
+                  longitude: property.location.longitude,
+                  address: property.location.address,
                 ),
-                IconInfoContainer(
-                  label: "Bathtub",
-                  iconPath: ImageConstant.bathTubIcon,
-                  number: 3,
-                ),
-                IconInfoContainer(
-                  label: "Bedrooms",
-                  iconPath: ImageConstant.areaIcon,
-                  number: 1880,
-                  isArea: true,
-                ),
-              ],
+                isVisitor: true,
+              ),
             ),
-
-            Row(
-              mainAxisAlignment: .spaceEvenly,
-              children: [
-                InfoContainer(label: "Build", number: 2020),
-                Spacer(),
-                InfoContainer(label: "Parking", infoText: "1 Indoor"),
-
-                SizedBox(width: ResponsiveDimensions.getSize(context, 67)),
-                InfoContainer(label: "Status"),
-
-                SizedBox(width: ResponsiveDimensions.getSize(context, 21)),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
-
-        // Description section
-        HeadingLabel(label: "Description"),
-        ReadMoreText(
-          text:
-              "This is a short description about this property. I hope you like this. It's surrounding is something that you might love it",
-          style: AppTextStyle.bodyRegular(context, color: AppColors.textHint),
-        ),
-
-        SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
-
-        // owner section
-        HeadingLabel(label: "Agent"),
-        Row(
-          spacing: ResponsiveDimensions.spacing16(context),
-          children: [
-            // TODO: later actual image will be placed
-            CircleAvatar(
-              radius: ResponsiveDimensions.radiusXLarge(context, size: 22),
-              backgroundColor: Colors.grey,
-            ),
-
-            Column(
-              crossAxisAlignment: .start,
-              children: [
-                // user name
-                Text("Kushal Pun", style: AppTextStyle.bodySemiBold(context)),
-
-                // user role
-                Text(
-                  "Owner",
-                  style: AppTextStyle.bodyRegular(
-                    context,
-                    color: AppColors.textHint,
-                  ),
-                ),
-              ],
-            ),
-            Spacer(),
-            // contact section
-            Row(
-              spacing: ResponsiveDimensions.spacing8(context),
-              children: [
-                ContactContainer(iconPath: ImageConstant.callIcon),
-                ContactContainer(iconPath: ImageConstant.chatIcon),
-              ],
-            ),
-          ],
-        ),
-
-        SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
-
-        // location & facility
-        HeadingLabel(label: "Location & Public Facilities"),
-
-        FacilityList(),
-
-        // map preview image
-        GestureDetector(
-          // TODO: later if agent or owner added their location then only this preview
-          // vissible otherwise hidden
-          onTap: () => context.router.push(LocationWrapper()),
-          child: ClipRRect(
-            borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
-            child: Image.asset(
-              ImageConstant.mapPreviewImg,
-              fit: .cover,
-              height: ResponsiveDimensions.getHeight(context, 142),
-              width: .infinity,
+            child: ClipRRect(
+              borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
+              child: Image.asset(
+                ImageConstant.mapPreviewImg,
+                fit: .cover,
+                height: ResponsiveDimensions.getHeight(context, 142),
+                width: .infinity,
+              ),
             ),
           ),
-        ),
 
-        // Review section
-        HeadingSection(title: "Reviews", onTapText: "See all"),
+          // TODO: initially this section will not be displayed untill review exist for this property
+          // Review section
+          HeadingSection(title: "Reviews", onTapText: "See all"),
 
-        ReviewList(),
+          ReviewList(),
 
-        // rent button
-        CustomButton(onTap: () {}, buttonLabel: TextConstants.rent),
-      ],
+          // rent button
+          BlocBuilder<PropertyCubit, PropertyState>(
+            builder: (context, state) {
+              final authState = context.read<AuthCubit>().state;
+              if (authState is Authenticated &&
+                  authState.currentUser!.uid == property.owner.ownerId) {
+                return CustomButton(
+                  onTap: () async {
+                    final result = await _showConfirmationDailog(context);
+
+                    if (result && context.mounted) {
+                      await context.read<PropertyCubit>().removeProperty(
+                        property,
+                      );
+                    }
+                  },
+                  buttonLabel: "Delete",
+                  textColor: AppColors.error,
+                  isOutlined: true,
+                  isLoading: state is PropertyLoading,
+                );
+              }
+              return CustomButton(
+                onTap: () {},
+                buttonLabel: TextConstants.rent,
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

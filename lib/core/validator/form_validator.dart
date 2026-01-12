@@ -1,4 +1,91 @@
 class FormValidators {
+  // AREA (sq ft)
+  static String? area(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Area is required';
+    }
+
+    final area = double.tryParse(value);
+    if (area == null || area <= 0) {
+      return 'Enter a valid area';
+    }
+    return null;
+  }
+
+  // BUILD YEAR
+  static String? buildYear(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Build year is required';
+    }
+
+    if (!RegExp(r'^\d{4}$').hasMatch(value)) {
+      return 'Enter a valid year';
+    }
+
+    final year = int.parse(value);
+    final currentYear = DateTime.now().year;
+
+    if (year < 1900 || year > currentYear) {
+      return 'Must be between 1900 and $currentYear';
+    }
+
+    return null;
+  }
+
+  // PROPERTY TITLE
+  static String? title(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Title is required';
+    }
+
+    if (value.trim().length < 5) {
+      return 'Must be at least 5 characters';
+    }
+
+    return null;
+  }
+
+  // DESCRIPTION
+  static String? description(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Description is required';
+    }
+
+    if (value.trim().length < 20) {
+      return 'Must be at least 20 characters';
+    }
+
+    return null;
+  }
+
+  // PRICE
+  static String? price(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Price is required';
+    }
+
+    final price = double.tryParse(value);
+    if (price == null || price <= 0) {
+      return 'Enter a valid price';
+    }
+
+    return null;
+  }
+
+  // BEDROOMS / BATHROOMS
+  static String? rooms(String? value, {required String label}) {
+    if (value == null || value.trim().isEmpty) {
+      return '$label is required';
+    }
+
+    final count = int.tryParse(value);
+    if (count == null || count < 0 || count > 20) {
+      return 'Enter a valid $label count';
+    }
+
+    return null;
+  }
+
   // Email Validator
   static String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -30,24 +117,24 @@ class FormValidators {
     }
 
     if (value.length < minLength) {
-      return 'Password must be at least $minLength characters long';
+      return 'Must be at least $minLength characters long';
     }
 
     if (requireUppercase && !value.contains(RegExp(r'[A-Z]'))) {
-      return 'Password must contain at least one uppercase letter';
+      return 'Must contain at least one uppercase letter';
     }
 
     if (requireLowercase && !value.contains(RegExp(r'[a-z]'))) {
-      return 'Password must contain at least one lowercase letter';
+      return 'Must contain at least one lowercase letter';
     }
 
     if (requireDigit && !value.contains(RegExp(r'[0-9]'))) {
-      return 'Password must contain at least one digit';
+      return 'Must contain at least one digit';
     }
 
     if (requireSpecialChar &&
         !value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
-      return 'Password must contain at least one special character';
+      return 'Must contain at least one special character';
     }
 
     return null;
@@ -78,7 +165,7 @@ class FormValidators {
     }
 
     if (value.length < minLength) {
-      return 'Username must be at least $minLength characters long';
+      return 'Must be at least $minLength characters long';
     }
 
     if (value.length > maxLength) {
@@ -91,7 +178,25 @@ class FormValidators {
 
     final usernameRegex = RegExp(r'^[a-zA-Z0-9_]+$');
     if (!usernameRegex.hasMatch(value)) {
-      return 'Username can only contain letters, numbers, and underscores';
+      return 'Must Only contain letters, numbers, and underscores';
+    }
+
+    return null;
+  }
+
+  // full name validator
+  static String? validateFullName(String? value) {
+    //  Check if empty
+    if (value == null || value.trim().isEmpty) {
+      return 'Please enter your full name';
+    }
+
+    //  Check for at least two words (First Name + Last Name)
+    // Logic: distinct words separated by a space, each at least 2 chars long.
+    final nameRegExp = RegExp(r"^[a-zA-Z]{2,}(\s+[a-zA-Z]{2,})+$");
+
+    if (!nameRegExp.hasMatch(value.trim())) {
+      return 'Please enter a valid full name (e.g. Kushal Pun)';
     }
 
     return null;

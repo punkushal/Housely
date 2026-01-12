@@ -1,0 +1,1 @@
+const maxPropertyImagesSizeInMB = 50;

@@ -145,6 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                               hintText: 'Password',
                               keyboardType: TextInputType.visiblePassword,
                               obscureText: state,
+                              maxLines: state ? 1 : null,
                               suffixIcon: GestureDetector(
                                 onTap: () => context
                                     .read<AuthFormCubit>()
@@ -203,6 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                       BlocConsumer<LoginCubit, LoginState>(
                         listener: (context, state) {
                           if (state is LoginSuccess) {
+                            context.router.replace(LocationRoute());
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 backgroundColor: AppColors.success,

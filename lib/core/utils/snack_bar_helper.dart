@@ -6,24 +6,43 @@ import 'package:housely/core/responsive/responsive_dimensions.dart';
 enum SnackbarType { success, error, info, warning }
 
 class SnackbarHelper {
-  static void showSuccess(BuildContext context, String message) {
-    _showSnackbar(context, message, SnackbarType.success);
+  static void showSuccess(
+    BuildContext context,
+    String message, {
+    bool showTop = false,
+  }) {
+    _showSnackbar(context, message, SnackbarType.success, showTop: showTop);
   }
 
-  static void showError(BuildContext context, String message) {
-    _showSnackbar(context, message, SnackbarType.error);
+  static void showError(
+    BuildContext context,
+    String message, {
+    bool showTop = false,
+  }) {
+    _showSnackbar(context, message, SnackbarType.error, showTop: showTop);
   }
 
-  static void showInfo(BuildContext context, String message) {
-    _showSnackbar(context, message, SnackbarType.info);
+  static void showInfo(
+    BuildContext context,
+    String message, {
+    bool showTop = false,
+  }) {
+    _showSnackbar(context, message, SnackbarType.info, showTop: showTop);
   }
 
   static void showWarning(
     BuildContext context,
     String message, {
     SnackBarAction? action,
+    bool showTop = false,
   }) {
-    _showSnackbar(context, message, SnackbarType.warning, action: action);
+    _showSnackbar(
+      context,
+      message,
+      SnackbarType.warning,
+      action: action,
+      showTop: showTop,
+    );
   }
 
   static void _showSnackbar(
@@ -31,6 +50,7 @@ class SnackbarHelper {
     String message,
     SnackbarType type, {
     SnackBarAction? action,
+    required bool showTop,
   }) {
     final config = _getSnackbarConfig(type);
 
@@ -62,7 +82,18 @@ class SnackbarHelper {
         shape: RoundedRectangleBorder(
           borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
         ),
-        margin: ResponsiveDimensions.paddingAll16(context),
+        margin: showTop
+            ? ResponsiveDimensions.paddingOnly(
+                context,
+                bottom: MediaQuery.heightOf(context) - 250,
+                left: 16,
+                right: 16,
+              )
+            : ResponsiveDimensions.paddingSymmetric(
+                context,
+                horizontal: 16,
+                vertical: 2,
+              ),
         padding: ResponsiveDimensions.paddingSymmetric(
           context,
           horizontal: 16,

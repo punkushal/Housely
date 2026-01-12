@@ -1,13 +1,14 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/detail_image_card.dart';
 
 class CustomCarouselSlider extends StatefulWidget {
-  const CustomCarouselSlider({super.key});
+  const CustomCarouselSlider({super.key, required this.imageUrls});
 
+  /// image url list
+  final List<String> imageUrls;
   @override
   State<CustomCarouselSlider> createState() => _CustomCarouselSliderState();
 }
@@ -31,12 +32,11 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
         ClipRRect(
           borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
           child: CarouselSlider.builder(
-            // TODO: later i will implement dynamic content
             carouselController: _controller,
-            itemCount: 4,
+            itemCount: widget.imageUrls.length,
             itemBuilder: (context, index, realIndex) {
               return DetailImageCard(
-                imgPath: ImageConstant.fourthVilla,
+                imgPath: widget.imageUrls[index],
                 width: ResponsiveDimensions.getSize(context, 327),
                 height: ResponsiveDimensions.getHeight(context, 232),
                 fit: .cover,
@@ -57,9 +57,13 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
 
         Row(
           mainAxisAlignment: .center,
-          children: List.generate(4, (index) {
+          children: List.generate(widget.imageUrls.length, (index) {
             return Container(
-              margin: EdgeInsets.all(8),
+              margin: ResponsiveDimensions.paddingOnly(
+                context,
+                bottom: 10,
+                right: 9,
+              ),
               width: ResponsiveDimensions.getSize(context, 8),
               height: ResponsiveDimensions.getHeight(context, 8),
               decoration: BoxDecoration(
