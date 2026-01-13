@@ -8,7 +8,6 @@ import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/property/domain/entities/property_filter_params.dart';
-import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/search/presentation/bloc/property_search_bloc.dart';
 import 'package:housely/features/search/presentation/cubit/search_filter_cubit.dart';
 import 'package:housely/features/search/presentation/widgets/filter_sheet.dart';
@@ -113,7 +112,7 @@ class _ExplorePageState extends State<ExplorePage> {
                     // result list
                     BlocBuilder<PropertySearchBloc, PropertySearchState>(
                       builder: (context, state) {
-                        if (state is PropertyFetchLoading) {
+                        if (state is PropertySearchLoading) {
                           return Center(child: CircularProgressIndicator());
                         }
                         if (state is PropertySearchAndFilterLoaded) {
