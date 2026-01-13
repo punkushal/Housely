@@ -4,6 +4,7 @@ import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/features/property/data/models/property_model.dart';
 import 'package:housely/features/property/data/models/property_owner_model.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
+import 'package:housely/features/property/domain/entities/property_filter_params.dart';
 
 class FirebaseRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -34,6 +35,81 @@ class FirebaseRemoteDataSource {
           .delete();
     } catch (e) {
       throw Exception('Failed to add new property: $e');
+    }
+  }
+
+  // search and filter properties
+  Future<({List<Property> data, DocumentSnapshot? lastDoc})> searchAndFilters({
+    required PropertyFilterParams filters,
+    DocumentSnapshot? lastDoc,
+    int limit = 10,
+  }) async {
+    try {
+      Query<Map<String, dynamic>> query = firestore.collection(
+        TextConstants.properties,
+      );
+
+      // filter by property type
+      if (filters.propertyTypes.isNotEmpty &&
+          filters.propertyTypes.length <= 30) {
+        query = query.where('type', whereIn: filters.propertyTypes);
+      }
+      if (filters.propertyStatus.isNotEmpty &&
+          filters.propertyStatus.length <= 30) {
+        query = query.where('status', whereIn: filters.propertyStatus);
+      }
+
+      if (filters.priceRange != null) {
+        final minPrice = filters.priceRange!.start.toInt();
+        final maxPrice = filters.priceRange!.end.toInt();
+        query = query
+            .where('price.amount', isGreaterThanOrEqualTo: minPrice)
+            .where('price.amount', isLessThanOrEqualTo: maxPrice)
+            .orderBy('price.amount');
+      }
+
+      // pagination
+      query = query.limit(limit);
+
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc);
+      }
+
+      final snapshot = await query.get();
+      final jsonList = snapshot.docs;
+      final newLastDoc = jsonList.isNotEmpty ? jsonList.last : null;
+      var propertyList = jsonList
+          .map((doc) => PropertyModel.fromJson(doc.data()))
+          .toList();
+
+      if (filters.facilities != null && filters.facilities!.isNotEmpty) {
+        propertyList = propertyList.where((p) {
+          final propertyFacilities = p.facilities
+              .map((e) => e.toLowerCase())
+              .toList();
+
+          return filters.facilities!.every(
+            (facility) => propertyFacilities.contains(facility),
+          );
+        }).toList();
+      }
+
+      if (filters.searchQuery != null) {
+        final searchTitle = filters.searchQuery!.toLowerCase();
+
+        propertyList = propertyList
+            .where(
+              (property) =>
+                  (property.name.toLowerCase() == searchTitle) ||
+                  (property.location.address.toLowerCase() == searchTitle),
+            )
+            .toList();
+
+        return (data: propertyList, lastDoc: newLastDoc);
+      }
+      return (data: propertyList, lastDoc: newLastDoc);
+    } catch (e) {
+      throw Exception('Failed to fetch all properties: $e');
     }
   }
 

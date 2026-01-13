@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:appwrite/appwrite.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:housely/core/error/failure.dart';
@@ -9,6 +10,7 @@ import 'package:housely/features/property/data/datasources/app_write_data_source
 import 'package:housely/features/property/data/datasources/firebase_remote_data_source.dart';
 import 'package:housely/features/property/data/models/property_model.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
+import 'package:housely/features/property/domain/entities/property_filter_params.dart';
 import 'package:housely/features/property/domain/repository/property_repo.dart';
 
 class PropertyRepoImpl implements PropertyRepo {
@@ -159,6 +161,23 @@ class PropertyRepoImpl implements PropertyRepo {
       return Left(handleFirebaseError(e));
     } catch (e) {
       return Left(UnknownFailure("Failed to deleted property: $e"));
+    }
+  }
+
+  @override
+  ResultFuture<(List<Property>, DocumentSnapshot<Object?>?)>
+  searchPropertiesWithFilters({
+    required PropertyFilterParams filters,
+    DocumentSnapshot<Object?>? lastDoc,
+  }) async {
+    try {
+      final result = await firebase.searchAndFilters(
+        filters: filters,
+        lastDoc: lastDoc,
+      );
+      return Right((result.data, result.lastDoc));
+    } catch (e) {
+      return Left(UnknownFailure("Failed to search and filter properties: $e"));
     }
   }
 }
