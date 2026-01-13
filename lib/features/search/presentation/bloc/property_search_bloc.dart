@@ -4,15 +4,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/entities/property_filter_params.dart';
 import 'package:housely/features/property/domain/usecases/search_and_filter.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'property_search_event.dart';
 part 'property_search_state.dart';
+
+// Event Transformer for Debouncing (prevents API spam)
+EventTransformer<E> debounce<E>(Duration duration) {
+  return (events, mapper) => events.debounceTime(duration).switchMap(mapper);
+}
 
 class PropertySearchBloc
     extends Bloc<PropertySearchEvent, PropertySearchState> {
   final SearchAndFilter searchAndFilter;
   PropertySearchBloc(this.searchAndFilter) : super(PropertySearchInitial()) {
-    on<GetSearchAndFilterProperties>(_fetchSearchAndFilters);
+    on<GetSearchAndFilterProperties>(
+      _fetchSearchAndFilters,
+      transformer: debounce(const Duration(milliseconds: 500)),
+    );
     on<PropertySearchAndFilterReset>(_resetSearchAndFilterState);
   }
 
