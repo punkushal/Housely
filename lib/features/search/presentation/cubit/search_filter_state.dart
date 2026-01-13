@@ -31,6 +31,17 @@ class SearchFilterState {
     );
   }
 
+  List<String> get selectedLookingFor => lookingFor.entries
+      .where((entry) => entry.value) // Filter only true values
+      .map((entry) => entry.key)
+      .toList();
+
+  // Getter to get selected "Property Type" keys
+  List<String> get selectedPropertyTypes => propertyType.entries
+      .where((entry) => entry.value)
+      .map((entry) => entry.key)
+      .toList();
+
   SearchFilterState copyWith({
     Map<String, bool>? lookingFor,
     Map<String, bool>? propertyType,
