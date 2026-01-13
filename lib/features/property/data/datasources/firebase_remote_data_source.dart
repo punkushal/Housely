@@ -97,13 +97,12 @@ class FirebaseRemoteDataSource {
       if (filters.searchQuery != null) {
         final searchTitle = filters.searchQuery!.toLowerCase();
 
-        propertyList = propertyList
-            .where(
-              (property) =>
-                  (property.name.toLowerCase() == searchTitle) ||
-                  (property.location.address.toLowerCase() == searchTitle),
-            )
-            .toList();
+        propertyList = propertyList.where((property) {
+          final name = property.name.toLowerCase();
+          final address = property.location.address.toLowerCase();
+          return (name.contains(searchTitle)) ||
+              (address.contains(searchTitle));
+        }).toList();
 
         return (data: propertyList, lastDoc: newLastDoc);
       }
