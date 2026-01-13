@@ -17,10 +17,11 @@ class PropertyFilterParams {
 
   // Helper to check if filters are active
   bool get hasActiveFilters =>
-      (searchQuery?.isNotEmpty ?? false) && propertyTypes.isNotEmpty ||
-      priceRange != null &&
-          (facilities != null || facilities!.isNotEmpty) &&
-          propertyStatus.isNotEmpty;
+      ((searchQuery != null && searchQuery!.isNotEmpty) ||
+      propertyTypes.isNotEmpty ||
+      priceRange != null ||
+      (facilities != null && facilities!.isNotEmpty) ||
+      propertyStatus.isNotEmpty);
 
   PropertyFilterParams copyWith({
     String? searchQuery,
@@ -36,5 +37,11 @@ class PropertyFilterParams {
       facilities: facilities ?? this.facilities,
       propertyStatus: propertyStatus ?? this.propertyStatus,
     );
+  }
+
+  // Helper to check if we can use backend filtering
+  bool get canUseBackendFiltering {
+    // Firebase whereIn limit is 30 items
+    return propertyTypes.length <= 30 && propertyStatus.length <= 30;
   }
 }
