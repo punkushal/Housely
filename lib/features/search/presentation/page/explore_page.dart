@@ -99,9 +99,19 @@ class _ExplorePageState extends State<ExplorePage> {
                         vertical: 14,
                       ),
                       onChanged: (value) {
+                        // Read current filters from state to preserve them, or create new
+                        final currentFilters =
+                            (context.read<PropertySearchBloc>().state
+                                is PropertySearchAndFilterLoaded)
+                            ? (context.read<PropertySearchBloc>().state
+                                      as PropertySearchAndFilterLoaded)
+                                  .activeFilters
+                            : PropertyFilterParams();
+
+                        // Update ONLY the search query
                         context.read<PropertySearchBloc>().add(
                           GetSearchAndFilterProperties(
-                            filterParams: PropertyFilterParams(
+                            filterParams: currentFilters.copyWith(
                               searchQuery: value,
                             ),
                           ),
@@ -159,7 +169,23 @@ class _ExplorePageState extends State<ExplorePage> {
                               ),
                             );
                           }
-                          return ResultList(propertyList: state.allProperties);
+                          return NotificationListener<ScrollNotification>(
+                            onNotification: (notification) {
+                              if (notification.metrics.pixels >=
+                                  notification.metrics.maxScrollExtent - 200) {
+                                context.read<PropertySearchBloc>().add(
+                                  LoadMoreProperties(),
+                                );
+                              }
+                              return false;
+                            },
+                            child: ResultList(
+                              itemCount:
+                                  state.allProperties.length +
+                                  (state.hasReachedMax ? 0 : 1),
+                              propertyList: state.allProperties,
+                            ),
+                          );
                         }
 
                         if (state is PropertySearchError) {

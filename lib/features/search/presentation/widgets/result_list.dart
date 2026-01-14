@@ -11,14 +11,22 @@ import 'package:housely/features/detail/presentation/widgets/heading_label.dart'
 import 'package:housely/features/property/domain/entities/property.dart';
 
 class ResultList extends StatelessWidget {
-  const ResultList({super.key, required this.propertyList});
+  const ResultList({
+    super.key,
+    required this.propertyList,
+    required this.itemCount,
+  });
   final List<Property> propertyList;
+  final int itemCount;
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
-        itemCount: propertyList.length,
+        itemCount: itemCount,
         itemBuilder: (context, index) {
+          if (index > propertyList.length) {
+            return Center(child: CircularProgressIndicator());
+          }
           return Padding(
             padding: ResponsiveDimensions.paddingOnly(context, bottom: 16),
             child: GestureDetector(
