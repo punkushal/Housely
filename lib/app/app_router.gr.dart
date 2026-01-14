@@ -17,10 +17,10 @@ import 'package:housely/features/auth/presentation/pages/login_page.dart'
     as _i9;
 import 'package:housely/features/auth/presentation/pages/signup_page.dart'
     as _i15;
+import 'package:housely/features/booking/presentation/page/my_booking_page.dart'
+    as _i1;
 import 'package:housely/features/detail/presentation/pages/detail_page.dart'
     as _i4;
-import 'package:housely/features/home/presentation/pages/booking_page.dart'
-    as _i1;
 import 'package:housely/features/home/presentation/pages/explore_page.dart'
     as _i5;
 import 'package:housely/features/home/presentation/pages/home_page.dart' as _i7;
