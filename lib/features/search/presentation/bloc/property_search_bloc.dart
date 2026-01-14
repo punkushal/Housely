@@ -23,6 +23,7 @@ class PropertySearchBloc
       transformer: debounce(const Duration(milliseconds: 500)),
     );
     on<PropertySearchAndFilterReset>(_resetSearchAndFilterState);
+    on<LoadMoreProperties>(_onLoadMore);
   }
 
   Future<void> _fetchSearchAndFilters(
@@ -42,9 +43,43 @@ class PropertySearchBloc
           allProperties: data.$1,
           lastDoc: data.$2,
           activeFilters: PropertyFilterParams(),
+          hasReachedMax: data.$1.length < 10,
         ),
       );
     });
+  }
+
+  // Handle Pagination
+  Future<void> _onLoadMore(
+    LoadMoreProperties event,
+    Emitter<PropertySearchState> emit,
+  ) async {
+    // Only proceed if we are currently in a Loaded state
+    if (state is PropertySearchAndFilterLoaded) {
+      final currentState = state as PropertySearchAndFilterLoaded;
+      if (currentState.hasReachedMax) return; // Stop if end reached
+
+      final result = await searchAndFilter(
+        SearchAndFilterParam(
+          filterParams: currentState.activeFilters,
+          lastDoc: currentState.lastDoc,
+        ),
+      );
+
+      result.fold((f) => emit(PropertySearchError(f.message)), (data) {
+        if (data.$1.isEmpty) {
+          emit(currentState.copyWith(hasReachedMax: true));
+        } else {
+          emit(
+            currentState.copyWith(
+              properties: List.of(currentState.allProperties)..addAll(data.$1),
+              hasReachedMax: data.$1.length < 10,
+              lastDoc: data.$2,
+            ),
+          );
+        }
+      });
+    }
   }
 
   void _resetSearchAndFilterState(

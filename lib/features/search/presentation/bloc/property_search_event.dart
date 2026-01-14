@@ -18,3 +18,5 @@ final class GetSearchAndFilterProperties extends PropertySearchEvent {
     this.lastDoc,
   });
 }
+
+final class LoadMoreProperties extends PropertySearchEvent {}
