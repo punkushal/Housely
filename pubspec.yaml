@@ -90,6 +90,7 @@ dependencies:
 
   # For caching network image
   cached_network_image: ^3.4.1
+  rxdart: ^0.28.0
   
 
 dev_dependencies:
