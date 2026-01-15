@@ -18,7 +18,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: HomeRoute.page, initial: true),
         AutoRoute(page: ProfileRoute.page),
         AutoRoute(page: ExploreRoute.page),
-        AutoRoute(page: BookingRoute.page),
+        AutoRoute(page: MyBookingRoute.page),
       ],
     ),
     AutoRoute(page: CreateNewPropertyRoute.page),
@@ -26,5 +26,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: SeeAllListRoute.page),
     AutoRoute(page: DetailRoute.page),
     AutoRoute(page: MyPropertyListRoute.page),
+    AutoRoute(page: BookingRoute.page),
   ];
 }
