@@ -70,6 +70,7 @@ class ImageConstant {
   // search location image
   static final String searchLocationImg = "${_baseOtherUrl}location.png";
   static final String mapPreviewImg = "${_baseOtherUrl}map_preview.jpg";
+  static final String searchNotFoundmg = "${_baseOtherUrl}search_not_found.png";
 
   // villa images
   static final String firstVilla = "${_baseVillaUrl}villa1.jpg";

@@ -149,7 +149,6 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(height: ResponsiveDimensions.getHeight(context, 16)),
 
                 // Search section
-                // ask dai to whether should i make this field tappable
                 CustomTextField(
                   prefixIcon: SvgPicture.asset(
                     ImageConstant.searchIcon,
@@ -157,13 +156,9 @@ class _HomePageState extends State<HomePage> {
                     width: ResponsiveDimensions.getSize(context, 24),
                     fit: .scaleDown,
                   ),
-                  suffixIcon: SvgPicture.asset(
-                    ImageConstant.filterIcon,
-                    height: ResponsiveDimensions.getHeight(context, 24),
-                    width: ResponsiveDimensions.getSize(context, 24),
-                    fit: .scaleDown,
-                  ),
                   hintText: "Search Property",
+                  readOnly: true,
+                  onTap: () => context.router.push(ExploreRoute()),
                   contentPadding: ResponsiveDimensions.paddingSymmetric(
                     context,
                     horizontal: 16,

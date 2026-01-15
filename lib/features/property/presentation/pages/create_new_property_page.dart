@@ -329,16 +329,15 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
             if (state is PropertyError) {
               SnackbarHelper.showError(context, state.message, showTop: true);
             } else if (state is PropertyCreated) {
+              // Trigger a refresh of the list before going back
+              context.read<PropertyBloc>().add(GetAllProperties());
+              context.pop(true);
               SnackbarHelper.showSuccess(
                 context,
                 "Successfully created new property",
                 showTop: true,
               );
               _resetForm();
-              // Trigger a refresh of the list before going back
-              context.read<PropertyBloc>().add(GetAllProperties());
-
-              context.pop(true);
             } else if (state is CoverImageUploaded) {
               SnackbarHelper.showSuccess(
                 context,
