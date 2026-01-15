@@ -77,7 +77,7 @@ class FirebaseRemoteDataSource {
 
       final snapshot = await query.get();
       final jsonList = snapshot.docs;
-      final newLastDoc = jsonList.isNotEmpty ? jsonList.last : null;
+
       var propertyList = jsonList
           .map((doc) => PropertyModel.fromJson(doc.data()))
           .toList();
@@ -89,12 +89,12 @@ class FirebaseRemoteDataSource {
               .toList();
 
           return filters.facilities!.every(
-            (facility) => propertyFacilities.contains(facility),
+            (facility) => propertyFacilities.contains(facility.toLowerCase()),
           );
         }).toList();
       }
 
-      if (filters.searchQuery != null) {
+      if (filters.searchQuery != null && filters.searchQuery!.isNotEmpty) {
         final searchTitle = filters.searchQuery!.toLowerCase();
 
         propertyList = propertyList.where((property) {
@@ -103,10 +103,11 @@ class FirebaseRemoteDataSource {
           return (name.contains(searchTitle)) ||
               (address.contains(searchTitle));
         }).toList();
-
-        return (data: propertyList, lastDoc: newLastDoc);
       }
-      return (data: propertyList, lastDoc: newLastDoc);
+      final limitedList = propertyList.take(limit).toList();
+
+      final newLastDoc = jsonList.isNotEmpty ? jsonList.last : null;
+      return (data: limitedList, lastDoc: newLastDoc);
     } catch (e) {
       throw Exception('Failed to fetch all properties: $e');
     }

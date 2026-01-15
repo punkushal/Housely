@@ -42,7 +42,7 @@ class PropertySearchBloc
         PropertySearchAndFilterLoaded(
           allProperties: data.$1,
           lastDoc: data.$2,
-          activeFilters: PropertyFilterParams(),
+          activeFilters: event.filterParams,
           hasReachedMax: data.$1.length < 10,
         ),
       );

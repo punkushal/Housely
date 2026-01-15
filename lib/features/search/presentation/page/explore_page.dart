@@ -72,7 +72,7 @@ class _ExplorePageState extends State<ExplorePage> {
                   horizontal: 24,
                 ),
                 child: Column(
-                  spacing: ResponsiveDimensions.spacing40(context),
+                  spacing: ResponsiveDimensions.spacing16(context),
                   children: [
                     // search text field
                     CustomTextField(
@@ -98,104 +98,128 @@ class _ExplorePageState extends State<ExplorePage> {
                         horizontal: 16,
                         vertical: 14,
                       ),
-                      onChanged: (value) {
-                        // Read current filters from state to preserve them, or create new
-                        final currentFilters =
-                            (context.read<PropertySearchBloc>().state
-                                is PropertySearchAndFilterLoaded)
-                            ? (context.read<PropertySearchBloc>().state
-                                      as PropertySearchAndFilterLoaded)
-                                  .activeFilters
-                            : PropertyFilterParams();
 
-                        // Update ONLY the search query
+                      onChanged: (value) {
+                        // Get current filter state from cubit
+                        final filterState = context
+                            .read<SearchFilterCubit>()
+                            .state;
+
+                        if (value.isEmpty &&
+                            !filterState.isPriceRangeActive &&
+                            filterState.facilities.isEmpty &&
+                            filterState.selectedPropertyTypes.isEmpty &&
+                            filterState.selectedLookingFor.isEmpty) {
+                          context.read<PropertySearchBloc>().add(
+                            PropertySearchAndFilterReset(),
+                          );
+                          return;
+                        }
+                        // Create filter params from current cubit state
+                        final filterParams = PropertyFilterParams(
+                          priceRange: filterState.priceRange,
+                          propertyStatus: filterState.selectedLookingFor,
+                          propertyTypes: filterState.selectedPropertyTypes,
+                          facilities: filterState.facilities.toList(),
+                          searchQuery: value.isEmpty
+                              ? null
+                              : value, // Set to null if empty
+                        );
+
+                        // Always trigger search with current filters + search query
                         context.read<PropertySearchBloc>().add(
                           GetSearchAndFilterProperties(
-                            filterParams: currentFilters.copyWith(
-                              searchQuery: value,
-                            ),
+                            filterParams: filterParams,
                           ),
                         );
                       },
                     ),
 
                     // result list
-                    BlocBuilder<PropertySearchBloc, PropertySearchState>(
-                      builder: (context, state) {
-                        if (state is PropertySearchLoading) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        if (state is PropertySearchAndFilterLoaded) {
-                          if (state.allProperties.isEmpty) {
-                            return Padding(
-                              padding: ResponsiveDimensions.paddingSymmetric(
-                                context,
-                                horizontal: 33,
-                              ),
-                              child: Column(
-                                spacing: ResponsiveDimensions.spacing16(
+                    Expanded(
+                      child: BlocBuilder<PropertySearchBloc, PropertySearchState>(
+                        builder: (context, state) {
+                          if (state is PropertySearchLoading) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          if (state is PropertySearchAndFilterLoaded) {
+                            if (state.allProperties.isEmpty) {
+                              return Padding(
+                                padding: ResponsiveDimensions.paddingSymmetric(
                                   context,
+                                  horizontal: 33,
                                 ),
-                                children: [
-                                  SizedBox(
-                                    height: ResponsiveDimensions.spacing20(
-                                      context,
-                                    ),
+                                child: Column(
+                                  spacing: ResponsiveDimensions.spacing16(
+                                    context,
                                   ),
-                                  Image.asset(ImageConstant.searchNotFoundmg),
-                                  SizedBox(
-                                    height: ResponsiveDimensions.spacing8(
-                                      context,
+                                  children: [
+                                    SizedBox(
+                                      height: ResponsiveDimensions.spacing20(
+                                        context,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    "Search not found",
-                                    style: AppTextStyle.headingSemiBold(
-                                      context,
-                                      fontSize: 20,
-                                      lineHeight: 26,
+                                    Image.asset(ImageConstant.searchNotFoundmg),
+                                    SizedBox(
+                                      height: ResponsiveDimensions.spacing8(
+                                        context,
+                                      ),
                                     ),
-                                  ),
+                                    Text(
+                                      "Search not found",
+                                      style: AppTextStyle.headingSemiBold(
+                                        context,
+                                        fontSize: 20,
+                                        lineHeight: 26,
+                                      ),
+                                    ),
 
-                                  Text(
-                                    "Please enable your location services for more optimal result",
-                                    textAlign: .center,
-                                    style: AppTextStyle.bodyRegular(
-                                      context,
-                                      color: AppColors.textHint,
+                                    Text(
+                                      "Please enable your location services for more optimal result",
+                                      textAlign: .center,
+                                      style: AppTextStyle.bodyRegular(
+                                        context,
+                                        color: AppColors.textHint,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                              );
+                            }
+
+                            if (!state.activeFilters.hasActiveFilters) {
+                              return SizedBox.shrink();
+                            }
+                            return NotificationListener<ScrollNotification>(
+                              onNotification: (notification) {
+                                if (notification.metrics.pixels >=
+                                    notification.metrics.maxScrollExtent -
+                                        200) {
+                                  context.read<PropertySearchBloc>().add(
+                                    LoadMoreProperties(),
+                                  );
+                                }
+                                return false;
+                              },
+                              child: ResultList(
+                                itemCount:
+                                    state.allProperties.length +
+                                    (state.hasReachedMax ? 0 : 1),
+                                propertyList: state.allProperties,
+                                activeFilters: state.activeFilters,
                               ),
                             );
                           }
-                          return NotificationListener<ScrollNotification>(
-                            onNotification: (notification) {
-                              if (notification.metrics.pixels >=
-                                  notification.metrics.maxScrollExtent - 200) {
-                                context.read<PropertySearchBloc>().add(
-                                  LoadMoreProperties(),
-                                );
-                              }
-                              return false;
-                            },
-                            child: ResultList(
-                              itemCount:
-                                  state.allProperties.length +
-                                  (state.hasReachedMax ? 0 : 1),
-                              propertyList: state.allProperties,
-                            ),
-                          );
-                        }
 
-                        if (state is PropertySearchError) {
-                          return Center(
-                            child: Text(state.message, overflow: .ellipsis),
-                          );
-                        }
+                          if (state is PropertySearchError) {
+                            return Center(
+                              child: Text(state.message, overflow: .ellipsis),
+                            );
+                          }
 
-                        return SizedBox.shrink();
-                      },
+                          return SizedBox.shrink();
+                        },
+                      ),
                     ),
                   ],
                 ),
