@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:appwrite/appwrite.dart';
 import 'package:housely/core/constants/text_constants.dart';
+import 'package:housely/env/env.dart';
 
 abstract interface class AppwriteStorageDataSource {
   Future<Map<String, dynamic>> uploadPropertyImages({
@@ -24,8 +25,8 @@ abstract interface class AppwriteStorageDataSource {
 class AppwriteStorageDataSourceImpl implements AppwriteStorageDataSource {
   final Storage storage;
 
-  final _bucketId = "6957a5060003fc720b53";
-  final _projectId = "6954b11a00214cb8b35f";
+  final _bucketId = Env.appWriteBucketId;
+  final _projectId = Env.appWriteProjectId;
 
   AppwriteStorageDataSourceImpl({required this.storage});
 

@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
+import 'package:housely/env/env.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:housely/features/auth/data/repositories/auth_repo_impl.dart';
 import 'package:housely/features/auth/domain/repositories/auth_repo.dart';
@@ -68,7 +69,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(
     () => Client()
         .setEndpoint(TextConstants.appwriteUrl)
-        .setProject("6954b11a00214cb8b35f"), //TODO: later add this id securely
+        .setProject(Env.appWriteProjectId),
   );
   sl.registerLazySingleton(() => Storage(sl<Client>()));
 
