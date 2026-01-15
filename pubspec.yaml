@@ -90,7 +90,12 @@ dependencies:
 
   # For caching network image
   cached_network_image: ^3.4.1
+
+  # Debouncing
   rxdart: ^0.28.0
+
+  # Date Picker
+  syncfusion_flutter_datepicker: ^32.1.23
   
 
 dev_dependencies:
