@@ -73,6 +73,9 @@ class ImageConstant {
   static final String mapPreviewImg = "${_baseOtherUrl}map_preview.jpg";
   static final String searchNotFoundmg = "${_baseOtherUrl}search_not_found.png";
 
+  // booking success image
+  static final String bookingSuccessImg = "${_baseOtherUrl}booking_success.png";
+
   // villa images
   static final String firstVilla = "${_baseVillaUrl}villa1.jpg";
   static final String secondVilla = "${_baseVillaUrl}villa2.jpg";
