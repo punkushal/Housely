@@ -12,4 +12,10 @@ abstract class Env {
 
   @EnviedField(varName: 'APP_WRITE_BUCKET_ID', obfuscate: true)
   static final String appWriteBucketId = _Env.appWriteBucketId;
+
+  @EnviedField(varName: 'ESEWA_CLIENT_ID', obfuscate: true)
+  static final String esewaClientId = _Env.esewaClientId;
+
+  @EnviedField(varName: 'ESEWA_SECRET_KEY', obfuscate: true)
+  static final String esewaSecretKey = _Env.esewaSecretKey;
 }
