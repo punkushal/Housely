@@ -51,18 +51,49 @@ import 'package:housely/features/search/presentation/page/explore_page.dart'
 
 /// generated route for
 /// [_i1.BookingPage]
-class BookingRoute extends _i18.PageRouteInfo<void> {
-  const BookingRoute({List<_i18.PageRouteInfo>? children})
-    : super(BookingRoute.name, initialChildren: children);
+class BookingRoute extends _i18.PageRouteInfo<BookingRouteArgs> {
+  BookingRoute({
+    _i19.Key? key,
+    required _i20.Property property,
+    List<_i18.PageRouteInfo>? children,
+  }) : super(
+         BookingRoute.name,
+         args: BookingRouteArgs(key: key, property: property),
+         initialChildren: children,
+       );
 
   static const String name = 'BookingRoute';
 
   static _i18.PageInfo page = _i18.PageInfo(
     name,
     builder: (data) {
-      return const _i1.BookingPage();
+      final args = data.argsAs<BookingRouteArgs>();
+      return _i1.BookingPage(key: args.key, property: args.property);
     },
   );
+}
+
+class BookingRouteArgs {
+  const BookingRouteArgs({this.key, required this.property});
+
+  final _i19.Key? key;
+
+  final _i20.Property property;
+
+  @override
+  String toString() {
+    return 'BookingRouteArgs{key: $key, property: $property}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! BookingRouteArgs) return false;
+    return key == other.key && property == other.property;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ property.hashCode;
 }
 
 /// generated route for
