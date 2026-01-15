@@ -22,7 +22,10 @@ class SearchFilterCubit extends Cubit<SearchFilterState> {
   }
 
   //price range selection
-  void updatePriceRange(RangeValues range) {
+  void updatePriceRange(RangeValues? range) {
+    if (range == null) {
+      emit(state.copyWith(clearPriceRange: true));
+    }
     emit(state.copyWith(priceRange: range));
   }
 
