@@ -25,6 +25,33 @@ class CalendarState extends Equatable {
     this.totalDuration = 0,
   });
 
+  bool get hasSelectedDate =>
+      selectedMonths.isNotEmpty || (startDate != null && endDate != null);
+
+  String get formattedDateText {
+    if (bookingType == BookingType.monthly) {
+      if (selectedMonths.isEmpty) return "Select one or more months";
+
+      // Sort months to ensure they appear in order (Jan, Feb, Mar)
+      final sortedMonths = List<DateTime>.from(selectedMonths)
+        ..sort((a, b) => a.compareTo(b));
+
+      // Format like: "January, February, March"
+      return sortedMonths
+          .map((date) => DateFormat('MMMM').format(date))
+          .join(', ');
+    } else {
+      // Nightly Logic
+      if (startDate == null) return "Select check-in date";
+      if (endDate == null) return "Select check-out date";
+
+      // Format like: "Jan 12 - Jan 15"
+      final start = DateFormat('MMM dd').format(startDate!);
+      final end = DateFormat('MMM dd').format(endDate!);
+      return "$start - $end";
+    }
+  }
+
   @override
   List<Object?> get props => [
     bookingType,

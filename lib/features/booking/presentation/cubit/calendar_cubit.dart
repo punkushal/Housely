@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 part 'calendar_state.dart';
 
@@ -18,10 +19,10 @@ class CalendarCubit extends Cubit<CalendarState> {
 
   /// Logic for "House" (Monthly selection)
   void selectMonths(List<DateTime> months, double monthlyPrice) {
-    // 1. Calculate duration (simple count of selected months)
+    // Calculate duration (simple count of selected months)
     final duration = months.length;
 
-    // 2. Calculate price
+    // Calculate price
     final total = duration * monthlyPrice;
 
     emit(
@@ -51,13 +52,12 @@ class CalendarCubit extends Cubit<CalendarState> {
       return;
     }
 
-    // 1. Calculate nights (Difference in days)
-    // If start and end are same day, it counts as 1 day (or 0 nights depending on your rule)
-    // Usually logic: End - Start. e.g., 5th - 1st = 4 nights.
+    // Calculate nights (Difference in days)
+    // If start and end are same day, it counts as 1 day
     int nights = end.difference(start).inDays;
     if (nights == 0) nights = 1; // Minimum 1 night charge
 
-    // 2. Calculate price
+    // Calculate price
     final total = nights * pricePerNight;
 
     emit(
