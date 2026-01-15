@@ -93,7 +93,6 @@ class FilterSheet extends StatelessWidget {
                       PropertySearchAndFilterReset(),
                     );
                     context.read<SearchFilterCubit>().resetFilters();
-                    context.pop();
                   },
                   child: Text(
                     "Reset",
