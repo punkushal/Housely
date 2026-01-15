@@ -1,0 +1,74 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+part 'calendar_state.dart';
+
+class CalendarCubit extends Cubit<CalendarState> {
+  CalendarCubit() : super(CalendarState());
+
+  /// Call this when initializing the page to set the mode
+  void initBookingType(String propertyType) {
+    final isHouse = propertyType.toLowerCase() == 'house';
+    emit(
+      state.copyWith(
+        bookingType: isHouse ? BookingType.monthly : BookingType.nightly,
+      ),
+    );
+  }
+
+  /// Logic for "House" (Monthly selection)
+  void selectMonths(List<DateTime> months, double monthlyPrice) {
+    // 1. Calculate duration (simple count of selected months)
+    final duration = months.length;
+
+    // 2. Calculate price
+    final total = duration * monthlyPrice;
+
+    emit(
+      state.copyWith(
+        selectedMonths: months,
+        totalDuration: duration,
+        totalPrice: total,
+        // Clear nightly data to avoid confusion
+        startDate: null,
+        endDate: null,
+      ),
+    );
+  }
+
+  /// Logic for "Villa/Apartment" (Nightly selection)
+  void selectDateRange(DateTime? start, DateTime? end, double pricePerNight) {
+    if (start == null || end == null) {
+      // Incomplete selection
+      emit(
+        state.copyWith(
+          startDate: start,
+          endDate: end,
+          totalPrice: 0.0,
+          totalDuration: 0,
+        ),
+      );
+      return;
+    }
+
+    // 1. Calculate nights (Difference in days)
+    // If start and end are same day, it counts as 1 day (or 0 nights depending on your rule)
+    // Usually logic: End - Start. e.g., 5th - 1st = 4 nights.
+    int nights = end.difference(start).inDays;
+    if (nights == 0) nights = 1; // Minimum 1 night charge
+
+    // 2. Calculate price
+    final total = nights * pricePerNight;
+
+    emit(
+      state.copyWith(
+        startDate: start,
+        endDate: end,
+        totalDuration: nights,
+        totalPrice: total,
+        // Clear monthly data
+        selectedMonths: [],
+      ),
+    );
+  }
+}
