@@ -4,6 +4,7 @@ import 'package:housely/app/app_router.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/core/theme/app_theme.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:housely/features/booking/presentation/bloc/booking_bloc.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<ConnectivityCubit>()),
         BlocProvider(create: (context) => sl<AuthCubit>()..checkLoginStatus()),
         BlocProvider(create: (context) => sl<OwnerCubit>()),
+        BlocProvider(create: (context) => sl<BookingBloc>()),
         BlocProvider(
           create: (context) => sl<PropertyBloc>()..add(GetAllProperties()),
         ),

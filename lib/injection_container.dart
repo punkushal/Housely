@@ -23,6 +23,12 @@ import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/password_reset_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/register_cubit.dart';
+import 'package:housely/features/booking/data/datasources/booking_remote_data_source.dart';
+import 'package:housely/features/booking/data/repository/booking_repo_impl.dart';
+import 'package:housely/features/booking/domain/repository/booking_repo.dart';
+import 'package:housely/features/booking/domain/usecases/listen_booking_changes_use_case.dart';
+import 'package:housely/features/booking/domain/usecases/request_booking_use_case.dart';
+import 'package:housely/features/booking/domain/usecases/respond_booking_use_case.dart';
 import 'package:housely/features/location/data/datasources/location_local_data_source.dart';
 import 'package:housely/features/location/data/repositories/location_repo_impl.dart';
 import 'package:housely/features/location/domain/repositories/location_repo.dart';
@@ -110,6 +116,7 @@ Future<void> initializeDependencies() async {
     () => AuthRepoImpl(remoteDataSource: sl<AuthRemoteDataSource>()),
   );
 
+  // Property
   sl.registerLazySingleton<PropertyRepo>(
     () => PropertyRepoImpl(
       dataSource: sl<AppwriteStorageDataSource>(),
@@ -117,10 +124,12 @@ Future<void> initializeDependencies() async {
     ),
   );
 
+  // Owner
   sl.registerLazySingleton<OwnerRepo>(
     () => OwnerRepoImpl(firebase: sl(), dataSource: sl()),
   );
 
+  // Location
   sl.registerLazySingleton<LocationLocalDataSource>(
     () => LocationLocalDataSourceImpl(),
   );
@@ -128,6 +137,13 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<LocationRepo>(
     () => LocationRepoImpl(dataSource: sl<LocationLocalDataSource>()),
   );
+
+  // Booking
+  sl.registerLazySingleton(
+    () => BookingRemoteDataSource(authRemoteDataSource: sl(), firestore: sl()),
+  );
+
+  sl.registerLazySingleton<BookingRepo>(() => BookingRepoImpl(sl()));
 
   // ============== Domain layer ===============
   sl.registerLazySingleton(
@@ -180,6 +196,11 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(
     () => CheckServiceEnabledUseCase(locationRepo: sl<LocationRepo>()),
   );
+
+  // booking use cases
+  sl.registerLazySingleton(() => RequestBookingUseCase(sl()));
+  sl.registerLazySingleton(() => ListenBookingChangesUseCase(sl()));
+  sl.registerLazySingleton(() => RespondBookingUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
