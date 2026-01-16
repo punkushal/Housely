@@ -339,7 +339,9 @@ class PropertyDetailSection extends StatelessWidget {
                 );
               }
               return CustomButton(
-                onTap: () {},
+                onTap: () {
+                  context.router.push(BookingRoute(property: property));
+                },
                 buttonLabel: TextConstants.rent,
               );
             },

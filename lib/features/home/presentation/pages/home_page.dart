@@ -29,7 +29,7 @@ class TabWrapper extends StatelessWidget {
         routes: [
           HomeRoute(address: address),
           ExploreRoute(),
-          BookingRoute(),
+          MyBookingRoute(),
           ProfileRoute(),
         ],
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

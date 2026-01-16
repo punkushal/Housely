@@ -42,4 +42,5 @@ class TextConstants {
   static final String chats = "chats";
   static final String messages = "messages";
   static final String owners = "owners";
+  static final String bookings = "bookings";
 }
