@@ -29,6 +29,7 @@ import 'package:housely/features/booking/domain/repository/booking_repo.dart';
 import 'package:housely/features/booking/domain/usecases/listen_booking_changes_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/request_booking_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/respond_booking_use_case.dart';
+import 'package:housely/features/booking/presentation/bloc/booking_bloc.dart';
 import 'package:housely/features/location/data/datasources/location_local_data_source.dart';
 import 'package:housely/features/location/data/repositories/location_repo_impl.dart';
 import 'package:housely/features/location/domain/repositories/location_repo.dart';
@@ -260,6 +261,14 @@ Future<void> initializeDependencies() async {
       authStateChangeUsecase: sl<AuthStateChangeUsecase>(),
       statusUsecase: sl<LoginStatusUsecase>(),
       getCurrentUserUseCase: sl<GetCurrentUserUseCase>(),
+    ),
+  );
+
+  // booking
+  sl.registerFactory(
+    () => BookingBloc(
+      requestBookingUseCase: sl(),
+      listenBookingChangesUseCase: sl(),
     ),
   );
 }
