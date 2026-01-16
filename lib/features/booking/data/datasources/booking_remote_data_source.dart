@@ -28,7 +28,7 @@ class BookingRemoteDataSource {
   }) async {
     try {
       await firestore.collection(TextConstants.bookings).doc(bookingId).update({
-        'bookingStatus': status,
+        'bookingStatus': status.name,
       });
     } catch (e) {
       throw Exception("Failed to response booking: $e");

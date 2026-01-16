@@ -30,6 +30,7 @@ class BookingModel extends Booking {
       tenantId: booking.tenantId,
       ownerId: booking.ownerId,
       amount: booking.amount,
+      bookingStatus: booking.bookingStatus,
     );
   }
 
@@ -40,7 +41,7 @@ class BookingModel extends Booking {
     'tenantId': tenantId,
     'ownerId': ownerId,
     'amount': amount,
-    'bookingStatus': bookingStatus,
+    'bookingStatus': bookingStatus.name,
   };
 
   @override
