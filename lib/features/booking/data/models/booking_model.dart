@@ -22,6 +22,17 @@ class BookingModel extends Booking {
     );
   }
 
+  // from entity class to model class
+  factory BookingModel.fromEntity(Booking booking) {
+    return BookingModel(
+      bookingId: booking.bookingId,
+      propertyId: booking.propertyId,
+      tenantId: booking.tenantId,
+      ownerId: booking.ownerId,
+      amount: booking.amount,
+    );
+  }
+
   // From model class to firestore
   Map<String, dynamic> toJson() => {
     'bookingId': bookingId,
