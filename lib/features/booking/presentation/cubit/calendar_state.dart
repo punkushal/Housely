@@ -25,6 +25,10 @@ class CalendarState extends Equatable {
     this.totalDuration = 0,
   });
 
+  factory CalendarState.initial() {
+    return CalendarState();
+  }
+
   bool get hasSelectedDate =>
       selectedMonths.isNotEmpty || (startDate != null && endDate != null);
 

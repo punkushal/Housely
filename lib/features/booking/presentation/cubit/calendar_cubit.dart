@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 part 'calendar_state.dart';
 
 class CalendarCubit extends Cubit<CalendarState> {
-  CalendarCubit() : super(CalendarState());
+  CalendarCubit() : super(CalendarState.initial());
 
   /// Call this when initializing the page to set the mode
   void initBookingType(String propertyType) {
@@ -70,5 +70,9 @@ class CalendarCubit extends Cubit<CalendarState> {
         selectedMonths: [],
       ),
     );
+  }
+
+  void reset() {
+    emit(CalendarState.initial());
   }
 }
