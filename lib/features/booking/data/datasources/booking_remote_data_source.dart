@@ -3,6 +3,8 @@ import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:housely/features/booking/data/models/booking_model.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
+import 'package:housely/features/booking/domain/entity/booking_detail.dart';
+import 'package:housely/features/property/data/models/property_model.dart';
 
 class BookingRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -44,17 +46,39 @@ class BookingRemoteDataSource {
   }
 
   // Listen booking changes
-  Stream<List<Booking>> listenBookingChanges() async* {
-    final currentUser = await authRemoteDataSource.getCurrentUser();
+  Stream<List<BookingDetail>> listenBookingChanges() async* {
+    try {
+      final currentUser = await authRemoteDataSource.getCurrentUser();
+      if (currentUser == null) return;
 
-    final snapshots = await firestore
-        .collection(TextConstants.bookings)
-        .where('bookingId', isEqualTo: currentUser!.uid)
-        .get();
-    final jsonList = snapshots.docs;
-    final bookingList = jsonList
-        .map((doc) => BookingModel.fromJson(doc.data()))
-        .toList();
-    yield bookingList;
+      // listent to bookings
+      yield* firestore
+          .collection(TextConstants.bookings)
+          .where('tenantId', isEqualTo: currentUser.uid)
+          .snapshots()
+          .asyncMap((bookingSnapshot) async {
+            List<BookingDetail> combinedList = [];
+
+            for (var doc in bookingSnapshot.docs) {
+              final booking = BookingModel.fromJson(doc.data());
+
+              // Fetch the property for this specific booking
+              final propertyDoc = await firestore
+                  .collection(TextConstants.properties)
+                  .doc(booking.propertyId)
+                  .get();
+
+              if (propertyDoc.exists) {
+                final property = PropertyModel.fromJson(propertyDoc.data()!);
+                combinedList.add(
+                  BookingDetail(booking: booking, property: property),
+                );
+              }
+            }
+            return combinedList;
+          });
+    } catch (e) {
+      throw Exception("Failed to listen for booking changes: $e");
+    }
   }
 }

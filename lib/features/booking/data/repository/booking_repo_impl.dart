@@ -5,6 +5,7 @@ import 'package:housely/core/utils/handle_error.dart';
 import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/booking/data/datasources/booking_remote_data_source.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
+import 'package:housely/features/booking/domain/entity/booking_detail.dart';
 import 'package:housely/features/booking/domain/repository/booking_repo.dart';
 
 class BookingRepoImpl implements BookingRepo {
@@ -12,7 +13,7 @@ class BookingRepoImpl implements BookingRepo {
 
   BookingRepoImpl(this.dataSource);
   @override
-  ResultStream<List<Booking>> get listenBookingChanges =>
+  ResultStream<List<BookingDetail>> get listenBookingChanges =>
       dataSource.listenBookingChanges();
 
   @override

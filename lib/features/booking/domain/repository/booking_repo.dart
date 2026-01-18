@@ -1,5 +1,6 @@
 import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
+import 'package:housely/features/booking/domain/entity/booking_detail.dart';
 
 abstract interface class BookingRepo {
   // Request booking
@@ -12,5 +13,5 @@ abstract interface class BookingRepo {
   });
 
   // Listen booking changes
-  ResultStream<List<Booking>> get listenBookingChanges;
+  ResultStream<List<BookingDetail>> get listenBookingChanges;
 }
