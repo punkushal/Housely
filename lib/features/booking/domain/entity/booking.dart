@@ -10,6 +10,9 @@ class Booking extends Equatable {
   final String ownerId;
   final BookingStatus bookingStatus;
   final double amount;
+  final List<DateTime> selectedMonths;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   const Booking({
     required this.bookingId,
@@ -18,6 +21,9 @@ class Booking extends Equatable {
     required this.ownerId,
     this.bookingStatus = .pending,
     required this.amount,
+    this.selectedMonths = const [],
+    this.startDate,
+    this.endDate,
   });
 
   Booking copyWith({
@@ -27,6 +33,9 @@ class Booking extends Equatable {
     String? ownerId,
     BookingStatus? bookingStatus,
     double? amount,
+    List<DateTime>? selectedMonths,
+    DateTime? startDate,
+    DateTime? endDate,
   }) {
     return Booking(
       bookingId: bookingId ?? this.bookingId,
@@ -35,6 +44,9 @@ class Booking extends Equatable {
       ownerId: ownerId ?? this.ownerId,
       bookingStatus: bookingStatus ?? this.bookingStatus,
       amount: amount ?? this.amount,
+      selectedMonths: selectedMonths ?? this.selectedMonths,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
     );
   }
 
@@ -46,5 +58,8 @@ class Booking extends Equatable {
     propertyId,
     amount,
     tenantId,
+    selectedMonths,
+    startDate,
+    endDate,
   ];
 }

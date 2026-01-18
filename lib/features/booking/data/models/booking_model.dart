@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
 
 class BookingModel extends Booking {
@@ -7,7 +8,10 @@ class BookingModel extends Booking {
     required super.tenantId,
     required super.ownerId,
     required super.amount,
+    super.selectedMonths,
     super.bookingStatus,
+    super.startDate,
+    super.endDate,
   });
 
   // From firestore to model class
@@ -19,6 +23,11 @@ class BookingModel extends Booking {
       ownerId: json['ownerId'],
       amount: json['amount'],
       bookingStatus: BookingStatus.values.byName(json['bookingStatus']),
+      selectedMonths: (json['selectedMonths'] as List)
+          .map((e) => (e as Timestamp).toDate())
+          .toList(),
+      startDate: (json['startDate'] as Timestamp?)?.toDate(),
+      endDate: (json['endDate'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -31,6 +40,9 @@ class BookingModel extends Booking {
       ownerId: booking.ownerId,
       amount: booking.amount,
       bookingStatus: booking.bookingStatus,
+      selectedMonths: booking.selectedMonths,
+      startDate: booking.startDate,
+      endDate: booking.endDate,
     );
   }
 
@@ -42,6 +54,9 @@ class BookingModel extends Booking {
     'ownerId': ownerId,
     'amount': amount,
     'bookingStatus': bookingStatus.name,
+    'startDate': startDate != null ? Timestamp.fromDate(startDate!) : null,
+    'endDate': endDate != null ? Timestamp.fromDate(endDate!) : null,
+    'selectedMonths': selectedMonths.map((e) => Timestamp.fromDate(e)).toList(),
   };
 
   @override
@@ -52,6 +67,9 @@ class BookingModel extends Booking {
     String? ownerId,
     BookingStatus? bookingStatus,
     double? amount,
+    List<DateTime>? selectedMonths,
+    DateTime? startDate,
+    DateTime? endDate,
   }) {
     return BookingModel(
       bookingId: bookingId ?? this.bookingId,
@@ -60,6 +78,9 @@ class BookingModel extends Booking {
       ownerId: ownerId ?? this.ownerId,
       bookingStatus: bookingStatus ?? this.bookingStatus,
       amount: amount ?? this.amount,
+      selectedMonths: selectedMonths ?? this.selectedMonths,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
     );
   }
 }
