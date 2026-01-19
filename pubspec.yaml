@@ -108,6 +108,9 @@ dependencies:
   # Shimmer skeleton loading
   skeletonizer: ^2.1.2
 
+  # launcher for phone
+  url_launcher: ^6.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
