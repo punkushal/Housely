@@ -22,7 +22,7 @@ class MyBookingCard extends StatelessWidget {
     return Container(
       padding: ResponsiveDimensions.paddingSymmetric(
         context,
-        horizontal: 24,
+        horizontal: 22,
         vertical: 16,
       ),
       height: ResponsiveDimensions.getSize(context, 104),
