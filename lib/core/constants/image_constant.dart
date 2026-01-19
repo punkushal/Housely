@@ -76,6 +76,9 @@ class ImageConstant {
   // booking success image
   static final String bookingSuccessImg = "${_baseOtherUrl}booking_success.png";
 
+  // no upcoming booking image
+  static final String noBookingImg = "${_baseOtherUrl}no_booking.png";
+
   // villa images
   static final String firstVilla = "${_baseVillaUrl}villa1.jpg";
   static final String secondVilla = "${_baseVillaUrl}villa2.jpg";
