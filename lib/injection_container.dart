@@ -26,6 +26,7 @@ import 'package:housely/features/auth/presentation/cubit/register_cubit.dart';
 import 'package:housely/features/booking/data/datasources/booking_remote_data_source.dart';
 import 'package:housely/features/booking/data/repository/booking_repo_impl.dart';
 import 'package:housely/features/booking/domain/repository/booking_repo.dart';
+import 'package:housely/features/booking/domain/usecases/get_booking_request_list_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/listen_booking_changes_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/request_booking_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/respond_booking_use_case.dart';
@@ -203,6 +204,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => RequestBookingUseCase(sl()));
   sl.registerLazySingleton(() => ListenBookingChangesUseCase(sl()));
   sl.registerLazySingleton(() => RespondBookingUseCase(sl()));
+  sl.registerLazySingleton(() => GetBookingRequestListUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -270,6 +272,8 @@ Future<void> initializeDependencies() async {
     () => BookingBloc(
       requestBookingUseCase: sl(),
       listenBookingChangesUseCase: sl(),
+      respondBookingUseCase: sl(),
+      getBookingRequestListUseCase: sl(),
     ),
   );
 
