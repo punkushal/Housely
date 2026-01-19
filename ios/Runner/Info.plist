@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+  	<string>tel</string>
+	</array>
 	<key>GIDClientID</key>
 	<string>299731885134-v3986q5kpjdmidb3re36odgu509qrred.apps.googleusercontent.com</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
