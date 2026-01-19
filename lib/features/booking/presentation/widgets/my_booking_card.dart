@@ -5,9 +5,11 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/extensions/date_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyBookingCard extends StatelessWidget {
   const MyBookingCard({
@@ -17,6 +19,21 @@ class MyBookingCard extends StatelessWidget {
   });
   final Property property;
   final Booking booking;
+
+  Future<void> makePhoneCall(BuildContext context, String number) async {
+    final Uri launchUri = Uri(scheme: 'tel', path: number);
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      if (!context.mounted) return;
+      SnackbarHelper.showError(
+        context,
+        'Could not launch $number',
+        showTop: true,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,7 +42,7 @@ class MyBookingCard extends StatelessWidget {
         horizontal: 22,
         vertical: 16,
       ),
-      height: ResponsiveDimensions.getSize(context, 104),
+      // height: ResponsiveDimensions.getSize(context, 104),
       color: AppColors.surface,
       child: Column(
         children: [
@@ -104,6 +121,10 @@ class MyBookingCard extends StatelessWidget {
           ),
           SizedBox(height: ResponsiveDimensions.spacing12(context)),
           Divider(color: AppColors.divider),
+
+          booking.bookingStatus.name != "pending"
+              ? _buildNavigationOption(context, status: booking.bookingStatus)
+              : SizedBox.shrink(),
         ],
       ),
     );
@@ -159,6 +180,64 @@ class MyBookingCard extends StatelessWidget {
         label,
         style: AppTextStyle.labelRegular(context, color: color),
       ),
+    );
+  }
+
+  Widget _buildNavigationOption(
+    BuildContext context, {
+    required BookingStatus status,
+  }) {
+    return Column(
+      spacing: ResponsiveDimensions.spacing8(context),
+      children: [
+        SizedBox(height: ResponsiveDimensions.spacing8(context)),
+        status == .completed
+            ? GestureDetector(
+                onTap: () {
+                  //TODO: Navigation to review writing page
+                },
+                child: _buildOptionContent(
+                  context,
+                  label: "Write review",
+                  iconPath: ImageConstant.reviewIcon,
+                ),
+              )
+            : SizedBox.shrink(),
+        Divider(color: AppColors.divider),
+        GestureDetector(
+          onTap: () {
+            // Navigation to phone contact
+            makePhoneCall(context, property.owner.phone);
+          },
+          child: _buildOptionContent(
+            context,
+            label: "Call Agent",
+            iconPath: ImageConstant.callIcon,
+          ),
+        ),
+        Divider(color: AppColors.divider),
+      ],
+    );
+  }
+
+  Widget _buildOptionContent(
+    BuildContext context, {
+    required String label,
+    required String iconPath,
+  }) {
+    return Row(
+      spacing: ResponsiveDimensions.spacing12(context),
+      children: [
+        SvgPicture.asset(
+          iconPath,
+          width: ResponsiveDimensions.spacing24(context),
+          height: ResponsiveDimensions.spacing24(context),
+        ),
+        Text(
+          label,
+          style: AppTextStyle.bodyRegular(context, color: AppColors.textHint),
+        ),
+      ],
     );
   }
 }
