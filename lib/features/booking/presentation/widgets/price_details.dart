@@ -18,7 +18,7 @@ class PriceDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
-      spacing: ResponsiveDimensions.spacing8(context),
+      spacing: ResponsiveDimensions.spacing4(context),
       children: [
         const HeadingLabel(label: "Price Details"),
         SizedBox(height: ResponsiveDimensions.spacing4(context)),
