@@ -18,38 +18,17 @@ final class RequestBookingEvent extends BookingEvent {
 
 final class ListenBookingChangesEvent extends BookingEvent {}
 
-final class LoadedBookingEvent extends BookingEvent {
-  final List<Booking> bookingList;
+final class LoadBookingRequestEvent extends BookingEvent {}
 
-  const LoadedBookingEvent(this.bookingList);
-
-  @override
-  List<Object> get props => [bookingList];
-}
-
-final class AcceptBookingEvent extends BookingEvent {
+final class ResponseBookingRequestEvent extends BookingEvent {
+  final BookingStatus status;
   final String bookingId;
 
-  const AcceptBookingEvent(this.bookingId);
+  const ResponseBookingRequestEvent({
+    required this.status,
+    required this.bookingId,
+  });
 
   @override
-  List<Object> get props => [bookingId];
-}
-
-final class CancelBookingEvent extends BookingEvent {
-  final String bookingId;
-
-  const CancelBookingEvent(this.bookingId);
-
-  @override
-  List<Object> get props => [bookingId];
-}
-
-final class CompleteBookingEvent extends BookingEvent {
-  final String bookingId;
-
-  const CompleteBookingEvent(this.bookingId);
-
-  @override
-  List<Object> get props => [bookingId];
+  List<Object> get props => [status, bookingId];
 }
