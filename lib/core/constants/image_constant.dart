@@ -59,6 +59,7 @@ class ImageConstant {
   static final String gasPumpIcon = "${_baseIconUrl}gas_pump_icon.svg";
   static final String bagIcon = "${_baseIconUrl}bag_icon.svg";
   static final String creditIcon = "${_baseIconUrl}credit.svg";
+  static final String reviewIcon = "${_baseIconUrl}review_icon.svg";
 
   // onboarding images
   static final String firstOnBoardingImg =
