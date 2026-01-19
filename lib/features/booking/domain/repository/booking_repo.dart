@@ -14,4 +14,7 @@ abstract interface class BookingRepo {
 
   // Listen booking changes
   ResultStream<List<BookingDetail>> get listenBookingChanges;
+
+  // Booking request list
+  ResultFuture<List<BookingDetail>> get bookingRequestList;
 }
