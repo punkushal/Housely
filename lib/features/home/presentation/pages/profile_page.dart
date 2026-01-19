@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
+import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:housely/injection_container.dart';
 
@@ -39,11 +40,23 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               body: Center(
-                child: GestureDetector(
-                  onTap: () {
-                    context.router.push(MyPropertyListRoute());
-                  },
-                  child: Text('property list'),
+                child: Column(
+                  mainAxisAlignment: .center,
+                  spacing: ResponsiveDimensions.spacing16(context),
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        context.router.push(BookingRequestRoute());
+                      },
+                      child: Text('Booking request'),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        context.router.push(MyPropertyListRoute());
+                      },
+                      child: Text('property list'),
+                    ),
+                  ],
                 ),
               ),
             ),
