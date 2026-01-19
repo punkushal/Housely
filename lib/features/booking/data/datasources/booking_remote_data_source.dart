@@ -81,4 +81,41 @@ class BookingRemoteDataSource {
       throw Exception("Failed to listen for booking changes: $e");
     }
   }
+
+  Future<List<BookingDetail>> getBookingRequestList() async {
+    try {
+      final currentUser = await authRemoteDataSource.getCurrentUser();
+      if (currentUser == null) return [];
+
+      final snapshots = await firestore
+          .collection(TextConstants.bookings)
+          .where(
+            'tenantId',
+            isEqualTo: currentUser.uid,
+          ) // later i need to pass owner id
+          .where('bookingStatus', isEqualTo: 'pending')
+          .get();
+
+      List<BookingDetail> combinedList = [];
+
+      for (var doc in snapshots.docs) {
+        final booking = BookingModel.fromJson(doc.data());
+
+        // Fetch the property for this specific booking
+        final propertyDoc = await firestore
+            .collection(TextConstants.properties)
+            .doc(booking.propertyId)
+            .get();
+
+        if (propertyDoc.exists) {
+          final property = PropertyModel.fromJson(propertyDoc.data()!);
+          combinedList.add(BookingDetail(booking: booking, property: property));
+        }
+      }
+
+      return combinedList;
+    } catch (e) {
+      throw Exception("Failed to fetch booking request list: $e");
+    }
+  }
 }
