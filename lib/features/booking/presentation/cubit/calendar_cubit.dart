@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:housely/core/utils/calculate_duration.dart';
 import 'package:intl/intl.dart';
 
 part 'calendar_state.dart';
@@ -54,7 +55,7 @@ class CalendarCubit extends Cubit<CalendarState> {
 
     // Calculate nights (Difference in days)
     // If start and end are same day, it counts as 1 day
-    int nights = end.difference(start).inDays;
+    int nights = calculateDuration(start: start, end: end);
     if (nights == 0) nights = 1; // Minimum 1 night charge
 
     // Calculate price
@@ -68,6 +69,29 @@ class CalendarCubit extends Cubit<CalendarState> {
         totalPrice: total,
         // Clear monthly data
         selectedMonths: [],
+      ),
+    );
+  }
+
+  void setExistingBookingDates({
+    required BookingType type,
+    DateTime? start,
+    DateTime? end,
+    List<DateTime> months = const [],
+    required double amount,
+  }) {
+    emit(
+      state.copyWith(
+        bookingType: type,
+        startDate: start,
+        endDate: end,
+        selectedMonths: months,
+        totalPrice: amount,
+        totalDuration: calculateDuration(
+          selectedMonths: months,
+          start: start,
+          end: end,
+        ),
       ),
     );
   }
