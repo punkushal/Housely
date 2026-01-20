@@ -149,12 +149,12 @@ class PropertyDetailSection extends StatelessWidget {
               // price
               RichText(
                 text: TextSpan(
-                  text: "\$${property.price.amount.toStringAsFixed(2)}",
+                  text: "Rs${property.price.amount.toStringAsFixed(2)}",
                   style: AppTextStyle.labelBold(
                     context,
                     lineHeight: 18,
                     color: AppColors.primaryPressed,
-                    fontSize: 10,
+                    fontSize: 12,
                   ),
                   children: [
                     TextSpan(
@@ -166,7 +166,7 @@ class PropertyDetailSection extends StatelessWidget {
                       style: AppTextStyle.bodyRegular(
                         context,
                         lineHeight: 14,
-                        fontSize: 9,
+                        fontSize: 11,
                         color: AppColors.textHint,
                       ),
                     ),
@@ -246,7 +246,9 @@ class PropertyDetailSection extends StatelessWidget {
               CircleAvatar(
                 radius: ResponsiveDimensions.radiusXLarge(context, size: 22),
                 backgroundColor: Colors.grey,
-                foregroundImage: NetworkImage(property.media.coverImage['url']),
+                foregroundImage: NetworkImage(
+                  property.owner.profileImage!['url'],
+                ),
               ),
 
               Column(
@@ -339,7 +341,9 @@ class PropertyDetailSection extends StatelessWidget {
                 );
               }
               return CustomButton(
-                onTap: () {},
+                onTap: () {
+                  context.router.push(BookingRoute(property: property));
+                },
                 buttonLabel: TextConstants.rent,
               );
             },

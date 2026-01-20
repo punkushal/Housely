@@ -52,12 +52,13 @@ class CustomButton extends StatelessWidget {
         horizontal: horizontal,
       ),
       child: SizedBox(
+        //Color(0xFFFEF3F2) => this color for delete outline button
         // width: double.infinity,
         child: ElevatedButton(
           onPressed: isLoading ? null : onTap,
           style: ElevatedButton.styleFrom(
             backgroundColor: isOutlined
-                ? Color(0xFFFEF3F2)
+                ? AppColors.surface
                 : AppColors.primaryPressed,
             foregroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(

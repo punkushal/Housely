@@ -2,7 +2,7 @@ name: housely
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -64,10 +64,10 @@ dependencies:
   # Local storage
   shared_preferences: ^2.5.4
 
-  # Google login 
+  # Google login
   google_sign_in: ^7.2.0
 
-  # Location 
+  # Location
   google_maps_flutter: ^2.14.0
   geolocator: ^14.0.2
   permission_handler: ^12.0.1
@@ -90,8 +90,26 @@ dependencies:
 
   # For caching network image
   cached_network_image: ^3.4.1
+
+  # Debouncing
   rxdart: ^0.28.0
-  
+
+  # Date Picker
+  syncfusion_flutter_datepicker: ^32.1.23
+
+  # For storing environment variables
+  envied: ^1.3.2
+
+  # Shimmer skeleton loading
+  skeletonizer: ^2.1.2
+
+  # launcher for phone
+  url_launcher: ^6.3.2
+
+  # For esewa payment integration
+  esewa_flutter: ^3.0.1
+  flutter_inappwebview: ^6.1.5
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:
@@ -105,13 +123,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  envied_generator: ^1.3.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -143,9 +161,9 @@ flutter:
         - asset: assets/fonts/Inter-Medium.otf
           weight: 500
         - asset: assets/fonts/Inter-SemiBold.otf
-          weight: 600  
+          weight: 600
         - asset: assets/fonts/Inter-Bold.otf
-          weight: 700 
+          weight: 700
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

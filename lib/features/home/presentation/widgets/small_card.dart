@@ -96,7 +96,7 @@ class SmallCard extends StatelessWidget {
                   SizedBox(height: ResponsiveDimensions.getHeight(context, 5)),
                   // Property price
                   Text(
-                    "\$${property.price.amount}/${isMonth ? "month" : "night"}",
+                    "Rs${property.price.amount}/${isMonth ? "month" : "night"}",
                     style: AppTextStyle.labelSemiBold(
                       context,
                       fontSize: 10,

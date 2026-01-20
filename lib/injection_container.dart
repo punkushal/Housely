@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
+import 'package:housely/env/env.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:housely/features/auth/data/repositories/auth_repo_impl.dart';
 import 'package:housely/features/auth/domain/repositories/auth_repo.dart';
@@ -22,6 +23,20 @@ import 'package:housely/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/password_reset_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/register_cubit.dart';
+import 'package:housely/features/booking/data/datasources/booking_remote_data_source.dart';
+import 'package:housely/features/booking/data/datasources/esewa_remote_data_source.dart';
+import 'package:housely/features/booking/data/repository/booking_repo_impl.dart';
+import 'package:housely/features/booking/data/repository/esewa_payment_repo_impl.dart';
+import 'package:housely/features/booking/domain/repository/booking_repo.dart';
+import 'package:housely/features/booking/domain/repository/esewa_payment_repo.dart';
+import 'package:housely/features/booking/domain/usecases/get_booking_request_list_use_case.dart';
+import 'package:housely/features/booking/domain/usecases/initiate_esewa_pay_use_case.dart';
+import 'package:housely/features/booking/domain/usecases/listen_booking_changes_use_case.dart';
+import 'package:housely/features/booking/domain/usecases/request_booking_use_case.dart';
+import 'package:housely/features/booking/domain/usecases/respond_booking_use_case.dart';
+import 'package:housely/features/booking/presentation/bloc/booking_bloc.dart';
+import 'package:housely/features/booking/presentation/bloc/payment_bloc.dart';
+import 'package:housely/features/booking/presentation/cubit/calendar_cubit.dart';
 import 'package:housely/features/location/data/datasources/location_local_data_source.dart';
 import 'package:housely/features/location/data/repositories/location_repo_impl.dart';
 import 'package:housely/features/location/domain/repositories/location_repo.dart';
@@ -68,7 +83,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(
     () => Client()
         .setEndpoint(TextConstants.appwriteUrl)
-        .setProject("6954b11a00214cb8b35f"), //TODO: later add this id securely
+        .setProject(Env.appWriteProjectId),
   );
   sl.registerLazySingleton(() => Storage(sl<Client>()));
 
@@ -109,6 +124,7 @@ Future<void> initializeDependencies() async {
     () => AuthRepoImpl(remoteDataSource: sl<AuthRemoteDataSource>()),
   );
 
+  // Property
   sl.registerLazySingleton<PropertyRepo>(
     () => PropertyRepoImpl(
       dataSource: sl<AppwriteStorageDataSource>(),
@@ -116,10 +132,12 @@ Future<void> initializeDependencies() async {
     ),
   );
 
+  // Owner
   sl.registerLazySingleton<OwnerRepo>(
     () => OwnerRepoImpl(firebase: sl(), dataSource: sl()),
   );
 
+  // Location
   sl.registerLazySingleton<LocationLocalDataSource>(
     () => LocationLocalDataSourceImpl(),
   );
@@ -127,6 +145,17 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<LocationRepo>(
     () => LocationRepoImpl(dataSource: sl<LocationLocalDataSource>()),
   );
+
+  // Booking
+  sl.registerLazySingleton(
+    () => BookingRemoteDataSource(authRemoteDataSource: sl(), firestore: sl()),
+  );
+
+  sl.registerLazySingleton<BookingRepo>(() => BookingRepoImpl(sl()));
+
+  // Payment
+  sl.registerLazySingleton(() => EsewaRemoteDataSource());
+  sl.registerLazySingleton<EsewaPaymentRepo>(() => EsewaPaymentRepoImpl(sl()));
 
   // ============== Domain layer ===============
   sl.registerLazySingleton(
@@ -179,6 +208,15 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(
     () => CheckServiceEnabledUseCase(locationRepo: sl<LocationRepo>()),
   );
+
+  // booking use cases
+  sl.registerLazySingleton(() => RequestBookingUseCase(sl()));
+  sl.registerLazySingleton(() => ListenBookingChangesUseCase(sl()));
+  sl.registerLazySingleton(() => RespondBookingUseCase(sl()));
+  sl.registerLazySingleton(() => GetBookingRequestListUseCase(sl()));
+
+  // payment use cases
+  sl.registerLazySingleton(() => InitiateEsewaPayUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -240,4 +278,19 @@ Future<void> initializeDependencies() async {
       getCurrentUserUseCase: sl<GetCurrentUserUseCase>(),
     ),
   );
+
+  // booking
+  sl.registerFactory(
+    () => BookingBloc(
+      requestBookingUseCase: sl(),
+      listenBookingChangesUseCase: sl(),
+      respondBookingUseCase: sl(),
+      getBookingRequestListUseCase: sl(),
+    ),
+  );
+
+  sl.registerFactory(() => CalendarCubit());
+
+  // Payment
+  sl.registerFactory(() => PaymentBloc(sl()));
 }

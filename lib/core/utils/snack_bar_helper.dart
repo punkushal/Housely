@@ -80,7 +80,7 @@ class SnackbarHelper {
         backgroundColor: config.backgroundColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
+          borderRadius: ResponsiveDimensions.borderRadiusSmall(context),
         ),
         margin: showTop
             ? ResponsiveDimensions.paddingOnly(
@@ -119,7 +119,7 @@ class SnackbarHelper {
         );
       case SnackbarType.info:
         return _SnackbarConfig(
-          backgroundColor: const Color(0xFF2196F3),
+          backgroundColor: AppColors.primary,
           icon: Icons.info,
         );
       case SnackbarType.warning:
