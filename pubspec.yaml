@@ -111,6 +111,11 @@ dependencies:
   # launcher for phone
   url_launcher: ^6.3.2
 
+  # For esewa payment integration
+  esewa_flutter: ^3.0.1
+  flutter_inappwebview: ^6.1.5
+  crypto: ^3.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
