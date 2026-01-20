@@ -24,13 +24,18 @@ import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/password_reset_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/register_cubit.dart';
 import 'package:housely/features/booking/data/datasources/booking_remote_data_source.dart';
+import 'package:housely/features/booking/data/datasources/esewa_remote_data_source.dart';
 import 'package:housely/features/booking/data/repository/booking_repo_impl.dart';
+import 'package:housely/features/booking/data/repository/esewa_payment_repo_impl.dart';
 import 'package:housely/features/booking/domain/repository/booking_repo.dart';
+import 'package:housely/features/booking/domain/repository/esewa_payment_repo.dart';
 import 'package:housely/features/booking/domain/usecases/get_booking_request_list_use_case.dart';
+import 'package:housely/features/booking/domain/usecases/initiate_esewa_pay_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/listen_booking_changes_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/request_booking_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/respond_booking_use_case.dart';
 import 'package:housely/features/booking/presentation/bloc/booking_bloc.dart';
+import 'package:housely/features/booking/presentation/bloc/payment_bloc.dart';
 import 'package:housely/features/booking/presentation/cubit/calendar_cubit.dart';
 import 'package:housely/features/location/data/datasources/location_local_data_source.dart';
 import 'package:housely/features/location/data/repositories/location_repo_impl.dart';
@@ -148,6 +153,10 @@ Future<void> initializeDependencies() async {
 
   sl.registerLazySingleton<BookingRepo>(() => BookingRepoImpl(sl()));
 
+  // Payment
+  sl.registerLazySingleton(() => EsewaRemoteDataSource());
+  sl.registerLazySingleton<EsewaPaymentRepo>(() => EsewaPaymentRepoImpl(sl()));
+
   // ============== Domain layer ===============
   sl.registerLazySingleton(
     () => SetOnboardingStatusUsecase(
@@ -205,6 +214,9 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => ListenBookingChangesUseCase(sl()));
   sl.registerLazySingleton(() => RespondBookingUseCase(sl()));
   sl.registerLazySingleton(() => GetBookingRequestListUseCase(sl()));
+
+  // payment use cases
+  sl.registerLazySingleton(() => InitiateEsewaPayUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -278,4 +290,7 @@ Future<void> initializeDependencies() async {
   );
 
   sl.registerFactory(() => CalendarCubit());
+
+  // Payment
+  sl.registerFactory(() => PaymentBloc(sl()));
 }
