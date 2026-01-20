@@ -13,6 +13,8 @@ final class BookingLoading extends BookingState {}
 
 final class BookingSuccess extends BookingState {}
 
+final class BookingResponseSuccess extends BookingState {}
+
 final class BookingLoaded extends BookingState {
   final List<BookingDetail> allBookings;
 

@@ -53,7 +53,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
     result.fold(
       (f) => emit(BookingFailure(f.message)),
-      (_) => emit(BookingSuccess()),
+      (_) => emit(BookingResponseSuccess()),
     );
   }
 
