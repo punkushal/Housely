@@ -42,7 +42,7 @@ class MyBookingCard extends StatelessWidget {
         horizontal: 22,
         vertical: 16,
       ),
-      // height: ResponsiveDimensions.getSize(context, 104),
+      width: .infinity,
       color: AppColors.surface,
       child: Column(
         children: [
@@ -122,7 +122,8 @@ class MyBookingCard extends StatelessWidget {
           SizedBox(height: ResponsiveDimensions.spacing12(context)),
           Divider(color: AppColors.divider),
 
-          booking.bookingStatus.name != "pending"
+          (booking.bookingStatus.name != "pending" &&
+                  booking.bookingStatus.name != "accepted")
               ? _buildNavigationOption(context, status: booking.bookingStatus)
               : SizedBox.shrink(),
         ],
@@ -141,8 +142,8 @@ class MyBookingCard extends StatelessWidget {
       case .accepted:
         return _buildStatusChip(
           context,
-          color: AppColors.success,
-          label: "Accepted",
+          color: AppColors.error,
+          label: "Waiting",
         );
       case .cancelled:
         return _buildStatusChip(
@@ -171,7 +172,7 @@ class MyBookingCard extends StatelessWidget {
         horizontal: 8,
         vertical: 2,
       ),
-      height: ResponsiveDimensions.getHeight(context, 20),
+      height: ResponsiveDimensions.getSize(context, 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: color.withValues(alpha: 0.2),

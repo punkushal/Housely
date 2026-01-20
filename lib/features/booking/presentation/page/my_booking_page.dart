@@ -35,27 +35,29 @@ class _BookingPageState extends State<MyBookingPage>
     super.dispose();
   }
 
-  // Helper method to build the list based on status
-  Widget _buildBookingList(List<BookingDetail> details, String status) {
-    // FILTER the list based on the tab requirement
+  // Update signature to accept a List of statuses
+  Widget _buildBookingList(
+    List<BookingDetail> details,
+    List<String> allowedStatuses,
+    String emptyLabel, // Label for the "No Data" message
+  ) {
+    // Check if the booking status is contained in the allowed list
     final filteredList = details
-        .where((d) => d.booking.bookingStatus.name == status)
+        .where((d) => allowedStatuses.contains(d.booking.bookingStatus.name))
         .toList();
 
     if (filteredList.isEmpty) {
-      return Center(child: NoBookingMessage(status));
+      return Center(child: NoBookingMessage(emptyLabel));
     }
 
     return ListView.builder(
       itemCount: filteredList.length,
       itemBuilder: (context, index) {
         final item = filteredList[index];
-        final property = item.property;
-        final booking = item.booking;
-
         return GestureDetector(
-          onTap: () => context.router.push(BookingRoute(property: property)),
-          child: MyBookingCard(property: property, booking: booking),
+          onTap: () =>
+              context.router.push(BookingRoute(property: item.property)),
+          child: MyBookingCard(property: item.property, booking: item.booking),
         );
       },
     );
@@ -139,9 +141,23 @@ class _BookingPageState extends State<MyBookingPage>
                   return TabBarView(
                     controller: tabController,
                     children: [
-                      _buildBookingList(state.allBookings, 'pending'),
-                      _buildBookingList(state.allBookings, 'completed'),
-                      _buildBookingList(state.allBookings, 'cancelled'),
+                      // TAB 1: Shows Pending AND Accepted
+                      _buildBookingList(
+                        state.allBookings,
+                        ['pending', 'accepted'],
+                        'pending', // Label for "No bookings found"
+                      ),
+
+                      // TAB 2: Completed
+                      _buildBookingList(state.allBookings, [
+                        'completed',
+                      ], 'completed'),
+
+                      // TAB 3: Cancelled (and Rejected)
+                      _buildBookingList(state.allBookings, [
+                        'cancelled',
+                        'rejected',
+                      ], 'cancelled'),
                     ],
                   );
                 }
