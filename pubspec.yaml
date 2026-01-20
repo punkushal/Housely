@@ -98,12 +98,7 @@ dependencies:
   syncfusion_flutter_datepicker: ^32.1.23
 
   # For storing environment variables
-  envied:
-    ^1.3.2
-
-    # Esewa flutter
-  esewa_flutter_sdk:
-    path: ./esewa_flutter_sdk
+  envied: ^1.3.2
 
   # Shimmer skeleton loading
   skeletonizer: ^2.1.2
