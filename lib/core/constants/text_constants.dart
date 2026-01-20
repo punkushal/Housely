@@ -3,6 +3,9 @@ class TextConstants {
 
   // urls
   static final String appwriteUrl = "https://sgp.cloud.appwrite.io/v1";
+  static final String esewaSucessUrl = 'https://developer.esewa.com.np/success';
+  static final String esewaFailureUrl =
+      'https://developer.esewa.com.np/failure';
 
   // bottom nav bar item labels
   static final String home = "Home";
