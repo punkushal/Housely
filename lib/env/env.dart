@@ -18,4 +18,7 @@ abstract class Env {
 
   @EnviedField(varName: 'ESEWA_SECRET_KEY', obfuscate: true)
   static final String esewaSecretKey = _Env.esewaSecretKey;
+
+  @EnviedField(varName: 'SECRET_KEY', obfuscate: true)
+  static final String secretKey = _Env.secretKey;
 }
