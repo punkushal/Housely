@@ -39,12 +39,12 @@ class PriceDetails extends StatelessWidget {
                   context,
                   label:
                       "${propertyType == 'house' ? 'Monthly' : 'Per night'} payment",
-                  price: "\$$price",
+                  price: "Rs$price",
                 ),
                 _buildInfo(
                   context,
                   label: "Total",
-                  price: "\$${state.totalPrice}",
+                  price: "Rs${state.totalPrice}",
                   isTotal: true,
                 ),
               ],
