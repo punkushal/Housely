@@ -27,4 +27,7 @@ abstract interface class ChatRepository {
 
   // Update online/offline status
   ResultVoid updatePresence(bool isOnline);
+
+  // get chat room id
+  String getChatRoomId(String secondUserUid);
 }

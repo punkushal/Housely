@@ -59,4 +59,9 @@ class ChatRepoImpl implements ChatRepository {
     // TODO: implement getMoreMessages
     throw UnimplementedError();
   }
+
+  @override
+  String getChatRoomId(String secondUserUid) {
+    return dataSource.getChatRoomId(secondUserUid: secondUserUid);
+  }
 }

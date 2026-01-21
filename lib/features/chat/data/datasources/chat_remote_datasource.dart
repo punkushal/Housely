@@ -12,7 +12,7 @@ class ChatRemoteDataSource {
 
   String get currentUid => auth.currentUser!.uid;
 
-  // 1. LISTEN TO CHAT LIST (Inbox)
+  // LISTEN TO CHAT LIST (Inbox)
   Stream<List<ChatRoomModel>> getChatRooms() {
     return firestore
         .collection('chat_rooms')
@@ -26,7 +26,7 @@ class ChatRemoteDataSource {
         );
   }
 
-  // 2. LISTEN TO MESSAGES (Real-time receiving)
+  // LISTEN TO MESSAGES (Real-time receiving)
   Stream<List<Message>> getMessages(String roomId, int limit) async* {
     yield* firestore
         .collection('chat_rooms')
@@ -42,7 +42,7 @@ class ChatRemoteDataSource {
         );
   }
 
-  // 3. SEND MESSAGE (Updates room AND adds message)
+  // SEND MESSAGE (Updates room AND adds message)
   Future<void> sendMessage({
     required ChatRoomModel chatRoom,
     required MessageModel message,
@@ -62,5 +62,11 @@ class ChatRemoteDataSource {
     batch.update(roomRef, updateRoom.toJson());
 
     await batch.commit();
+  }
+
+  String getChatRoomId({required String secondUserUid}) {
+    List<String> ids = [currentUid, secondUserUid];
+    ids.sort();
+    return ids.join('_');
   }
 }
