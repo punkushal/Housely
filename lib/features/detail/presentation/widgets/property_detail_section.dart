@@ -246,9 +246,7 @@ class PropertyDetailSection extends StatelessWidget {
               CircleAvatar(
                 radius: ResponsiveDimensions.radiusXLarge(context, size: 22),
                 backgroundColor: Colors.grey,
-                foregroundImage: NetworkImage(
-                  property.owner.profileImage!['url'],
-                ),
+                foregroundImage: NetworkImage(property.media.coverImage['url']),
               ),
 
               Column(
@@ -276,7 +274,15 @@ class PropertyDetailSection extends StatelessWidget {
                 spacing: ResponsiveDimensions.spacing8(context),
                 children: [
                   ContactContainer(iconPath: ImageConstant.callIcon),
-                  ContactContainer(iconPath: ImageConstant.chatIcon),
+                  ContactContainer(
+                    iconPath: ImageConstant.chatIcon,
+                    onTap: () {
+                      // navigation to chat page
+                      context.router.push(
+                        ChatDetailRoute(secondUserUid: property.owner.ownerId),
+                      );
+                    },
+                  ),
                 ],
               ),
             ],

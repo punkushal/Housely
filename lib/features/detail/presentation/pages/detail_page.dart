@@ -48,7 +48,9 @@ class DetailPage extends StatelessWidget {
                 // favorite icon button
                 BlocBuilder<OwnerCubit, OwnerState>(
                   builder: (context, state) {
-                    if (state is OwnerLoaded && state.owner != null) {
+                    if (state is OwnerLoaded &&
+                        state.owner != null &&
+                        state.owner!.ownerId == property.owner.ownerId) {
                       return IconButton(
                         onPressed: () async {
                           await context.router.push(
