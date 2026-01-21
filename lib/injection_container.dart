@@ -110,6 +110,7 @@ Future<void> initializeDependencies() async {
     () => AuthRemoteDataSourceImpl(
       firebaseAuth: sl<FirebaseAuth>(),
       googleSignInInstance: sl<GoogleSignIn>(),
+      firestore: sl<FirebaseFirestore>(),
     ),
   );
 

@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:housely/core/error/exception.dart';
+import 'package:housely/features/auth/data/models/app_user_model.dart';
 import 'package:housely/features/auth/domain/entities/app_user.dart';
 
 abstract class AuthRemoteDataSource {
@@ -28,10 +30,12 @@ abstract class AuthRemoteDataSource {
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
   final GoogleSignIn googleSignInInstance;
+  final FirebaseFirestore firestore;
 
   AuthRemoteDataSourceImpl({
     required this.firebaseAuth,
     required this.googleSignInInstance,
+    required this.firestore,
   });
 
   /// login through firebase auth
@@ -71,6 +75,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         email: email,
         password: password,
       );
+      final user = AppUserModel(
+        uid: userCredential.user!.uid,
+        email: email,
+        username: username,
+      );
+      await firestore.collection('users').doc().set(user.toMap());
 
       // Update display name
       await userCredential.user?.updateDisplayName(username);
@@ -134,6 +144,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         email: firebaseUser.email!,
         username: firebaseUser.displayName!,
       );
+
+      final user = AppUserModel.fromEntity(appUser);
+
+      await firestore.collection('users').doc().set(user.toMap());
+
       return appUser;
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseException(e);
