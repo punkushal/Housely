@@ -39,6 +39,7 @@ import 'package:housely/features/booking/presentation/bloc/payment_bloc.dart';
 import 'package:housely/features/booking/presentation/cubit/calendar_cubit.dart';
 import 'package:housely/features/chat/data/datasources/chat_remote_datasource.dart';
 import 'package:housely/features/chat/data/repository/chat_repo_impl.dart';
+import 'package:housely/features/chat/domain/repositories/chat_repo.dart';
 import 'package:housely/features/chat/domain/usecases/get_chat_room_id_use_case.dart';
 import 'package:housely/features/chat/domain/usecases/get_chat_rooms_use_case.dart';
 import 'package:housely/features/chat/domain/usecases/get_messages_use_case.dart';
@@ -168,7 +169,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(
     () => ChatRemoteDataSource(firestore: sl(), auth: sl()),
   );
-  sl.registerLazySingleton(() => ChatRepoImpl(sl()));
+  sl.registerLazySingleton<ChatRepository>(() => ChatRepoImpl(sl()));
 
   // ============== Domain layer ===============
   sl.registerLazySingleton(
