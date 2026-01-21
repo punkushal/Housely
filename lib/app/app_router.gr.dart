@@ -120,18 +120,52 @@ class BookingRequestRoute extends _i21.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.ChatDetailPage]
-class ChatDetailRoute extends _i21.PageRouteInfo<void> {
-  const ChatDetailRoute({List<_i21.PageRouteInfo>? children})
-    : super(ChatDetailRoute.name, initialChildren: children);
+class ChatDetailRoute extends _i21.PageRouteInfo<ChatDetailRouteArgs> {
+  ChatDetailRoute({
+    _i22.Key? key,
+    required String secondUserUid,
+    List<_i21.PageRouteInfo>? children,
+  }) : super(
+         ChatDetailRoute.name,
+         args: ChatDetailRouteArgs(key: key, secondUserUid: secondUserUid),
+         initialChildren: children,
+       );
 
   static const String name = 'ChatDetailRoute';
 
   static _i21.PageInfo page = _i21.PageInfo(
     name,
     builder: (data) {
-      return const _i3.ChatDetailPage();
+      final args = data.argsAs<ChatDetailRouteArgs>();
+      return _i3.ChatDetailPage(
+        key: args.key,
+        secondUserUid: args.secondUserUid,
+      );
     },
   );
+}
+
+class ChatDetailRouteArgs {
+  const ChatDetailRouteArgs({this.key, required this.secondUserUid});
+
+  final _i22.Key? key;
+
+  final String secondUserUid;
+
+  @override
+  String toString() {
+    return 'ChatDetailRouteArgs{key: $key, secondUserUid: $secondUserUid}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ChatDetailRouteArgs) return false;
+    return key == other.key && secondUserUid == other.secondUserUid;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ secondUserUid.hashCode;
 }
 
 /// generated route for
