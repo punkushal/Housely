@@ -37,6 +37,12 @@ import 'package:housely/features/booking/domain/usecases/respond_booking_use_cas
 import 'package:housely/features/booking/presentation/bloc/booking_bloc.dart';
 import 'package:housely/features/booking/presentation/bloc/payment_bloc.dart';
 import 'package:housely/features/booking/presentation/cubit/calendar_cubit.dart';
+import 'package:housely/features/chat/data/datasources/chat_remote_datasource.dart';
+import 'package:housely/features/chat/data/repository/chat_repo_impl.dart';
+import 'package:housely/features/chat/domain/usecases/get_chat_rooms_use_case.dart';
+import 'package:housely/features/chat/domain/usecases/get_messages_use_case.dart';
+import 'package:housely/features/chat/domain/usecases/send_message_use_case.dart';
+import 'package:housely/features/chat/presentation/bloc/chat_session_bloc.dart';
 import 'package:housely/features/location/data/datasources/location_local_data_source.dart';
 import 'package:housely/features/location/data/repositories/location_repo_impl.dart';
 import 'package:housely/features/location/domain/repositories/location_repo.dart';
@@ -157,6 +163,12 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => EsewaRemoteDataSource());
   sl.registerLazySingleton<EsewaPaymentRepo>(() => EsewaPaymentRepoImpl(sl()));
 
+  // chat
+  sl.registerLazySingleton(
+    () => ChatRemoteDataSource(firestore: sl(), auth: sl()),
+  );
+  sl.registerLazySingleton(() => ChatRepoImpl(sl()));
+
   // ============== Domain layer ===============
   sl.registerLazySingleton(
     () => SetOnboardingStatusUsecase(
@@ -217,6 +229,11 @@ Future<void> initializeDependencies() async {
 
   // payment use cases
   sl.registerLazySingleton(() => InitiateEsewaPayUseCase(sl()));
+
+  // chat use cases
+  sl.registerLazySingleton(() => SendMessageUseCase(sl()));
+  sl.registerLazySingleton(() => GetMessagesUseCase(sl()));
+  sl.registerLazySingleton(() => GetChatRoomsUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -293,4 +310,13 @@ Future<void> initializeDependencies() async {
 
   // Payment
   sl.registerFactory(() => PaymentBloc(sl()));
+
+  // chat
+  sl.registerFactory(
+    () => ChatSessionBloc(
+      sendMessageUseCase: sl(),
+      getMessagesUseCase: sl(),
+      getChatRoomsUseCase: sl(),
+    ),
+  );
 }
