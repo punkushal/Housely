@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage> {
           ResponsiveDimensions.gapW8(context),
           IconWrapper(
             iconPath: ImageConstant.chatIcon,
-            onTap: () => context.router.push(ChatRoute()),
+            onTap: () => context.router.push(ChatListRoute()),
           ),
           ResponsiveDimensions.gapW24(context),
         ],

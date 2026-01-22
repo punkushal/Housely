@@ -279,7 +279,7 @@ class PropertyDetailSection extends StatelessWidget {
                     onTap: () {
                       // navigation to chat page
                       context.router.push(
-                        ChatDetailRoute(secondUserUid: property.owner.ownerId),
+                        ChatRoute(secondUserUid: property.owner.ownerId),
                       );
                     },
                   ),

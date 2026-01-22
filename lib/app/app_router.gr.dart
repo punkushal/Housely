@@ -23,7 +23,7 @@ import 'package:housely/features/booking/presentation/page/booking_request_page.
     as _i2;
 import 'package:housely/features/booking/presentation/page/my_booking_page.dart'
     as _i14;
-import 'package:housely/features/chat/presentation/page/chat_detail_page.dart'
+import 'package:housely/features/chat/presentation/page/chat_list_page.dart'
     as _i3;
 import 'package:housely/features/chat/presentation/page/chat_page.dart' as _i4;
 import 'package:housely/features/detail/presentation/pages/detail_page.dart'
@@ -119,34 +119,47 @@ class BookingRequestRoute extends _i21.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i3.ChatDetailPage]
-class ChatDetailRoute extends _i21.PageRouteInfo<ChatDetailRouteArgs> {
-  ChatDetailRoute({
-    _i22.Key? key,
-    required String secondUserUid,
-    List<_i21.PageRouteInfo>? children,
-  }) : super(
-         ChatDetailRoute.name,
-         args: ChatDetailRouteArgs(key: key, secondUserUid: secondUserUid),
-         initialChildren: children,
-       );
+/// [_i3.ChatListPage]
+class ChatListRoute extends _i21.PageRouteInfo<void> {
+  const ChatListRoute({List<_i21.PageRouteInfo>? children})
+    : super(ChatListRoute.name, initialChildren: children);
 
-  static const String name = 'ChatDetailRoute';
+  static const String name = 'ChatListRoute';
 
   static _i21.PageInfo page = _i21.PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<ChatDetailRouteArgs>();
-      return _i3.ChatDetailPage(
-        key: args.key,
-        secondUserUid: args.secondUserUid,
-      );
+      return const _i3.ChatListPage();
     },
   );
 }
 
-class ChatDetailRouteArgs {
-  const ChatDetailRouteArgs({this.key, required this.secondUserUid});
+/// generated route for
+/// [_i4.ChatPage]
+class ChatRoute extends _i21.PageRouteInfo<ChatRouteArgs> {
+  ChatRoute({
+    _i22.Key? key,
+    required String secondUserUid,
+    List<_i21.PageRouteInfo>? children,
+  }) : super(
+         ChatRoute.name,
+         args: ChatRouteArgs(key: key, secondUserUid: secondUserUid),
+         initialChildren: children,
+       );
+
+  static const String name = 'ChatRoute';
+
+  static _i21.PageInfo page = _i21.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<ChatRouteArgs>();
+      return _i4.ChatPage(key: args.key, secondUserUid: args.secondUserUid);
+    },
+  );
+}
+
+class ChatRouteArgs {
+  const ChatRouteArgs({this.key, required this.secondUserUid});
 
   final _i22.Key? key;
 
@@ -154,34 +167,18 @@ class ChatDetailRouteArgs {
 
   @override
   String toString() {
-    return 'ChatDetailRouteArgs{key: $key, secondUserUid: $secondUserUid}';
+    return 'ChatRouteArgs{key: $key, secondUserUid: $secondUserUid}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other is! ChatDetailRouteArgs) return false;
+    if (other is! ChatRouteArgs) return false;
     return key == other.key && secondUserUid == other.secondUserUid;
   }
 
   @override
   int get hashCode => key.hashCode ^ secondUserUid.hashCode;
-}
-
-/// generated route for
-/// [_i4.ChatPage]
-class ChatRoute extends _i21.PageRouteInfo<void> {
-  const ChatRoute({List<_i21.PageRouteInfo>? children})
-    : super(ChatRoute.name, initialChildren: children);
-
-  static const String name = 'ChatRoute';
-
-  static _i21.PageInfo page = _i21.PageInfo(
-    name,
-    builder: (data) {
-      return const _i4.ChatPage();
-    },
-  );
 }
 
 /// generated route for
