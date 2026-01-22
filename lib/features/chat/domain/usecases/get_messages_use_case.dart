@@ -10,16 +10,29 @@ class GetMessagesUseCase
 
   GetMessagesUseCase(this.chatRepository);
   @override
-  ResultStream<List<Message>> call(param) {
-    return chatRepository.getMessages(roomId: param.roomId);
+  ResultStream<List<Message>> call(params) {
+    return chatRepository.getMessages(
+      chatId: params.chatId,
+      currentUserId: params.currentUserId,
+      limit: params.limit,
+      lastMessage: params.lastMessage,
+    );
   }
 }
 
 class GetMessagesParams extends Equatable {
-  final String roomId;
+  final String chatId;
+  final String currentUserId;
+  final int? limit;
+  final Message? lastMessage;
 
-  const GetMessagesParams({required this.roomId});
+  const GetMessagesParams({
+    required this.chatId,
+    required this.currentUserId,
+    this.limit,
+    this.lastMessage,
+  });
 
   @override
-  List<Object> get props => [roomId];
+  List<Object?> get props => [chatId, currentUserId, limit, lastMessage];
 }

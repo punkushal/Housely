@@ -2,36 +2,61 @@
 import 'package:equatable/equatable.dart';
 
 class Message extends Equatable {
-  final String id;
+  final String messageId;
   final String senderId;
   final String receiverId;
-  final String text;
+  final String message;
   final DateTime timestamp;
+  final bool isRead;
+  final bool isDeleted;
+  final List<String> deletedBy;
 
   const Message({
-    required this.id,
+    required this.messageId,
     required this.senderId,
     required this.receiverId,
-    required this.text,
+    required this.message,
     required this.timestamp,
+    required this.isRead,
+    required this.isDeleted,
+    required this.deletedBy,
   });
 
+  bool isDeletedByUser(String userId) {
+    return deletedBy.contains(userId);
+  }
+
   @override
-  List<Object> get props => [id, senderId, receiverId, text, timestamp];
+  List<Object> get props => [
+    messageId,
+    senderId,
+    receiverId,
+    message,
+    timestamp,
+    isRead,
+    isDeleted,
+    deletedBy,
+  ];
 
   Message copyWith({
-    String? id,
+    String? messageId,
     String? senderId,
     String? receiverId,
-    String? text,
+    String? message,
     DateTime? timestamp,
+    bool? isRead,
+    bool? isDeleted,
+    List<String>? deletedBy,
   }) {
     return Message(
-      id: id ?? this.id,
+      messageId: messageId ?? this.messageId,
       senderId: senderId ?? this.senderId,
       receiverId: receiverId ?? this.receiverId,
-      text: text ?? this.text,
+      message: message ?? this.message,
       timestamp: timestamp ?? this.timestamp,
+      isDeleted: isDeleted ?? this.isDeleted,
+      isRead: isRead ?? this.isRead,
+      deletedBy: deletedBy ?? this.deletedBy,
     );
   }
 }

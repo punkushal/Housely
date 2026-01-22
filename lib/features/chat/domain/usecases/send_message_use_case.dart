@@ -1,29 +1,36 @@
 import 'package:equatable/equatable.dart';
 import 'package:housely/core/usecases/usecase.dart';
 import 'package:housely/core/utils/typedef.dart';
-import 'package:housely/features/chat/domain/entity/chat_room.dart';
-import 'package:housely/features/chat/domain/entity/message.dart';
 import 'package:housely/features/chat/domain/repositories/chat_repo.dart';
 
-class SendMessageUseCase implements UseCase<void, SendParams> {
+class SendMessageUseCase implements UseCase<void, SendMessageParams> {
   final ChatRepository chatRepository;
 
   SendMessageUseCase(this.chatRepository);
   @override
   ResultFuture<void> call(params) async {
     return await chatRepository.sendMessage(
-      chatRoom: params.chatRoom,
+      chatId: params.chatId,
+      senderId: params.senderId,
+      receiverId: params.receiverId,
       message: params.message,
     );
   }
 }
 
-class SendParams extends Equatable {
-  final Message message;
-  final ChatRoom chatRoom;
+class SendMessageParams extends Equatable {
+  final String chatId;
+  final String senderId;
+  final String receiverId;
+  final String message;
 
-  const SendParams({required this.message, required this.chatRoom});
+  const SendMessageParams({
+    required this.chatId,
+    required this.senderId,
+    required this.receiverId,
+    required this.message,
+  });
 
   @override
-  List<Object?> get props => [message, chatRoom];
+  List<Object?> get props => [chatId, senderId, receiverId, message];
 }
