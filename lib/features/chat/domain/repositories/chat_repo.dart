@@ -1,33 +1,49 @@
 import 'package:housely/core/utils/typedef.dart';
-import 'package:housely/features/chat/domain/entity/chat_room.dart';
+import 'package:housely/features/chat/domain/entity/chat.dart';
+import 'package:housely/features/chat/domain/entity/chat_user.dart';
 import 'package:housely/features/chat/domain/entity/message.dart';
 
 abstract interface class ChatRepository {
+  ResultFuture<Chat> createOrGetChat({
+    required String currentUserId,
+    required String otherUserId,
+    required String currentUserName,
+    String? currentUserProfileImage,
+    required String otherUserName,
+    String? otherUserProfileImage,
+  });
+
   // Stream to listen for the list of chats (Inbox)
-  ResultStream<List<ChatRoom>> getChatRooms();
+  ResultStream<List<Chat>> getChatList(String userId);
 
   // Stream to listen for messages in a specific room with pagination support
   ResultStream<List<Message>> getMessages({
-    required String roomId,
-    int limit = 20,
-  });
-
-  // Method to fetch MORE messages (Pagination)
-  ResultFuture<List<Message>> getMoreMessages({
-    required String roomId,
-    required DateTime lastMessageTime,
-    int limit = 20,
+    required String chatId,
+    required String currentUserId,
+    int? limit,
+    Message? lastMessage,
   });
 
   // Action to send a message
   ResultVoid sendMessage({
-    required ChatRoom chatRoom,
-    required Message message,
+    required String chatId,
+    required String senderId,
+    required String receiverId,
+    required String message,
   });
 
-  // Update online/offline status
-  ResultVoid updatePresence(bool isOnline);
+  ResultVoid deleteMessage({
+    required String chatId,
+    required String messageId,
+    required String userId,
+  });
 
-  // get chat room id
-  String getChatRoomId(String secondUserUid);
+  ResultVoid markMessagesAsRead({
+    required String chatId,
+    required String userId,
+  });
+
+  ResultVoid updateUserStatus({required String userId, required bool isOnline});
+
+  ResultStream<ChatUser> getUserStatus(String userId);
 }
