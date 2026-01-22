@@ -1,4 +1,5 @@
 class ChatUtils {
+  ChatUtils._();
   // Generate chat ID from two user IDs (always in same order)
   static String generateChatId(String userId1, String userId2) {
     final sortedIds = [userId1, userId2]..sort();
