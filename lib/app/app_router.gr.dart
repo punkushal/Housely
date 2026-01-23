@@ -35,7 +35,7 @@ import 'package:housely/features/home/presentation/pages/profile_page.dart'
 import 'package:housely/features/home/presentation/pages/see_all_list_page.dart'
     as _i18;
 import 'package:housely/features/location/domain/entities/location.dart'
-    as _i24;
+    as _i25;
 import 'package:housely/features/location/presentation/pages/location_page.dart'
     as _i11;
 import 'package:housely/features/location/presentation/pages/map_picker_page.dart'
@@ -46,6 +46,8 @@ import 'package:housely/features/onboarding/presentation/pages/splash_page.dart'
     as _i20;
 import 'package:housely/features/property/domain/entities/property.dart'
     as _i23;
+import 'package:housely/features/property/domain/entities/property_owner.dart'
+    as _i24;
 import 'package:housely/features/property/presentation/pages/complete_owner_profile_page.dart'
     as _i5;
 import 'package:housely/features/property/presentation/pages/create_new_property_page.dart'
@@ -139,11 +141,11 @@ class ChatListRoute extends _i21.PageRouteInfo<void> {
 class ChatRoute extends _i21.PageRouteInfo<ChatRouteArgs> {
   ChatRoute({
     _i22.Key? key,
-    required String secondUserUid,
+    _i24.PropertyOwner? owner,
     List<_i21.PageRouteInfo>? children,
   }) : super(
          ChatRoute.name,
-         args: ChatRouteArgs(key: key, secondUserUid: secondUserUid),
+         args: ChatRouteArgs(key: key, owner: owner),
          initialChildren: children,
        );
 
@@ -152,33 +154,37 @@ class ChatRoute extends _i21.PageRouteInfo<ChatRouteArgs> {
   static _i21.PageInfo page = _i21.PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<ChatRouteArgs>();
-      return _i4.ChatPage(key: args.key, secondUserUid: args.secondUserUid);
+      final args = data.argsAs<ChatRouteArgs>(
+        orElse: () => const ChatRouteArgs(),
+      );
+      return _i21.WrappedRoute(
+        child: _i4.ChatPage(key: args.key, owner: args.owner),
+      );
     },
   );
 }
 
 class ChatRouteArgs {
-  const ChatRouteArgs({this.key, required this.secondUserUid});
+  const ChatRouteArgs({this.key, this.owner});
 
   final _i22.Key? key;
 
-  final String secondUserUid;
+  final _i24.PropertyOwner? owner;
 
   @override
   String toString() {
-    return 'ChatRouteArgs{key: $key, secondUserUid: $secondUserUid}';
+    return 'ChatRouteArgs{key: $key, owner: $owner}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! ChatRouteArgs) return false;
-    return key == other.key && secondUserUid == other.secondUserUid;
+    return key == other.key && owner == other.owner;
   }
 
   @override
-  int get hashCode => key.hashCode ^ secondUserUid.hashCode;
+  int get hashCode => key.hashCode ^ owner.hashCode;
 }
 
 /// generated route for
@@ -418,7 +424,7 @@ class MapPickerRoute extends _i21.PageRouteInfo<MapPickerRouteArgs> {
   MapPickerRoute({
     _i22.Key? key,
     bool isOwner = false,
-    _i24.Location? initialLocation,
+    _i25.Location? initialLocation,
     bool isVisitor = false,
     List<_i21.PageRouteInfo>? children,
   }) : super(
@@ -464,7 +470,7 @@ class MapPickerRouteArgs {
 
   final bool isOwner;
 
-  final _i24.Location? initialLocation;
+  final _i25.Location? initialLocation;
 
   final bool isVisitor;
 
