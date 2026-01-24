@@ -5,45 +5,53 @@ import 'package:housely/features/chat/domain/entity/message.dart';
 
 abstract interface class ChatRepository {
   ResultFuture<Chat> createOrGetChat({
-    required String currentUserId,
-    required String otherUserId,
-    required String currentUserName,
-    String? currentUserProfileImage,
-    required String otherUserName,
-    String? otherUserProfileImage,
+    required ChatUser currentUser,
+    required ChatUser otherUser,
   });
 
   // Stream to listen for the list of chats (Inbox)
-  ResultStream<List<Chat>> getChatList(String userId);
+  ResultStream<List<Chat>> getChatListStream({
+    required String userId,
+    int limit,
+    Chat? lastChat,
+  });
 
   // Stream to listen for messages in a specific room with pagination support
   ResultStream<List<Message>> getMessages({
     required String chatId,
-    required String currentUserId,
-    int? limit,
+    int limit,
     Message? lastMessage,
   });
 
   // Action to send a message
-  ResultVoid sendMessage({
+  ResultFuture<Message> sendMessage({
     required String chatId,
     required String senderId,
-    required String receiverId,
-    required String message,
+    required String text,
+    String? replyToMessageId,
   });
 
-  ResultVoid deleteMessage({
-    required String chatId,
-    required String messageId,
-    required String userId,
-  });
+  /// Delete a message
+  ResultVoid deleteMessage({required String chatId, required String messageId});
 
+  /// Delete a chat
+  ResultVoid deleteChat({required String chatId});
+
+  /// Mark message as read
   ResultVoid markMessagesAsRead({
     required String chatId,
     required String userId,
   });
 
-  ResultVoid updateUserStatus({required String userId, required bool isOnline});
+  /// Update user online status
+  ResultVoid updateOnlineStatus({
+    required String userId,
+    required bool isOnline,
+  });
 
-  ResultStream<ChatUser> getUserStatus(String userId);
+  /// Stream of user online status
+  ResultStream<ChatUser> getUserStatusStream(String userId);
+
+  /// Get user details
+  ResultFuture<ChatUser> getUserDetails(String userId);
 }

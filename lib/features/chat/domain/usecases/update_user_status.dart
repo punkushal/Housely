@@ -3,13 +3,13 @@ import 'package:housely/core/usecases/usecase.dart';
 import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/chat/domain/repositories/chat_repo.dart';
 
-class UpdateUserStatus implements UseCase<void, UpdateStatusParams> {
+class UpdateOnlineStatusUseCase implements UseCase<void, UpdateStatusParams> {
   final ChatRepository chatRepository;
 
-  UpdateUserStatus(this.chatRepository);
+  UpdateOnlineStatusUseCase(this.chatRepository);
   @override
   ResultFuture<void> call(params) async {
-    return await chatRepository.updateUserStatus(
+    return await chatRepository.updateOnlineStatus(
       isOnline: params.isOnline,
       userId: params.userId,
     );

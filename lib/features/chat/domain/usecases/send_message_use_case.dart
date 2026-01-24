@@ -12,8 +12,8 @@ class SendMessageUseCase implements UseCase<void, SendMessageParams> {
     return await chatRepository.sendMessage(
       chatId: params.chatId,
       senderId: params.senderId,
-      receiverId: params.receiverId,
-      message: params.message,
+      replyToMessageId: params.replyToMessageId,
+      text: params.message,
     );
   }
 }
@@ -21,16 +21,16 @@ class SendMessageUseCase implements UseCase<void, SendMessageParams> {
 class SendMessageParams extends Equatable {
   final String chatId;
   final String senderId;
-  final String receiverId;
+  final String? replyToMessageId;
   final String message;
 
   const SendMessageParams({
     required this.chatId,
     required this.senderId,
-    required this.receiverId,
+    this.replyToMessageId,
     required this.message,
   });
 
   @override
-  List<Object?> get props => [chatId, senderId, receiverId, message];
+  List<Object?> get props => [chatId, senderId, replyToMessageId, message];
 }

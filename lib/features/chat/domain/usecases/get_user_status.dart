@@ -4,14 +4,14 @@ import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/chat/domain/entity/chat_user.dart';
 import 'package:housely/features/chat/domain/repositories/chat_repo.dart';
 
-class GetUserStatus
+class GetUserStatusStreamUseCase
     implements UseCaseStreamWithParam<ChatUser, GetStatusParams> {
   final ChatRepository chatRepository;
 
-  GetUserStatus(this.chatRepository);
+  GetUserStatusStreamUseCase(this.chatRepository);
   @override
   ResultStream<ChatUser> call(params) {
-    return chatRepository.getUserStatus(params.userId);
+    return chatRepository.getUserStatusStream(params.userId);
   }
 }
 
