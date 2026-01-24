@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:housely/core/constants/text_constants.dart';
+import 'package:housely/core/error/exception.dart';
 import 'package:housely/core/utils/chat_utils.dart';
 import 'package:housely/features/chat/data/models/chat_model.dart';
 import 'package:housely/features/chat/data/models/chat_user_model.dart';
 import 'package:housely/features/chat/data/models/message_model.dart';
+import 'package:housely/features/chat/domain/entity/chat.dart';
+import 'package:housely/features/chat/domain/entity/chat_user.dart';
+import 'package:housely/features/chat/domain/entity/message.dart';
 
 class ChatRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -14,108 +18,123 @@ class ChatRemoteDataSource {
 
   String get currentUid => auth.currentUser!.uid;
 
+  CollectionReference get _chatsCollection =>
+      firestore.collection(TextConstants.chatsCollection);
+
+  CollectionReference get _usersCollection =>
+      firestore.collection(TextConstants.users);
+
+  CollectionReference _messagesCollection(String chatId) =>
+      _chatsCollection.doc(chatId).collection(TextConstants.messagesCollection);
+
   Future<ChatModel> createOrGetChat({
-    required String currentUserId,
-    required String otherUserId,
-    required String currentUserName,
-    String? currentUserProfileImage,
-    required String otherUserName,
-    String? otherUserProfileImage,
+    required ChatUser currentUser,
+    required ChatUser otherUser,
   }) async {
     try {
-      final chatId = ChatUtils.generateChatId(currentUserId, otherUserId);
-      final chatRef = firestore.collection(TextConstants.chats).doc(chatId);
+      final chatId = ChatUtils.generateChatId(currentUser.uid, otherUser.uid);
 
-      final chatDoc = await chatRef.get();
+      // check if chat exists
+      final existingChat = await firestore
+          .collection(TextConstants.chatsCollection)
+          .doc(chatId)
+          .get();
 
-      if (!chatDoc.exists) {
-        final now = DateTime.now();
-        final newChat = ChatModel(
-          chatId: chatId,
-          participants: [currentUserId, otherUserId],
-          participantDetails: {
-            currentUserId: ParticipantInfoModel(
-              name: currentUserName,
-              profileImage: currentUserProfileImage,
-            ),
-            otherUserId: ParticipantInfoModel(
-              name: otherUserName,
-              profileImage: otherUserProfileImage,
-            ),
-          },
-          lastMessage: '',
-          lastMessageTime: now,
-          lastMessageSenderId: '',
-          createdAt: now,
-          updatedAt: now,
-        );
-
-        await chatRef.set(newChat.toFirestore());
-        return newChat;
+      if (existingChat.exists) {
+        return ChatModel.fromFirestore(existingChat, currentUser.uid);
       }
 
-      return ChatModel.fromFirestore(chatDoc);
+      // Create new chat
+      final now = DateTime.now();
+      final currentUserModel = ChatUserModel.fromEntity(currentUser);
+      final otherUserModel = ChatUserModel.fromEntity(otherUser);
+
+      final chatData = {
+        'participants': [currentUser.uid, otherUser.uid],
+        'participantDetails': {
+          currentUser.uid: currentUserModel.toParticipantMap(),
+          otherUser.uid: otherUserModel.toParticipantMap(),
+        },
+        'createdAt': Timestamp.fromDate(now),
+        'updatedAt': Timestamp.fromDate(now),
+        'lastMessage': null,
+      };
+
+      await _chatsCollection.doc(chatId).set(chatData);
+
+      final newChatDoc = await _chatsCollection.doc(chatId).get();
+
+      return ChatModel.fromFirestore(newChatDoc, currentUser.uid);
     } catch (e) {
-      throw Exception('Failed to create or get chat: $e');
+      throw ServerException('Failed to create or get chat: $e');
     }
   }
 
-  Future<void> sendMessage({
+  Future<MessageModel> sendMessage({
     required String chatId,
     required String senderId,
-    required String receiverId,
+    String? replyToMessageId,
     required String message,
   }) async {
     try {
-      final messageRef = firestore
-          .collection(TextConstants.chats)
-          .doc(chatId)
-          .collection(TextConstants.messages)
-          .doc();
-
       final now = DateTime.now();
-      final newMessage = MessageModel(
+
+      final messageData = {
+        'senderId': senderId,
+        'text': message,
+        'timestamp': Timestamp.fromDate(now),
+        'isRead': false,
+        'replyToMessageId': replyToMessageId,
+      };
+
+      // add message
+      final messageRef = await firestore
+          .collection(TextConstants.chatsCollection)
+          .doc(chatId)
+          .collection(TextConstants.messagesCollection)
+          .add(messageData);
+
+      // Update chat with last message
+      await firestore
+          .collection(TextConstants.chatsCollection)
+          .doc(chatId)
+          .update({
+            'lastMessage': {
+              'text': message,
+              'senderId': senderId,
+              'timestamp': Timestamp.fromDate(now),
+              'isRead': false,
+            },
+            'updatedAt': Timestamp.fromDate(now),
+          });
+
+      return MessageModel(
         messageId: messageRef.id,
+        chatId: chatId,
         senderId: senderId,
-        receiverId: receiverId,
-        message: message,
+        text: message,
         timestamp: now,
         isRead: false,
-        isDeleted: false,
-        deletedBy: [],
+        status: MessageStatus.sent,
+        replyToMessageId: replyToMessageId,
       );
-
-      // Send message
-      await messageRef.set(newMessage.toJson());
-
-      // Update chat last message
-      await firestore.collection(TextConstants.chats).doc(chatId).update({
-        'lastMessage': message,
-        'lastMessageTime': Timestamp.fromDate(now),
-        'lastMessageSenderId': senderId,
-        'updatedAt': Timestamp.fromDate(now),
-      });
     } catch (e) {
-      throw Exception('Failed to send message: $e');
+      throw ServerException('Failed to send message: $e');
     }
   }
 
-  Stream<List<MessageModel>> getMessages({
+  Stream<List<MessageModel>> getMessagesStream({
     required String chatId,
-    required String currentUserId,
-    int? limit,
-    MessageModel? lastMessage,
+    int limit = TextConstants.messagePageSize,
+    Message? lastMessage,
   }) {
     try {
       Query query = firestore
-          .collection(TextConstants.chats)
+          .collection(TextConstants.chatsCollection)
           .doc(chatId)
-          .collection(TextConstants.messages)
-          .orderBy('timestamp', descending: true);
-
-      if (limit != null) {
-        query = query.limit(limit);
-      }
+          .collection(TextConstants.messagesCollection)
+          .orderBy('timestamp', descending: true)
+          .limit(limit);
 
       if (lastMessage != null) {
         query = query.startAfter([Timestamp.fromDate(lastMessage.timestamp)]);
@@ -124,59 +143,47 @@ class ChatRemoteDataSource {
       return query.snapshots().map((snapshot) {
         return snapshot.docs
             .map((doc) => MessageModel.fromFirestore(doc))
-            .where((message) => !message.isDeletedByUser(currentUserId))
             .toList();
       });
     } catch (e) {
-      throw Exception('Failed to get messages: $e');
+      throw ServerException('Failed to get messages stream: $e');
     }
   }
 
-  Stream<List<ChatModel>> getChatList(String userId) {
+  Stream<List<ChatModel>> getChatListStream({
+    required String userId,
+    int limit = TextConstants.chatListPageSize,
+    Chat? lastChat,
+  }) {
     try {
-      return firestore
-          .collection(TextConstants.chats)
-          .where('participants', arrayContains: userId)
-          .orderBy('lastMessageTime', descending: true)
-          .snapshots()
-          .map((snapshot) {
-            return snapshot.docs
-                .map((doc) => ChatModel.fromFirestore(doc))
-                .where((chat) => chat.lastMessage.isNotEmpty)
-                .toList();
-          });
+      Query query = firestore
+          .collection(TextConstants.chatsCollection)
+          .where(TextConstants.participantsField, arrayContains: userId)
+          .orderBy(TextConstants.updatedAtField, descending: true)
+          .limit(limit);
+
+      if (lastChat != null) {
+        query = query.startAfter([Timestamp.fromDate(lastChat.updatedAt)]);
+      }
+
+      return query.snapshots().map((snapshot) {
+        return snapshot.docs
+            .map((doc) => ChatModel.fromFirestore(doc, userId))
+            .toList();
+      });
     } catch (e) {
-      throw Exception('Failed to get chat list: $e');
+      throw ServerException('Failed to get chat list stream: $e');
     }
   }
 
   Future<void> deleteMessage({
     required String chatId,
     required String messageId,
-    required String userId,
   }) async {
     try {
-      final messageRef = firestore
-          .collection(TextConstants.chats)
-          .doc(chatId)
-          .collection(TextConstants.messages)
-          .doc(messageId);
-
-      await messageRef.update({
-        'deletedBy': FieldValue.arrayUnion([userId]),
-      });
-
-      // Check if both users deleted the message
-      final messageDoc = await messageRef.get();
-      final deletedBy = List<String>.from(
-        messageDoc.data()?['deletedBy'] ?? [],
-      );
-
-      if (deletedBy.length >= 2) {
-        await messageRef.update({'isDeleted': true});
-      }
+      await _messagesCollection(chatId).doc(messageId).delete();
     } catch (e) {
-      throw Exception('Failed to delete message: $e');
+      throw ServerException('Failed to delete message: $e');
     }
   }
 
@@ -185,13 +192,9 @@ class ChatRemoteDataSource {
     required String userId,
   }) async {
     try {
-      final messagesRef = firestore
-          .collection(TextConstants.chats)
-          .doc(chatId)
-          .collection(TextConstants.messages);
-
-      final unreadMessages = await messagesRef
-          .where('receiverId', isEqualTo: userId)
+      // Get unread messages not sent by current user
+      final unreadMessages = await _messagesCollection(chatId)
+          .where('senderId', isEqualTo: userId)
           .where('isRead', isEqualTo: false)
           .get();
 
@@ -201,33 +204,65 @@ class ChatRemoteDataSource {
       }
       await batch.commit();
     } catch (e) {
-      throw Exception('Failed to mark messages as read: $e');
+      throw ServerException('Failed to mark messages as read: $e');
     }
   }
 
-  Future<void> updateUserStatus({
+  Future<void> updateOnlineStatus({
     required String userId,
     required bool isOnline,
   }) async {
     try {
-      await firestore.collection(TextConstants.users).doc(userId).update({
+      await _usersCollection.doc(userId).update({
         'isOnline': isOnline,
         'lastSeen': Timestamp.fromDate(DateTime.now()),
       });
     } catch (e) {
-      throw Exception('Failed to update user status: $e');
+      throw ServerException('Failed to update user status: $e');
     }
   }
 
-  Stream<ChatUserModel> getUserStatus(String userId) {
+  Stream<ChatUserModel> getUserStatusStream(String userId) {
     try {
-      return firestore
-          .collection(TextConstants.users)
-          .doc(userId)
-          .snapshots()
-          .map((doc) => ChatUserModel.fromFirestore(doc));
+      return _usersCollection.doc(userId).snapshots().map((doc) {
+        if (!doc.exists) {
+          throw ServerException("User not found");
+        }
+        return ChatUserModel.fromFirestore(doc);
+      });
     } catch (e) {
-      throw Exception('Failed to get user status: $e');
+      throw ServerException('Failed to get user status stream: $e');
+    }
+  }
+
+  Future<ChatUserModel> getUserDetails({required String userId}) async {
+    try {
+      final doc = await _usersCollection.doc(userId).get();
+      if (!doc.exists) {
+        throw ServerException('User not found');
+      }
+      return ChatUserModel.fromFirestore(doc);
+    } catch (e) {
+      throw ServerException('Failed to get user details: $e');
+    }
+  }
+
+  Future<void> deleteChat({required String chatId}) async {
+    try {
+      // Delete all messages
+      final messages = await _messagesCollection(chatId).get();
+      final batch = firestore.batch();
+
+      for (final doc in messages.docs) {
+        batch.delete(doc.reference);
+      }
+
+      // Delete chat document
+      batch.delete(_chatsCollection.doc(chatId));
+
+      await batch.commit();
+    } catch (e) {
+      throw ServerException('Failed to delete chat: $e');
     }
   }
 }

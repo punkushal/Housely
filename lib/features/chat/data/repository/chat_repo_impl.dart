@@ -1,4 +1,5 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:housely/core/error/exception.dart';
 import 'package:housely/core/error/failure.dart';
 import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/chat/data/datasources/chat_remote_datasource.dart';
@@ -8,91 +9,62 @@ import 'package:housely/features/chat/domain/entity/message.dart';
 import 'package:housely/features/chat/domain/repositories/chat_repo.dart';
 
 class ChatRepoImpl implements ChatRepository {
-  final ChatRemoteDataSource dataSource;
+  final ChatRemoteDataSource remoteDataSource;
 
-  ChatRepoImpl(this.dataSource);
+  ChatRepoImpl(this.remoteDataSource);
 
   @override
   ResultFuture<Chat> createOrGetChat({
-    required String currentUserId,
-    required String otherUserId,
-    required String currentUserName,
-    String? currentUserProfileImage,
-    required String otherUserName,
-    String? otherUserProfileImage,
+    required ChatUser currentUser,
+    required ChatUser otherUser,
   }) async {
     try {
-      final chat = await dataSource.createOrGetChat(
-        currentUserId: currentUserId,
-        otherUserId: otherUserId,
-        currentUserName: currentUserName,
-        currentUserProfileImage: currentUserProfileImage,
-        otherUserName: otherUserName,
-        otherUserProfileImage: otherUserProfileImage,
+      final chat = await remoteDataSource.createOrGetChat(
+        currentUser: currentUser,
+        otherUser: otherUser,
       );
       return Right(chat);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
     }
   }
 
   @override
   ResultStream<List<Message>> getMessages({
     required String chatId,
-    required String currentUserId,
-    int? limit,
+    int limit = 30,
     Message? lastMessage,
   }) {
     try {
-      return dataSource
-          .getMessages(
+      return remoteDataSource
+          .getMessagesStream(
             chatId: chatId,
-            currentUserId: currentUserId,
             limit: limit,
-            lastMessage: lastMessage as dynamic,
+            lastMessage: lastMessage,
           )
-          .map((messages) => Right<Failure, List<Message>>(messages))
-          .handleError((error) {
-            return Left<Failure, List<Message>>(
-              ServerFailure(error.toString()),
-            );
-          });
+          .map((messages) => Right<Failure, List<Message>>(messages));
     } catch (e) {
       return Stream.value(Left(ServerFailure(e.toString())));
     }
   }
 
   @override
-  ResultVoid sendMessage({
+  ResultFuture<Message> sendMessage({
     required String chatId,
     required String senderId,
-    required String receiverId,
-    required String message,
+    required String text,
+    String? replyToMessageId,
   }) async {
     try {
-      await dataSource.sendMessage(
+      final message = await remoteDataSource.sendMessage(
         chatId: chatId,
         senderId: senderId,
-        receiverId: receiverId,
-        message: message,
+        replyToMessageId: replyToMessageId,
+        message: text,
       );
-      return const Right(null);
+      return Right(message);
     } catch (e) {
       return Left(ServerFailure("Failed to send message"));
-    }
-  }
-
-  @override
-  ResultStream<List<Chat>> getChatList(String userId) {
-    try {
-      return dataSource
-          .getChatList(userId)
-          .map((chats) => Right<Failure, List<Chat>>(chats))
-          .handleError((error) {
-            return Left<Failure, List<Chat>>(ServerFailure(error.toString()));
-          });
-    } catch (e) {
-      return Stream.value(Left(ServerFailure(e.toString())));
     }
   }
 
@@ -100,13 +72,11 @@ class ChatRepoImpl implements ChatRepository {
   ResultVoid deleteMessage({
     required String chatId,
     required String messageId,
-    required String userId,
   }) async {
     try {
-      await dataSource.deleteMessage(
+      await remoteDataSource.deleteMessage(
         chatId: chatId,
         messageId: messageId,
-        userId: userId,
       );
       return const Right(null);
     } catch (e) {
@@ -120,7 +90,7 @@ class ChatRepoImpl implements ChatRepository {
     required String userId,
   }) async {
     try {
-      await dataSource.markMessagesAsRead(chatId: chatId, userId: userId);
+      await remoteDataSource.markMessagesAsRead(chatId: chatId, userId: userId);
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -128,29 +98,64 @@ class ChatRepoImpl implements ChatRepository {
   }
 
   @override
-  ResultVoid updateUserStatus({
+  ResultVoid deleteChat({required String chatId}) async {
+    try {
+      await remoteDataSource.deleteChat(chatId: chatId);
+      return const Right(null);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  ResultStream<List<Chat>> getChatListStream({
+    required String userId,
+    int limit = 20,
+    Chat? lastChat,
+  }) {
+    try {
+      return remoteDataSource
+          .getChatListStream(userId: userId, limit: limit, lastChat: lastChat)
+          .map((chats) => Right<Failure, List<Chat>>(chats));
+    } catch (e) {
+      return Stream.value(Left(ServerFailure(e.toString())));
+    }
+  }
+
+  @override
+  ResultFuture<ChatUser> getUserDetails(String userId) async {
+    try {
+      final user = await remoteDataSource.getUserDetails(userId: userId);
+      return Right(user);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  ResultStream<ChatUser> getUserStatusStream(String userId) {
+    try {
+      return remoteDataSource
+          .getUserStatusStream(userId)
+          .map((user) => Right<Failure, ChatUser>(user));
+    } catch (e) {
+      return Stream.value(Left(ServerFailure(e.toString())));
+    }
+  }
+
+  @override
+  ResultVoid updateOnlineStatus({
     required String userId,
     required bool isOnline,
   }) async {
     try {
-      await dataSource.updateUserStatus(userId: userId, isOnline: isOnline);
+      await remoteDataSource.updateOnlineStatus(
+        userId: userId,
+        isOnline: isOnline,
+      );
       return const Right(null);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
-  }
-
-  @override
-  ResultStream<ChatUser> getUserStatus(String userId) {
-    try {
-      return dataSource
-          .getUserStatus(userId)
-          .map((user) => Right<Failure, ChatUser>(user))
-          .handleError((error) {
-            return Left<Failure, ChatUser>(ServerFailure(error.toString()));
-          });
-    } catch (e) {
-      return Stream.value(Left(ServerFailure(e.toString())));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
     }
   }
 }
