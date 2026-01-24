@@ -1,62 +1,62 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 
+enum MessageStatus { sending, sent, delivered, read, failed }
+
 class Message extends Equatable {
   final String messageId;
+  final String chatId;
   final String senderId;
-  final String receiverId;
-  final String message;
+  final String text;
   final DateTime timestamp;
   final bool isRead;
-  final bool isDeleted;
-  final List<String> deletedBy;
+  final MessageStatus status;
+  final String? replyToMessageId;
 
   const Message({
     required this.messageId,
     required this.senderId,
-    required this.receiverId,
-    required this.message,
+    required this.text,
     required this.timestamp,
-    required this.isRead,
-    required this.isDeleted,
-    required this.deletedBy,
+    this.isRead = false,
+    this.status = .sent,
+    this.replyToMessageId,
+    required this.chatId,
   });
 
-  bool isDeletedByUser(String userId) {
-    return deletedBy.contains(userId);
-  }
+  bool get isSending => status == MessageStatus.sending;
+  bool get isFailed => status == MessageStatus.failed;
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     messageId,
     senderId,
-    receiverId,
-    message,
+    text,
     timestamp,
     isRead,
-    isDeleted,
-    deletedBy,
+    status,
+    replyToMessageId,
   ];
 
   Message copyWith({
     String? messageId,
     String? senderId,
-    String? receiverId,
-    String? message,
+    String? chatId,
+    String? text,
     DateTime? timestamp,
     bool? isRead,
-    bool? isDeleted,
-    List<String>? deletedBy,
+    MessageStatus? status,
+    String? replyToMessageId,
   }) {
     return Message(
       messageId: messageId ?? this.messageId,
       senderId: senderId ?? this.senderId,
-      receiverId: receiverId ?? this.receiverId,
-      message: message ?? this.message,
+      text: text ?? this.text,
       timestamp: timestamp ?? this.timestamp,
-      isDeleted: isDeleted ?? this.isDeleted,
+      status: status ?? this.status,
       isRead: isRead ?? this.isRead,
-      deletedBy: deletedBy ?? this.deletedBy,
+      replyToMessageId: replyToMessageId ?? this.replyToMessageId,
+      chatId: chatId ?? this.chatId,
     );
   }
 }

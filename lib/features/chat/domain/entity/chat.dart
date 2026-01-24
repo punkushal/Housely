@@ -1,12 +1,28 @@
 import 'package:equatable/equatable.dart';
+import 'package:housely/features/chat/domain/entity/chat_user.dart';
+
+class LastMessage extends Equatable {
+  final String text;
+  final String senderId;
+  final DateTime timestamp;
+  final bool isRead;
+
+  const LastMessage({
+    required this.text,
+    required this.senderId,
+    required this.timestamp,
+    required this.isRead,
+  });
+
+  @override
+  List<Object?> get props => [text, senderId, timestamp, isRead];
+}
 
 class Chat extends Equatable {
   final String chatId;
   final List<String> participants;
-  final Map<String, ParticipantInfo> participantDetails;
-  final String lastMessage;
-  final DateTime lastMessageTime;
-  final String lastMessageSenderId;
+  final Map<String, ChatUser> participantDetails;
+  final LastMessage? lastMessage;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -14,9 +30,7 @@ class Chat extends Equatable {
     required this.chatId,
     required this.participants,
     required this.participantDetails,
-    required this.lastMessage,
-    required this.lastMessageTime,
-    required this.lastMessageSenderId,
+    this.lastMessage,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -27,19 +41,7 @@ class Chat extends Equatable {
     participants,
     participantDetails,
     lastMessage,
-    lastMessageTime,
-    lastMessageSenderId,
     createdAt,
     updatedAt,
   ];
-}
-
-class ParticipantInfo extends Equatable {
-  final String name;
-  final String? profileImage;
-
-  const ParticipantInfo({required this.name, this.profileImage});
-
-  @override
-  List<Object?> get props => [name, profileImage];
 }

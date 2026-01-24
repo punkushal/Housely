@@ -1,5 +1,3 @@
-// lib/features/chat/domain/entities/chat_user.dart
-
 import 'package:equatable/equatable.dart';
 
 class ChatUser extends Equatable {
@@ -8,6 +6,7 @@ class ChatUser extends Equatable {
   final String email;
   final String? profileImage;
   final bool isOnline;
+  final bool isOwner;
   final DateTime? lastSeen;
   final String? fcmToken;
 
@@ -16,10 +15,33 @@ class ChatUser extends Equatable {
     required this.name,
     required this.email,
     this.profileImage,
-    required this.isOnline,
+    this.isOnline = false,
+    this.isOwner = false,
     this.lastSeen,
     this.fcmToken,
   });
+
+  ChatUser copyWith({
+    String? uid,
+    String? name,
+    String? email,
+    String? profileImage,
+    bool? isOnline,
+    bool? isOwner,
+    DateTime? lastSeen,
+    String? fcmToken,
+  }) {
+    return ChatUser(
+      uid: uid ?? this.uid,
+      name: name ?? this.name,
+      profileImage: profileImage ?? this.profileImage,
+      isOnline: isOnline ?? this.isOnline,
+      lastSeen: lastSeen ?? this.lastSeen,
+      isOwner: isOwner ?? this.isOwner,
+      email: email ?? this.email,
+      fcmToken: fcmToken ?? this.fcmToken,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -28,6 +50,7 @@ class ChatUser extends Equatable {
     email,
     profileImage,
     isOnline,
+    isOwner,
     lastSeen,
     fcmToken,
   ];
