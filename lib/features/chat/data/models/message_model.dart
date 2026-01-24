@@ -5,12 +5,12 @@ class MessageModel extends Message {
   const MessageModel({
     required super.messageId,
     required super.senderId,
-    required super.receiverId,
-    required super.message,
+    required super.chatId,
+    required super.text,
     required super.timestamp,
-    required super.isDeleted,
-    required super.isRead,
-    required super.deletedBy,
+    super.status,
+    super.isRead,
+    super.replyToMessageId,
   });
 
   factory MessageModel.fromFirestore(DocumentSnapshot doc) {
@@ -18,55 +18,58 @@ class MessageModel extends Message {
     return MessageModel(
       messageId: doc.id,
       senderId: data['senderId'],
-      receiverId: data['receiverId'],
-      message: data['message'],
+      chatId: data['chatId'],
+      text: data['text'],
       timestamp: (data['timestamp'] as Timestamp).toDate(),
       isRead: data['isRead'] ?? false,
-      isDeleted: data['isDeleted'] ?? false,
-      deletedBy: List<String>.from(data['deletedBy'] ?? []),
+      status: .sent,
+      replyToMessageId: data['replyToMessageId'],
     );
   }
 
-  factory MessageModel.fromEntity(Message message) {
+  factory MessageModel.fromEntity(Message entity) {
     return MessageModel(
-      messageId: message.messageId,
-      senderId: message.senderId,
-      receiverId: message.receiverId,
-      message: message.message,
-      timestamp: message.timestamp,
-      isDeleted: message.isDeleted,
-      isRead: message.isRead,
-      deletedBy: message.deletedBy,
+      messageId: entity.messageId,
+      senderId: entity.senderId,
+      chatId: entity.chatId,
+      text: entity.text,
+      timestamp: entity.timestamp,
+      status: entity.status,
+      isRead: entity.isRead,
+      replyToMessageId: entity.replyToMessageId,
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'senderId': senderId,
-    'receiverId': receiverId,
-    'text': message,
-    'timestamp': FieldValue.serverTimestamp(),
-  };
+  Map<String, dynamic> toFireStore() {
+    return {
+      'senderId': senderId,
+      'text': text,
+      'timestamp': Timestamp.fromDate(timestamp),
+      'isRead': isRead,
+      'replyToMessageId': replyToMessageId,
+    };
+  }
 
   @override
   MessageModel copyWith({
     String? messageId,
     String? senderId,
-    String? receiverId,
-    String? message,
+    String? chatId,
+    String? text,
     DateTime? timestamp,
     bool? isRead,
-    bool? isDeleted,
-    List<String>? deletedBy,
+    MessageStatus? status,
+    String? replyToMessageId,
   }) {
     return MessageModel(
       messageId: messageId ?? this.messageId,
       senderId: senderId ?? this.senderId,
-      receiverId: receiverId ?? this.receiverId,
-      message: message ?? this.message,
+      chatId: chatId ?? this.chatId,
+      text: text ?? this.text,
       timestamp: timestamp ?? this.timestamp,
-      isDeleted: isDeleted ?? this.isDeleted,
+      status: status ?? this.status,
       isRead: isRead ?? this.isRead,
-      deletedBy: deletedBy ?? this.deletedBy,
+      replyToMessageId: replyToMessageId ?? this.replyToMessageId,
     );
   }
 }

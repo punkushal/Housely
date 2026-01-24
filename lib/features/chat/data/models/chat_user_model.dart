@@ -10,7 +10,21 @@ class ChatUserModel extends ChatUser {
     required super.isOnline,
     super.lastSeen,
     super.fcmToken,
+    super.isOwner,
   });
+
+  factory ChatUserModel.fromEntity(ChatUser entity) {
+    return ChatUserModel(
+      uid: entity.uid,
+      name: entity.name,
+      profileImage: entity.profileImage,
+      isOnline: entity.isOnline,
+      lastSeen: entity.lastSeen,
+      isOwner: entity.isOwner,
+      email: entity.email,
+      fcmToken: entity.fcmToken,
+    );
+  }
 
   factory ChatUserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -21,10 +35,9 @@ class ChatUserModel extends ChatUser {
       email: data['email'] ?? '',
       profileImage: data['profileImage'],
       isOnline: data['isOnline'] ?? false,
-      lastSeen: data['lastSeen'] != null
-          ? (data['lastSeen'] as Timestamp).toDate()
-          : null,
+      lastSeen: (data['lastSeen'] as Timestamp?)?.toDate(),
       fcmToken: data['fcmToken'],
+      isOwner: data['isOwner'] ?? false,
     );
   }
 
@@ -37,6 +50,23 @@ class ChatUserModel extends ChatUser {
       'isOnline': isOnline,
       'lastSeen': lastSeen != null ? Timestamp.fromDate(lastSeen!) : null,
       'fcmToken': fcmToken,
+      'isOwner': isOwner,
     };
+  }
+
+  factory ChatUserModel.fromMap(Map<String, dynamic> map, String uid) {
+    return ChatUserModel(
+      uid: uid,
+      name: map['name'] ?? '',
+      profileImage: map['profileImage'],
+      isOnline: map['isOnline'] ?? false,
+      lastSeen: (map['lastSeen'] as Timestamp?)?.toDate(),
+      isOwner: map['isOwner'] ?? false,
+      email: map['email'],
+    );
+  }
+
+  Map<String, dynamic> toParticipantMap() {
+    return {'name': name, 'profileImage': profileImage, 'isOwner': isOwner};
   }
 }
