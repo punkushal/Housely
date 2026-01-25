@@ -12,7 +12,7 @@ class DeleteMessage implements UseCase<void, DeleteMessageParams> {
     return await chatRepository.deleteMessage(
       chatId: params.chatId,
       messageId: params.messageId,
-      userId: params.userId,
+      // userId: params.userId,
     );
   }
 }
@@ -20,14 +20,9 @@ class DeleteMessage implements UseCase<void, DeleteMessageParams> {
 class DeleteMessageParams extends Equatable {
   final String chatId;
   final String messageId;
-  final String userId;
 
-  const DeleteMessageParams({
-    required this.chatId,
-    required this.messageId,
-    required this.userId,
-  });
+  const DeleteMessageParams({required this.chatId, required this.messageId});
 
   @override
-  List<Object?> get props => [chatId, messageId, userId];
+  List<Object?> get props => [chatId, messageId];
 }
