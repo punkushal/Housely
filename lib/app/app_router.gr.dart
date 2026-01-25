@@ -23,6 +23,7 @@ import 'package:housely/features/booking/presentation/page/booking_request_page.
     as _i2;
 import 'package:housely/features/booking/presentation/page/my_booking_page.dart'
     as _i14;
+import 'package:housely/features/chat/domain/entity/chat_user.dart' as _i24;
 import 'package:housely/features/chat/presentation/page/chat_list_page.dart'
     as _i3;
 import 'package:housely/features/chat/presentation/page/chat_page.dart' as _i4;
@@ -46,8 +47,6 @@ import 'package:housely/features/onboarding/presentation/pages/splash_page.dart'
     as _i20;
 import 'package:housely/features/property/domain/entities/property.dart'
     as _i23;
-import 'package:housely/features/property/domain/entities/property_owner.dart'
-    as _i24;
 import 'package:housely/features/property/presentation/pages/complete_owner_profile_page.dart'
     as _i5;
 import 'package:housely/features/property/presentation/pages/create_new_property_page.dart'
@@ -141,11 +140,16 @@ class ChatListRoute extends _i21.PageRouteInfo<void> {
 class ChatRoute extends _i21.PageRouteInfo<ChatRouteArgs> {
   ChatRoute({
     _i22.Key? key,
-    _i24.PropertyOwner? owner,
+    required _i24.ChatUser currentUser,
+    required _i24.ChatUser otherUser,
     List<_i21.PageRouteInfo>? children,
   }) : super(
          ChatRoute.name,
-         args: ChatRouteArgs(key: key, owner: owner),
+         args: ChatRouteArgs(
+           key: key,
+           currentUser: currentUser,
+           otherUser: otherUser,
+         ),
          initialChildren: children,
        );
 
@@ -154,37 +158,47 @@ class ChatRoute extends _i21.PageRouteInfo<ChatRouteArgs> {
   static _i21.PageInfo page = _i21.PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<ChatRouteArgs>(
-        orElse: () => const ChatRouteArgs(),
-      );
+      final args = data.argsAs<ChatRouteArgs>();
       return _i21.WrappedRoute(
-        child: _i4.ChatPage(key: args.key, owner: args.owner),
+        child: _i4.ChatPage(
+          key: args.key,
+          currentUser: args.currentUser,
+          otherUser: args.otherUser,
+        ),
       );
     },
   );
 }
 
 class ChatRouteArgs {
-  const ChatRouteArgs({this.key, this.owner});
+  const ChatRouteArgs({
+    this.key,
+    required this.currentUser,
+    required this.otherUser,
+  });
 
   final _i22.Key? key;
 
-  final _i24.PropertyOwner? owner;
+  final _i24.ChatUser currentUser;
+
+  final _i24.ChatUser otherUser;
 
   @override
   String toString() {
-    return 'ChatRouteArgs{key: $key, owner: $owner}';
+    return 'ChatRouteArgs{key: $key, currentUser: $currentUser, otherUser: $otherUser}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! ChatRouteArgs) return false;
-    return key == other.key && owner == other.owner;
+    return key == other.key &&
+        currentUser == other.currentUser &&
+        otherUser == other.otherUser;
   }
 
   @override
-  int get hashCode => key.hashCode ^ owner.hashCode;
+  int get hashCode => key.hashCode ^ currentUser.hashCode ^ otherUser.hashCode;
 }
 
 /// generated route for

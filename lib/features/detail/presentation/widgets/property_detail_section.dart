@@ -12,6 +12,7 @@ import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:housely/features/chat/domain/entity/chat_user.dart';
 import 'package:housely/features/detail/presentation/widgets/contact_container.dart';
 import 'package:housely/features/detail/presentation/widgets/facility_list.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
@@ -277,9 +278,22 @@ class PropertyDetailSection extends StatelessWidget {
                   ContactContainer(
                     iconPath: ImageConstant.chatIcon,
                     onTap: () {
-                      // navigation to chat page
+                      final state =
+                          context.read<AuthCubit>().state as Authenticated;
                       context.router.push(
-                        ChatRoute(secondUserUid: property.owner.ownerId),
+                        ChatRoute(
+                          currentUser: ChatUser(
+                            uid: state.currentUser!.uid,
+                            name: state.currentUser!.username,
+                            email: state.currentUser!.email,
+                          ),
+                          otherUser: ChatUser(
+                            uid: property.owner.ownerId,
+                            name: property.owner.name,
+                            email: "currently no email added, later i'll add",
+                            isOwner: true,
+                          ),
+                        ),
                       );
                     },
                   ),

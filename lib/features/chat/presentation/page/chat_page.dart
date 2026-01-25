@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,17 +6,23 @@ import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/utils/chat_utils.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
-import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:housely/features/chat/domain/entity/chat_user.dart';
 import 'package:housely/features/chat/presentation/bloc/chat_session_bloc.dart';
-import 'package:housely/features/property/domain/entities/property_owner.dart';
+import 'package:housely/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:housely/injection_container.dart';
 
 @RoutePage()
 class ChatPage extends StatefulWidget implements AutoRouteWrapper {
-  const ChatPage({super.key, this.owner});
-  final PropertyOwner? owner;
+  const ChatPage({
+    super.key,
+    required this.currentUser,
+    required this.otherUser,
+  });
+  final ChatUser currentUser;
+  final ChatUser otherUser;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -26,22 +30,7 @@ class ChatPage extends StatefulWidget implements AutoRouteWrapper {
   @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider<ChatSessionBloc>(
-      create: (context) {
-        final bloc = sl<ChatSessionBloc>();
-        final authState = context.read<AuthCubit>().state as Authenticated;
-        if (owner != null) {
-          bloc.add(
-            InitializeChat(
-              currentUserId: authState.currentUser!.uid,
-              otherUserId: owner!.ownerId,
-              currentUserName: authState.currentUser!.username,
-              otherUserName: owner!.name,
-            ),
-          );
-        }
-
-        return bloc;
-      },
+      create: (context) => sl<ChatSessionBloc>(),
       child: this,
     );
   }
@@ -50,105 +39,190 @@ class ChatPage extends StatefulWidget implements AutoRouteWrapper {
 class _ChatPageState extends State<ChatPage> {
   final _messageController = TextEditingController();
 
+  final ScrollController _scrollController = ScrollController();
+  String? _replyToMessageId;
+  // String? _replyToMessageText;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupScrollListener();
+    _initializeChat();
+  }
+
   @override
   void dispose() {
     _messageController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
-  void _handleMessageSending() {
+  /// Set up scroll listener for loading more messages
+  void _setupScrollListener() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent * 0.9) {
+        context.read<ChatSessionBloc>().add(LoadMoreMessages());
+      }
+    });
+  }
+
+  /// Initialize chat session
+  void _initializeChat() {
+    context.read<ChatSessionBloc>().add(
+      InitializeChat(
+        currentUser: widget.currentUser,
+        otherUser: widget.otherUser,
+      ),
+    );
+  }
+
+  void _sendMessage() {
     if (_messageController.text.isEmpty) return;
 
-    if (widget.owner != null) {
-      context.read<ChatSessionBloc>().add(
-        SendMessage(
-          chatId: "", // here is empty because in my datasource i added it there
-          message: _messageController.text.trim(),
-          receiverId: widget.owner!.ownerId,
-          senderId: (context.read<AuthCubit>().state as Authenticated)
-              .currentUser!
-              .uid,
-        ),
-      );
+    final state = context.read<ChatSessionBloc>().state;
+    if (state is! ChatSessionLoaded) return;
 
-      _messageController.clear();
-    }
+    context.read<ChatSessionBloc>().add(
+      SendMessage(
+        chatId: ChatUtils.generateChatId(
+          widget.currentUser.uid,
+          widget.otherUser.uid,
+        ),
+        message: _messageController.text.trim(),
+        senderId: widget.currentUser.uid,
+        replyToMessageId: _replyToMessageId,
+      ),
+    );
+
+    _messageController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ChatSessionBloc, ChatSessionState>(
-      listener: (context, state) {
-        log('current state of chat sesssion: $state');
-        if (state is ChatSessionFailure) {
-          SnackbarHelper.showError(context, state.message, showTop: true);
-        }
-        if (state is ChatSessionSuccess) {
-          SnackbarHelper.showSuccess(context, 'your message sent!');
-        }
+    return Scaffold(
+      appBar: AppBar(
+        leadingWidth: .infinity,
+        leading: Row(
+          spacing: ResponsiveDimensions.spacing8(context),
+          children: [
+            IconButton(
+              onPressed: () {
+                context.pop();
+              },
+              icon: Icon(Icons.arrow_back),
+            ),
 
-        if (state is MessageSendFailure) {
-          SnackbarHelper.showError(context, state.message);
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          leadingWidth: .infinity,
-          leading: Row(
-            spacing: ResponsiveDimensions.spacing8(context),
-            children: [
-              IconButton(
-                onPressed: () {
-                  context.pop();
-                },
-                icon: Icon(Icons.arrow_back),
-              ),
+            // profile image
+            CircleAvatar(radius: ResponsiveDimensions.spacing24(context)),
 
-              // profile image
-              CircleAvatar(radius: ResponsiveDimensions.spacing24(context)),
+            Column(
+              crossAxisAlignment: .start,
+              mainAxisAlignment: .center,
+              children: [
+                // name
+                Text(
+                  widget.otherUser.name,
+                  style: AppTextStyle.bodySemiBold(context, fontSize: 12),
+                ),
 
-              Column(
-                crossAxisAlignment: .start,
-                mainAxisAlignment: .center,
-                children: [
-                  // name
-                  Text(
-                    widget.owner != null ? widget.owner!.name : 'No name',
-                    style: AppTextStyle.bodySemiBold(context, fontSize: 12),
-                  ),
+                // online status
+                Row(
+                  spacing: ResponsiveDimensions.spacing4(context),
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: AppColors.success,
+                      radius: ResponsiveDimensions.spacing4(context),
+                    ),
 
-                  // online status
-                  Row(
-                    spacing: ResponsiveDimensions.spacing4(context),
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: AppColors.success,
-                        radius: ResponsiveDimensions.spacing4(context),
-                      ),
-
-                      Text(
-                        'Online',
-                        style: AppTextStyle.bodyRegular(
-                          context,
-                          color: AppColors.textHint,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
+                    BlocBuilder<ChatSessionBloc, ChatSessionState>(
+                      builder: (context, state) {
+                        if (state is ChatSessionLoaded) {
+                          return Text(
+                            state.isOtherUserOnline
+                                ? "Online"
+                                : state.otherUserLastSeen != null
+                                ? "last seen "
+                                : "Offline",
+                          );
+                        }
+                        return Text(
+                          'Offline',
+                          style: AppTextStyle.bodyRegular(
+                            context,
+                            color: AppColors.textHint,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
-        body: Padding(
-          padding: ResponsiveDimensions.paddingSymmetric(
-            context,
-            horizontal: 24,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: BlocConsumer<ChatSessionBloc, ChatSessionState>(
+              listener: (context, state) {
+                // Show error messages
+                if (state is ChatSessionLoaded && state.errorMessage != null) {
+                  SnackbarHelper.showError(context, state.errorMessage!);
+                } else if (state is ChatSessionLoaded) {
+                } else if (state is ChatSessionFailure) {
+                  SnackbarHelper.showError(context, state.message);
+                }
+              },
+              builder: (context, state) {
+                if (state is ChatSessionLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (state is ChatSessionLoaded) {
+                  return Padding(
+                    padding: ResponsiveDimensions.paddingSymmetric(
+                      context,
+                      horizontal: 24,
+                    ),
+                    child: ListView.builder(
+                      itemCount:
+                          state.messages.length + (state.isLoadingMore ? 1 : 0),
+                      reverse: true,
+                      itemBuilder: (context, index) {
+                        // Show loading indicator at the end
+                        if (state.isLoadingMore &&
+                            index == state.messages.length) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+
+                        final message = state.messages[index];
+                        final isMe = message.senderId == widget.currentUser.uid;
+
+                        return MessageBubble(message: message, isMe: isMe);
+                      },
+                    ),
+                  );
+                }
+
+                return const Center(child: Text("Start a conversation"));
+              },
+            ),
           ),
-          child: Column(
-            children: [
-              Spacer(),
-              Row(
+
+          SafeArea(
+            child: Padding(
+              padding: ResponsiveDimensions.paddingSymmetric(
+                context,
+                horizontal: 24,
+                vertical: 12,
+              ),
+              child: Row(
                 spacing: ResponsiveDimensions.spacing12(context),
                 children: [
                   Expanded(
@@ -170,18 +244,16 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                     child: IconButton(
                       onPressed: () {
-                        _handleMessageSending();
+                        _sendMessage();
                       },
                       icon: SvgPicture.asset(ImageConstant.sendIcon),
                     ),
                   ),
                 ],
               ),
-
-              SizedBox(height: ResponsiveDimensions.spacing8(context)),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
