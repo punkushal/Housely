@@ -1,14 +1,18 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/date_formatter.dart';
+import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/chat/domain/entity/chat.dart';
 import 'package:housely/features/chat/domain/entity/chat_user.dart';
+import 'package:housely/features/chat/presentation/bloc/chat_list_bloc.dart';
 
 class ChatCard extends StatelessWidget {
   const ChatCard({
@@ -20,6 +24,72 @@ class ChatCard extends StatelessWidget {
   final Chat chat;
   final ChatUser otherUser;
   final String currentUserId;
+
+  /// Delete a chat with confirmation
+  Future<void> _onDeletingChat(BuildContext context, String chatId) async {
+    final confirmed = await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: ResponsiveDimensions.paddingSymmetric(
+            context,
+            horizontal: 30,
+          ),
+          child: Column(
+            spacing: ResponsiveDimensions.spacing16(context),
+            mainAxisAlignment: .center,
+            children: [
+              Image.asset(ImageConstant.deleteConfirmImg),
+              Text(
+                "Are you sure you want to delete this chat message ?",
+                style: AppTextStyle.headingSemiBold(
+                  context,
+                  fontSize: 20,
+                  lineHeight: 26,
+                ),
+                textAlign: .center,
+              ),
+
+              Text(
+                "the message will be deleted from this device",
+                style: AppTextStyle.bodyRegular(
+                  context,
+                  fontSize: 14,
+                  color: AppColors.textHint,
+                ),
+                textAlign: .center,
+              ),
+
+              // action buttons
+              Row(
+                spacing: ResponsiveDimensions.spacing16(context),
+                children: [
+                  Expanded(
+                    child: CustomButton(
+                      onTap: () => context.pop(false),
+                      buttonLabel: "Cancel",
+                    ),
+                  ),
+                  Expanded(
+                    child: CustomButton(
+                      onTap: () => context.pop(true),
+                      buttonLabel: "Delete",
+                      backgroundColor: AppColors.border,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (confirmed == true && context.mounted) {
+      context.read<ChatListBloc>().add(DeleteChat(chatId: chatId));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final lastMessage = chat.lastMessage;
@@ -36,13 +106,24 @@ class ChatCard extends StatelessWidget {
             horizontal: ResponsiveDimensions.spacing16(context),
           ),
           decoration: BoxDecoration(color: AppColors.primaryPressed),
-          child: const Icon(Icons.delete, color: Colors.white),
+          child: Column(
+            mainAxisSize: .min,
+            children: [
+              SvgPicture.asset(ImageConstant.deleteIcon),
+              Text(
+                "Delete",
+                style: AppTextStyle.labelRegular(
+                  context,
+                  color: AppColors.surfaceAlt,
+                ),
+              ),
+            ],
+          ),
         ),
+        direction: .endToStart,
         confirmDismiss: (direction) async {
-          return null;
-
-          // await _deleteChat(context, chat.chatId);
-          // return false; // Don't auto-dismiss, let BLoC handle it
+          await _onDeletingChat(context, chat.chatId);
+          return false;
         },
         child: GestureDetector(
           onTap: () {
