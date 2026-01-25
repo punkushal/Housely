@@ -41,6 +41,7 @@ import 'package:housely/features/chat/data/datasources/chat_remote_datasource.da
 import 'package:housely/features/chat/data/repository/chat_repo_impl.dart';
 import 'package:housely/features/chat/domain/repositories/chat_repo.dart';
 import 'package:housely/features/chat/domain/usecases/create_or_get_chat.dart';
+import 'package:housely/features/chat/domain/usecases/delete_chat_use_case.dart';
 import 'package:housely/features/chat/domain/usecases/delete_message.dart'
     as delete_message_usecase;
 import 'package:housely/features/chat/domain/usecases/get_chat_list.dart';
@@ -248,6 +249,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => delete_message_usecase.DeleteMessage(sl()));
   sl.registerLazySingleton(() => GetChatListUseCase(sl()));
   sl.registerLazySingleton(() => CreateOrGetChatUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteChatUseCase(sl()));
   sl.registerLazySingleton(() => mark_message.MarkMessageAsRead(sl()));
 
   // ============= Presentation layer =================
@@ -339,5 +341,5 @@ Future<void> initializeDependencies() async {
     ),
   );
 
-  sl.registerFactory(() => ChatListBloc(sl()));
+  sl.registerFactory(() => ChatListBloc(deleteChat: sl(), getChatList: sl()));
 }
