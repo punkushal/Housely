@@ -6,13 +6,13 @@ import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_carousel_slider.dart';
 import 'package:housely/features/detail/presentation/widgets/image_list.dart';
 import 'package:housely/features/detail/presentation/widgets/property_detail_section.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
-import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
 import 'package:housely/injection_container.dart';
 
@@ -36,6 +36,9 @@ class DetailPage extends StatelessWidget {
 
       child: Builder(
         builder: (context) {
+          final authState = context.read<AuthCubit>().state;
+          final user = authState as Authenticated;
+          final isOwner = user.currentUser!.uid == property.owner.ownerId;
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.transparent,
@@ -45,13 +48,8 @@ class DetailPage extends StatelessWidget {
                 right: 18,
               ),
               actions: [
-                // favorite icon button
-                BlocBuilder<OwnerCubit, OwnerState>(
-                  builder: (context, state) {
-                    if (state is OwnerLoaded &&
-                        state.owner != null &&
-                        state.owner!.ownerId == property.owner.ownerId) {
-                      return IconButton(
+                isOwner
+                    ? IconButton(
                         onPressed: () async {
                           await context.router.push(
                             CreateNewPropertyRoute(property: property),
@@ -74,47 +72,46 @@ class DetailPage extends StatelessWidget {
                             size: ResponsiveDimensions.spacing20(context),
                           ),
                         ),
-                      );
-                    }
-                    return GestureDetector(
-                      onTap: () {
-                        context.read<FavoriteToggleCubit>().toggleFavorite();
-                      },
-                      child:
-                          BlocSelector<
-                            FavoriteToggleCubit,
-                            FavoriteToggleState,
-                            bool
-                          >(
-                            selector: (state) {
-                              return state.isSelected;
-                            },
-                            builder: (context, state) {
-                              bool isFavorite = state;
-                              return SvgPicture.asset(
-                                isFavorite
-                                    ? ImageConstant.favoriteFilledIcon
-                                    : ImageConstant.favoriteIcon,
-                                width: ResponsiveDimensions.getSize(
-                                  context,
-                                  24,
-                                ),
-                                height: ResponsiveDimensions.getHeight(
-                                  context,
-                                  24,
-                                ),
-                                colorFilter: ColorFilter.mode(
+                      )
+                    :
+                      // favorite icon button
+                      GestureDetector(
+                        onTap: () {
+                          context.read<FavoriteToggleCubit>().toggleFavorite();
+                        },
+                        child:
+                            BlocSelector<
+                              FavoriteToggleCubit,
+                              FavoriteToggleState,
+                              bool
+                            >(
+                              selector: (state) {
+                                return state.isSelected;
+                              },
+                              builder: (context, state) {
+                                bool isFavorite = state;
+                                return SvgPicture.asset(
                                   isFavorite
-                                      ? AppColors.error
-                                      : AppColors.textPrimary,
-                                  .srcIn,
-                                ),
-                              );
-                            },
-                          ),
-                    );
-                  },
-                ),
+                                      ? ImageConstant.favoriteFilledIcon
+                                      : ImageConstant.favoriteIcon,
+                                  width: ResponsiveDimensions.getSize(
+                                    context,
+                                    24,
+                                  ),
+                                  height: ResponsiveDimensions.getHeight(
+                                    context,
+                                    24,
+                                  ),
+                                  colorFilter: ColorFilter.mode(
+                                    isFavorite
+                                        ? AppColors.error
+                                        : AppColors.textPrimary,
+                                    .srcIn,
+                                  ),
+                                );
+                              },
+                            ),
+                      ),
               ],
             ),
             body: SafeArea(
@@ -140,7 +137,10 @@ class DetailPage extends StatelessWidget {
                       ),
 
                       // Detail section
-                      PropertyDetailSection(property: property),
+                      PropertyDetailSection(
+                        property: property,
+                        isOwner: isOwner,
+                      ),
 
                       SizedBox(
                         height: ResponsiveDimensions.getHeight(context, 6),
