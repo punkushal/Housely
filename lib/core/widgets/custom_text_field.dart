@@ -20,6 +20,7 @@ class CustomTextField extends StatelessWidget {
     this.initialValue,
     this.fieldKey,
     this.onTap,
+    this.border,
   });
 
   /// [TextEditingController] controller
@@ -69,6 +70,9 @@ class CustomTextField extends StatelessWidget {
 
   /// on tap if any tapping functionality needed
   final void Function()? onTap;
+
+  /// border
+  final InputBorder? border;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -89,6 +93,9 @@ class CustomTextField extends StatelessWidget {
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         contentPadding: contentPadding,
+        border: border,
+        enabledBorder: border,
+        focusedBorder: border,
       ),
     );
   }
