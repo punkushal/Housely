@@ -23,12 +23,14 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void _listenToAuthChanges() {
-    _authSubscription = authStateChangeUsecase().listen((user) {
-      if (user != null) {
-        emit(Authenticated(user));
-      } else {
-        emit(UnAuthenticated());
-      }
+    _authSubscription = authStateChangeUsecase().listen((either) {
+      either.fold((f) => emit(UnAuthenticated()), (user) {
+        if (user != null) {
+          emit(Authenticated(user));
+        } else {
+          emit(UnAuthenticated());
+        }
+      });
     });
   }
 

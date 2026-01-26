@@ -119,7 +119,15 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Stream<AppUser?> get authStateChanges => remoteDataSource.authStateChanges;
+  ResultStream<AppUser?> get authStateChanges {
+    try {
+      return remoteDataSource.authStateChanges
+          .map((user) => Right<Failure, AppUser?>(user))
+          .handleError((error) => Left<Failure, AppUser?>(error));
+    } catch (e) {
+      return Stream.value(Left(ServerFailure(e.toString())));
+    }
+  }
 
   @override
   bool isLoggedIn() {

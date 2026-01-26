@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:housely/core/error/failure.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
 import 'package:housely/features/booking/domain/entity/booking_detail.dart';
 import 'package:housely/features/booking/domain/usecases/get_booking_request_list_use_case.dart';
@@ -75,10 +77,12 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     Emitter<BookingState> emit,
   ) async {
     emit(BookingLoading());
-
-    await emit.forEach<List<BookingDetail>>(
+    await emit.forEach<Either<Failure, List<BookingDetail>>>(
       listenBookingChangesUseCase(),
-      onData: (bookings) => BookingLoaded(bookings),
+      onData: (either) => either.fold(
+        (f) => BookingFailure(f.message),
+        (bookings) => BookingLoaded(bookings),
+      ),
       onError: (error, stackTrace) => BookingFailure(error.toString()),
     );
   }

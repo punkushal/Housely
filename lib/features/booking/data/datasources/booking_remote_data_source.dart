@@ -89,10 +89,7 @@ class BookingRemoteDataSource {
 
       final snapshots = await firestore
           .collection(TextConstants.bookings)
-          .where(
-            'tenantId',
-            isEqualTo: currentUser.uid,
-          ) // later i need to pass owner id
+          .where('ownerId', isEqualTo: currentUser.uid)
           .where('bookingStatus', isEqualTo: 'pending')
           .get();
 

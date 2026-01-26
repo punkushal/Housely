@@ -23,7 +23,7 @@ abstract interface class AuthRepo {
   ResultVoid sendPasswordResetEmail({required String email});
 
   // get auth changes state
-  Stream<AppUser?> get authStateChanges;
+  ResultStream<AppUser?> get authStateChanges;
 
   // check current user logged in or not
   bool isLoggedIn();

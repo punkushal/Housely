@@ -12,6 +12,7 @@ import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:housely/features/chat/domain/entity/chat_user.dart';
 import 'package:housely/features/detail/presentation/widgets/contact_container.dart';
 import 'package:housely/features/detail/presentation/widgets/facility_list.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
@@ -25,8 +26,13 @@ import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
 
 class PropertyDetailSection extends StatelessWidget {
-  const PropertyDetailSection({super.key, required this.property});
+  const PropertyDetailSection({
+    super.key,
+    required this.property,
+    this.isOwner = false,
+  });
   final Property property;
+  final bool isOwner;
 
   // show dialog box before deleting
   Future<bool> _showConfirmationDailog(BuildContext context) async {
@@ -246,9 +252,7 @@ class PropertyDetailSection extends StatelessWidget {
               CircleAvatar(
                 radius: ResponsiveDimensions.radiusXLarge(context, size: 22),
                 backgroundColor: Colors.grey,
-                foregroundImage: NetworkImage(
-                  property.owner.profileImage!['url'],
-                ),
+                foregroundImage: NetworkImage(property.media.coverImage['url']),
               ),
 
               Column(
@@ -272,13 +276,38 @@ class PropertyDetailSection extends StatelessWidget {
               ),
               Spacer(),
               // contact section
-              Row(
-                spacing: ResponsiveDimensions.spacing8(context),
-                children: [
-                  ContactContainer(iconPath: ImageConstant.callIcon),
-                  ContactContainer(iconPath: ImageConstant.chatIcon),
-                ],
-              ),
+              isOwner
+                  ? SizedBox.shrink()
+                  : Row(
+                      spacing: ResponsiveDimensions.spacing8(context),
+                      children: [
+                        ContactContainer(iconPath: ImageConstant.callIcon),
+                        ContactContainer(
+                          iconPath: ImageConstant.chatIcon,
+                          onTap: () {
+                            final state =
+                                context.read<AuthCubit>().state
+                                    as Authenticated;
+                            context.router.push(
+                              ChatRoute(
+                                currentUser: ChatUser(
+                                  uid: state.currentUser!.uid,
+                                  name: state.currentUser!.username,
+                                  email: state.currentUser!.email,
+                                ),
+                                otherUser: ChatUser(
+                                  uid: property.owner.ownerId,
+                                  name: property.owner.name,
+                                  email:
+                                      "currently no email added, later i'll add",
+                                  isOwner: true,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
             ],
           ),
 
@@ -321,13 +350,10 @@ class PropertyDetailSection extends StatelessWidget {
           // rent button
           BlocBuilder<PropertyCubit, PropertyState>(
             builder: (context, state) {
-              final authState = context.read<AuthCubit>().state;
-              if (authState is Authenticated &&
-                  authState.currentUser!.uid == property.owner.ownerId) {
+              if (isOwner) {
                 return CustomButton(
                   onTap: () async {
                     final result = await _showConfirmationDailog(context);
-
                     if (result && context.mounted) {
                       await context.read<PropertyCubit>().removeProperty(
                         property,

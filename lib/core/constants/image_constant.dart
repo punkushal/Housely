@@ -60,6 +60,8 @@ class ImageConstant {
   static final String bagIcon = "${_baseIconUrl}bag_icon.svg";
   static final String creditIcon = "${_baseIconUrl}credit.svg";
   static final String reviewIcon = "${_baseIconUrl}review_icon.svg";
+  static final String sendIcon = "${_baseIconUrl}send_icon.svg";
+  static final String deleteIcon = "${_baseIconUrl}delete_icon.svg";
 
   // onboarding images
   static final String firstOnBoardingImg =
@@ -79,6 +81,9 @@ class ImageConstant {
 
   // no upcoming booking image
   static final String noBookingImg = "${_baseOtherUrl}no_booking.png";
+
+  // delete confirmation image
+  static final String deleteConfirmImg = "${_baseOtherUrl}delete_image.png";
 
   // villa images
   static final String firstVilla = "${_baseVillaUrl}villa1.jpg";

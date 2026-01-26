@@ -16,6 +16,7 @@ class CustomButton extends StatelessWidget {
     this.fontSize,
     this.lineHeight,
     this.isOutlined = false,
+    this.backgroundColor,
   });
 
   /// Button's height
@@ -44,6 +45,9 @@ class CustomButton extends StatelessWidget {
 
   /// text line height
   final double? lineHeight;
+
+  /// background color
+  final Color? backgroundColor;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -57,9 +61,9 @@ class CustomButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: isLoading ? null : onTap,
           style: ElevatedButton.styleFrom(
-            backgroundColor: isOutlined
-                ? AppColors.surface
-                : AppColors.primaryPressed,
+            backgroundColor:
+                backgroundColor ??
+                (isOutlined ? AppColors.surface : AppColors.primaryPressed),
             foregroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
               borderRadius: ResponsiveDimensions.borderRadiusSmall(context),

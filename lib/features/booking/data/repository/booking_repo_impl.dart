@@ -13,8 +13,22 @@ class BookingRepoImpl implements BookingRepo {
 
   BookingRepoImpl(this.dataSource);
   @override
-  ResultStream<List<BookingDetail>> get listenBookingChanges =>
-      dataSource.listenBookingChanges();
+  ResultStream<List<BookingDetail>> get listenBookingChanges {
+    try {
+      return dataSource
+          .listenBookingChanges()
+          .map((bookingDetailList) {
+            return Right<Failure, List<BookingDetail>>(bookingDetailList);
+          })
+          .handleError(
+            (error) => Left<Failure, List<BookingDetail>>(
+              ServerFailure(error.toString()),
+            ),
+          );
+    } catch (e) {
+      return Stream.value(Left(ServerFailure(e.toString())));
+    }
+  }
 
   @override
   ResultVoid requestBooking(Booking booking) async {

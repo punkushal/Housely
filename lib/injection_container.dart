@@ -37,6 +37,22 @@ import 'package:housely/features/booking/domain/usecases/respond_booking_use_cas
 import 'package:housely/features/booking/presentation/bloc/booking_bloc.dart';
 import 'package:housely/features/booking/presentation/bloc/payment_bloc.dart';
 import 'package:housely/features/booking/presentation/cubit/calendar_cubit.dart';
+import 'package:housely/features/chat/data/datasources/chat_remote_datasource.dart';
+import 'package:housely/features/chat/data/repository/chat_repo_impl.dart';
+import 'package:housely/features/chat/domain/repositories/chat_repo.dart';
+import 'package:housely/features/chat/domain/usecases/create_or_get_chat.dart';
+import 'package:housely/features/chat/domain/usecases/delete_chat_use_case.dart';
+import 'package:housely/features/chat/domain/usecases/delete_message.dart'
+    as delete_message_usecase;
+import 'package:housely/features/chat/domain/usecases/get_chat_list.dart';
+import 'package:housely/features/chat/domain/usecases/get_messages_use_case.dart';
+import 'package:housely/features/chat/domain/usecases/get_user_status.dart';
+import 'package:housely/features/chat/domain/usecases/mark_message_as_read.dart'
+    as mark_message;
+import 'package:housely/features/chat/domain/usecases/send_message_use_case.dart';
+import 'package:housely/features/chat/domain/usecases/update_user_status.dart';
+import 'package:housely/features/chat/presentation/bloc/chat_list_bloc.dart';
+import 'package:housely/features/chat/presentation/bloc/chat_session_bloc.dart';
 import 'package:housely/features/location/data/datasources/location_local_data_source.dart';
 import 'package:housely/features/location/data/repositories/location_repo_impl.dart';
 import 'package:housely/features/location/domain/repositories/location_repo.dart';
@@ -102,6 +118,7 @@ Future<void> initializeDependencies() async {
     () => AuthRemoteDataSourceImpl(
       firebaseAuth: sl<FirebaseAuth>(),
       googleSignInInstance: sl<GoogleSignIn>(),
+      firestore: sl<FirebaseFirestore>(),
     ),
   );
 
@@ -156,6 +173,12 @@ Future<void> initializeDependencies() async {
   // Payment
   sl.registerLazySingleton(() => EsewaRemoteDataSource());
   sl.registerLazySingleton<EsewaPaymentRepo>(() => EsewaPaymentRepoImpl(sl()));
+
+  // chat
+  sl.registerLazySingleton(
+    () => ChatRemoteDataSource(firestore: sl(), auth: sl()),
+  );
+  sl.registerLazySingleton<ChatRepository>(() => ChatRepoImpl(sl()));
 
   // ============== Domain layer ===============
   sl.registerLazySingleton(
@@ -217,6 +240,17 @@ Future<void> initializeDependencies() async {
 
   // payment use cases
   sl.registerLazySingleton(() => InitiateEsewaPayUseCase(sl()));
+
+  // chat use cases
+  sl.registerLazySingleton(() => SendMessageUseCase(sl()));
+  sl.registerLazySingleton(() => GetMessagesStreamUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateOnlineStatusUseCase(sl()));
+  sl.registerLazySingleton(() => GetUserStatusStreamUseCase(sl()));
+  sl.registerLazySingleton(() => delete_message_usecase.DeleteMessage(sl()));
+  sl.registerLazySingleton(() => GetChatListUseCase(sl()));
+  sl.registerLazySingleton(() => CreateOrGetChatUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteChatUseCase(sl()));
+  sl.registerLazySingleton(() => mark_message.MarkMessageAsRead(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -293,4 +327,19 @@ Future<void> initializeDependencies() async {
 
   // Payment
   sl.registerFactory(() => PaymentBloc(sl()));
+
+  // chat
+  sl.registerFactory(
+    () => ChatSessionBloc(
+      sendMessageUseCase: sl(),
+      getMessagesUseCase: sl(),
+      deleteMessageUseCase: sl(),
+      markMessagesAsRead: sl(),
+      updateOnlineStatus: sl(),
+      getUserStatus: sl(),
+      createOrGetChat: sl(),
+    ),
+  );
+
+  sl.registerFactory(() => ChatListBloc(deleteChat: sl(), getChatList: sl()));
 }
