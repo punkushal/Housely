@@ -17,6 +17,7 @@ class ChatListBloc extends Bloc<ChatListEvent, ChatListState> {
     : super(ChatListInitial()) {
     on<LoadChatList>(_onLoadChatList);
     on<LoadMoreChats>(_onLoadMoreChats);
+    on<RefreshChatList>(_onRefreshChatList);
     on<DeleteChat>(_onDeleteChat);
   }
 
@@ -44,7 +45,7 @@ class ChatListBloc extends Bloc<ChatListEvent, ChatListState> {
     );
   }
 
-  void _onLoadMoreChats(
+  Future<void> _onLoadMoreChats(
     LoadMoreChats event,
     Emitter<ChatListState> emit,
   ) async {
@@ -68,6 +69,41 @@ class ChatListBloc extends Bloc<ChatListEvent, ChatListState> {
               hasReachedMax: hasReachedMax,
               currentLimit: newLimit,
               isLoadingMore: false,
+            );
+          });
+        },
+        onError: (error, stackTrace) => ChatListError(error.toString()),
+      );
+    }
+  }
+
+  /// Refresh chat list
+  Future<void> _onRefreshChatList(
+    RefreshChatList event,
+    Emitter<ChatListState> emit,
+  ) async {
+    if (state is ChatListLoaded) {
+      final currentState = state as ChatListLoaded;
+
+      // Reset to initial state and reload
+      emit(ChatListLoading());
+
+      await emit.forEach<Either<Failure, List<Chat>>>(
+        getChatList(
+          GetChatListParams(
+            userId: currentState.chats.isNotEmpty
+                ? currentState.chats.first.participants.first
+                : '',
+            limit: currentState.currentLimit,
+          ),
+        ),
+        onData: (result) {
+          return result.fold((f) => ChatListError(f.message), (chatList) {
+            final hasReachedMax = chatList.length < currentState.currentLimit;
+            return ChatListLoaded(
+              chats: chatList,
+              hasReachedMax: hasReachedMax,
+              currentLimit: currentState.currentLimit,
             );
           });
         },
