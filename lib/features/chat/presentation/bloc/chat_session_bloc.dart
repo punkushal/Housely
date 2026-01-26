@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/text_constants.dart';
+import 'package:housely/core/utils/chat_utils.dart';
 import 'package:housely/features/chat/domain/entity/chat_user.dart';
 import 'package:housely/features/chat/domain/entity/message.dart';
 import 'package:housely/features/chat/domain/usecases/create_or_get_chat.dart';
@@ -135,44 +136,35 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
     InitializeChat event,
     Emitter<ChatSessionState> emit,
   ) async {
-    // Emit loaded state with empty messages immediately (not loading)
-    // This allows "Start a conversation" to show while fetching
-    emit(ChatSessionLoaded(chatId: '', messages: [], isInitializing: true));
+    // Store user IDs for later use
+    currentUserId = event.currentUser.uid;
 
-    // Create or get chat
-    final result = await createOrGetChat(
-      CreateOrGetChatParams(
-        currentUser: event.currentUser,
-        otherUser: event.otherUser,
+    // Generate chat ID from user IDs (without creating chat in DB yet)
+    currentChatId = ChatUtils.generateChatId(
+      event.currentUser.uid,
+      event.otherUser.uid,
+    );
+
+    // Emit loaded state without messages - ready to send first message
+    emit(
+      ChatSessionLoaded(
+        chatId: currentChatId!,
+        messages: [],
+        isInitializing: true,
       ),
     );
 
-    await result.fold(
-      (failure) async => emit(ChatSessionFailure(failure.message)),
-      (chat) async {
-        // Store the chat ID and current user ID for later use
-        currentChatId = chat.chatId;
-        currentUserId = event.currentUser.uid;
-
-        // Initial Setup (Mark read + online)
-        await markMessagesAsRead(
-          MarkParams(chatId: chat.chatId, userId: event.currentUser.uid),
-        );
-
-        // Update current user status to online
-        await updateOnlineStatus(
-          UpdateStatusParams(userId: event.currentUser.uid, isOnline: true),
-        );
-
-        // Listen to User status
-        _userStatusSubscription?.cancel();
-
-        await _setupUserStatusStream(event.otherUser.uid, emit);
-
-        // Load initial messages and set up stream
-        await _loadAndSubscribeToMessages(chat.chatId, event.currentUser.uid);
-      },
+    // Update current user status to online
+    await updateOnlineStatus(
+      UpdateStatusParams(userId: event.currentUser.uid, isOnline: true),
     );
+
+    // Listen to User status
+    _userStatusSubscription?.cancel();
+    await _setupUserStatusStream(event.otherUser.uid, emit);
+
+    // Load initial messages from existing chat (if any) and set up stream
+    await _loadAndSubscribeToMessages(currentChatId!, event.currentUser.uid);
   }
 
   /// Load initial messages and set up persistent stream subscription
@@ -318,6 +310,33 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
     final currentState = state as ChatSessionLoaded;
 
     emit(currentState.copyWith(isSendingMessage: true));
+
+    // If this is the first message, ensure chat is created in Firestore first
+    if (currentState.messages.isEmpty) {
+      try {
+        await createOrGetChat(
+          CreateOrGetChatParams(
+            currentUser: ChatUser(
+              uid: event.senderId,
+              email: '',
+              name: event.senderName ?? '',
+              profileImage: event.senderImage ?? '',
+              isOwner: false,
+            ),
+            otherUser: ChatUser(
+              uid: event.recipientUid ?? '',
+              email: '',
+              name: event.recipientName ?? '',
+              profileImage: event.recipientImage ?? '',
+              isOwner: false,
+            ),
+          ),
+        );
+      } catch (e) {
+        log('Warning: Failed to create chat before sending first message: $e');
+        // Continue anyway - the use case will still send the message
+      }
+    }
 
     final result = await sendMessageUseCase(
       SendMessageParams(

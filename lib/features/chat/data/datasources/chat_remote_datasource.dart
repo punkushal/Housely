@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:housely/core/constants/text_constants.dart';
@@ -95,18 +97,18 @@ class ChatRemoteDataSource {
           .add(messageData);
 
       // Update chat with last message
-      await firestore
-          .collection(TextConstants.chatsCollection)
-          .doc(chatId)
-          .update({
-            'lastMessage': {
-              'text': message,
-              'senderId': senderId,
-              'timestamp': Timestamp.fromDate(now),
-              'isRead': false,
-            },
-            'updatedAt': Timestamp.fromDate(now),
-          });
+      await firestore.collection(TextConstants.chatsCollection).doc(chatId).set(
+        {
+          'lastMessage': {
+            'text': message,
+            'senderId': senderId,
+            'timestamp': Timestamp.fromDate(now),
+            'isRead': false,
+          },
+          'updatedAt': Timestamp.fromDate(now),
+        },
+        SetOptions(merge: true),
+      );
 
       return MessageModel(
         messageId: messageRef.id,
@@ -156,6 +158,7 @@ class ChatRemoteDataSource {
     Chat? lastChat,
   }) {
     try {
+      log("getChatListStream called with userId: $userId, limit: $limit");
       Query query = firestore
           .collection(TextConstants.chatsCollection)
           .where(TextConstants.participantsField, arrayContains: userId)
@@ -167,9 +170,13 @@ class ChatRemoteDataSource {
       }
 
       return query.snapshots().map((snapshot) {
-        return snapshot.docs
-            .map((doc) => ChatModel.fromFirestore(doc, userId))
-            .toList();
+        log(
+          "ChatListStream snapshot received with ${snapshot.docs.length} documents",
+        );
+        return snapshot.docs.map((doc) {
+          log("doc id: ${doc.id}, exists: ${doc.exists}, data: ${doc.data()}");
+          return ChatModel.fromFirestore(doc, userId);
+        }).toList();
       });
     } catch (e) {
       throw ServerException('Failed to get chat list stream: $e');

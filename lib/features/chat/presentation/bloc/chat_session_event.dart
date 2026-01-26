@@ -22,16 +22,34 @@ final class SendMessage extends ChatSessionEvent {
   final String chatId;
   final String senderId;
   final String? replyToMessageId;
+  final String? senderName;
+  final String? senderImage;
+  final String? recipientUid;
+  final String? recipientName;
+  final String? recipientImage;
 
   const SendMessage({
     this.replyToMessageId,
     required this.message,
     required this.chatId,
     required this.senderId,
+    this.senderName,
+    this.senderImage,
+    this.recipientUid,
+    this.recipientName,
+    this.recipientImage,
   });
 
   @override
-  List<Object?> get props => [message, replyToMessageId];
+  List<Object?> get props => [
+    message,
+    replyToMessageId,
+    senderName,
+    senderImage,
+    recipientUid,
+    recipientName,
+    recipientImage,
+  ];
 }
 
 final class DeleteMessage extends ChatSessionEvent {

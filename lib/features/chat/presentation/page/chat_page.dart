@@ -79,7 +79,7 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _sendMessage() {
-    if (_messageController.text.isEmpty) return;
+    if (_messageController.text.trim().isEmpty) return;
 
     final state = context.read<ChatSessionBloc>().state;
     if (state is! ChatSessionLoaded) return;
@@ -92,6 +92,11 @@ class _ChatPageState extends State<ChatPage> {
         ),
         message: _messageController.text.trim(),
         senderId: widget.currentUser.uid,
+        senderName: widget.currentUser.name,
+        senderImage: widget.currentUser.profileImage,
+        recipientUid: widget.otherUser.uid,
+        recipientName: widget.otherUser.name,
+        recipientImage: widget.otherUser.profileImage,
         replyToMessageId: _replyToMessageId,
       ),
     );
@@ -194,7 +199,6 @@ class _ChatPageState extends State<ChatPage> {
                 // Show error messages
                 if (state is ChatSessionLoaded && state.errorMessage != null) {
                   SnackbarHelper.showError(context, state.errorMessage!);
-                } else if (state is ChatSessionLoaded) {
                 } else if (state is ChatSessionFailure) {
                   SnackbarHelper.showError(context, state.message);
                 }
@@ -210,6 +214,7 @@ class _ChatPageState extends State<ChatPage> {
                       horizontal: 24,
                     ),
                     child: ListView.builder(
+                      controller: _scrollController,
                       itemCount:
                           state.messages.length + (state.isLoadingMore ? 1 : 0),
                       reverse: true,
@@ -254,6 +259,7 @@ class _ChatPageState extends State<ChatPage> {
                       isFilled: true,
                       fillColor: AppColors.divider,
                       controller: _messageController,
+                      hintText: "write your message",
                       textCapitalization: .sentences,
                     ),
                   ),
