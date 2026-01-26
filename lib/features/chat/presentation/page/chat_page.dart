@@ -7,6 +7,7 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/chat_utils.dart';
+import 'package:housely/core/utils/date_formatter.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/chat/domain/entity/chat_user.dart';
@@ -114,8 +115,22 @@ class _ChatPageState extends State<ChatPage> {
             ),
 
             // profile image
-            CircleAvatar(radius: ResponsiveDimensions.spacing24(context)),
-
+            CircleAvatar(
+              radius: ResponsiveDimensions.spacing24(context),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              backgroundImage: widget.otherUser.profileImage != null
+                  ? NetworkImage(widget.otherUser.profileImage!)
+                  : null,
+              child: widget.otherUser.profileImage == null
+                  ? Text(
+                      widget.otherUser.name[0].toUpperCase(),
+                      style: AppTextStyle.bodySemiBold(
+                        context,
+                        color: AppColors.primary,
+                      ),
+                    )
+                  : null,
+            ),
             Column(
               crossAxisAlignment: .start,
               mainAxisAlignment: .center,
@@ -130,9 +145,18 @@ class _ChatPageState extends State<ChatPage> {
                 Row(
                   spacing: ResponsiveDimensions.spacing4(context),
                   children: [
-                    CircleAvatar(
-                      backgroundColor: AppColors.success,
-                      radius: ResponsiveDimensions.spacing4(context),
+                    BlocBuilder<ChatSessionBloc, ChatSessionState>(
+                      builder: (context, state) {
+                        if (state is ChatSessionLoaded) {
+                          return CircleAvatar(
+                            backgroundColor: state.isOtherUserOnline
+                                ? AppColors.success
+                                : AppColors.textHint,
+                            radius: ResponsiveDimensions.spacing4(context),
+                          );
+                        }
+                        return SizedBox.shrink();
+                      },
                     ),
 
                     BlocBuilder<ChatSessionBloc, ChatSessionState>(
@@ -142,17 +166,17 @@ class _ChatPageState extends State<ChatPage> {
                             state.isOtherUserOnline
                                 ? "Online"
                                 : state.otherUserLastSeen != null
-                                ? "last seen "
+                                ? "Last seen ${DateFormatter.formatLastSeen(state.otherUserLastSeen!)}"
                                 : "Offline",
+                            style: AppTextStyle.bodyRegular(
+                              context,
+                              color: state.isOtherUserOnline
+                                  ? AppColors.success
+                                  : AppColors.textHint,
+                            ),
                           );
                         }
-                        return Text(
-                          'Offline',
-                          style: AppTextStyle.bodyRegular(
-                            context,
-                            color: AppColors.textHint,
-                          ),
-                        );
+                        return SizedBox.shrink();
                       },
                     ),
                   ],
@@ -229,9 +253,8 @@ class _ChatPageState extends State<ChatPage> {
                     child: CustomTextField(
                       isFilled: true,
                       fillColor: AppColors.divider,
-                      hintText: "write your message",
-                      maxLines: 1,
                       controller: _messageController,
+                      textCapitalization: .sentences,
                     ),
                   ),
 
