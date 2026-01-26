@@ -22,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     this.onTap,
     this.isFilled = false,
     this.fillColor,
+    this.textCapitalization = .none,
   });
 
   /// [TextEditingController] controller
@@ -77,6 +78,9 @@ class CustomTextField extends StatelessWidget {
 
   /// fill color
   final Color? fillColor;
+
+  /// text capitalization
+  final TextCapitalization textCapitalization;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -91,6 +95,7 @@ class CustomTextField extends StatelessWidget {
       onChanged: onChanged,
       maxLines: maxLines,
       onTap: onTap,
+      textCapitalization: textCapitalization,
       decoration: InputDecoration(
         filled: isFilled,
         fillColor: fillColor,
