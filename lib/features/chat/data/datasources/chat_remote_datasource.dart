@@ -194,7 +194,7 @@ class ChatRemoteDataSource {
     try {
       // Get unread messages not sent by current user
       final unreadMessages = await _messagesCollection(chatId)
-          .where('senderId', isEqualTo: userId)
+          .where('senderId', isNotEqualTo: userId)
           .where('isRead', isEqualTo: false)
           .get();
 
@@ -213,10 +213,10 @@ class ChatRemoteDataSource {
     required bool isOnline,
   }) async {
     try {
-      await _usersCollection.doc(userId).update({
+      await _usersCollection.doc(userId).set({
         'isOnline': isOnline,
         'lastSeen': Timestamp.fromDate(DateTime.now()),
-      });
+      }, SetOptions(merge: true));
     } catch (e) {
       throw ServerException('Failed to update user status: $e');
     }
@@ -225,9 +225,6 @@ class ChatRemoteDataSource {
   Stream<ChatUserModel> getUserStatusStream(String userId) {
     try {
       return _usersCollection.doc(userId).snapshots().map((doc) {
-        if (!doc.exists) {
-          throw ServerException("User not found");
-        }
         return ChatUserModel.fromFirestore(doc);
       });
     } catch (e) {
