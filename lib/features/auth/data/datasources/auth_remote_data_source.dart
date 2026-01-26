@@ -80,7 +80,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         email: email,
         username: username,
       );
-      await firestore.collection('users').doc().set(user.toMap());
+      await firestore
+          .collection('users')
+          .doc(user.uid)
+          .set(user.toMap(), SetOptions(merge: true));
 
       // Update display name
       await userCredential.user?.updateDisplayName(username);
@@ -147,13 +150,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       final user = AppUserModel.fromEntity(appUser);
 
-      await firestore.collection('users').doc().set(user.toMap());
+      await firestore
+          .collection('users')
+          .doc(user.uid)
+          .set(user.toMap(), SetOptions(merge: true));
 
       return appUser;
     } on FirebaseAuthException catch (e) {
       throw _handleFirebaseException(e);
     } catch (e) {
-      throw ServerException('An unexpected error occurred');
+      throw ServerException('An unexpected error occurred : $e');
     }
   }
 
