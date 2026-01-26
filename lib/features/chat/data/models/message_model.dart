@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:housely/features/chat/domain/entity/message.dart';
 
@@ -14,17 +16,44 @@ class MessageModel extends Message {
   });
 
   factory MessageModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return MessageModel(
-      messageId: doc.id,
-      senderId: data['senderId'],
-      chatId: data['chatId'],
-      text: data['text'],
-      timestamp: (data['timestamp'] as Timestamp).toDate(),
-      isRead: data['isRead'] ?? false,
-      status: .sent,
-      replyToMessageId: data['replyToMessageId'],
-    );
+    try {
+      final data = doc.data() as Map<String, dynamic>?;
+
+      if (data == null) {
+        throw Exception('Message document data is null');
+      }
+
+      // Parse timestamp with null safety
+      DateTime timestamp;
+      try {
+        final timestampData = data['timestamp'];
+        if (timestampData is Timestamp) {
+          timestamp = timestampData.toDate();
+        } else if (timestampData is int) {
+          // Handle case where timestamp might be stored as milliseconds
+          timestamp = DateTime.fromMillisecondsSinceEpoch(timestampData);
+        } else {
+          timestamp = DateTime.now();
+        }
+      } catch (e) {
+        log('Error parsing timestamp: $e');
+        timestamp = DateTime.now();
+      }
+
+      return MessageModel(
+        messageId: doc.id,
+        senderId: data['senderId']?.toString() ?? '',
+        chatId: data['chatId']?.toString() ?? '',
+        text: data['text']?.toString() ?? '',
+        timestamp: timestamp,
+        isRead: data['isRead'], // Explicit boolean check
+        status: MessageStatus.sent, // Default status
+        replyToMessageId: data['replyToMessageId']?.toString(),
+      );
+    } catch (e) {
+      log('Error parsing MessageModel from Firestore: $e');
+      rethrow;
+    }
   }
 
   factory MessageModel.fromEntity(Message entity) {
@@ -47,6 +76,8 @@ class MessageModel extends Message {
       'timestamp': Timestamp.fromDate(timestamp),
       'isRead': isRead,
       'replyToMessageId': replyToMessageId,
+      'chatId': chatId,
+      // Note: chatId is not stored in the document as it's part of the path
     };
   }
 

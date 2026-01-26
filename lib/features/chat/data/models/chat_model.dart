@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:housely/features/chat/data/models/chat_user_model.dart';
 import 'package:housely/features/chat/domain/entity/chat.dart';
@@ -13,8 +15,8 @@ class LastMessageModel extends LastMessage {
 
   factory LastMessageModel.fromMap(Map<String, dynamic> map) {
     return LastMessageModel(
-      text: map['text'],
-      senderId: map['senderId'],
+      text: map['text'] ?? '', // Handle null with default empty string
+      senderId: map['senderId'] ?? '', // Handle null with default empty string
       timestamp: (map['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isRead: map['isRead'] ?? false,
     );
@@ -41,43 +43,97 @@ class ChatModel extends Chat {
   });
 
   factory ChatModel.fromFirestore(DocumentSnapshot doc, String currentUserId) {
-    final data = doc.data() as Map<String, dynamic>;
+    try {
+      final data = doc.data() as Map<String, dynamic>?;
 
-    // Parse participant details
-    final participantDetailsMap =
-        data['participantDetails'] as Map<String, dynamic>;
-    final participantDetails = <String, ChatUser>{};
+      // Handle case where document data is null
+      if (data == null) {
+        throw Exception('Chat document data is null');
+      }
 
-    participantDetailsMap.forEach((userId, details) {
-      participantDetails[userId] = ChatUserModel.fromMap(
-        details as Map<String, dynamic>,
-        userId,
+      // Parse participant details with null safety
+      final participantDetailsMap =
+          data['participantDetails'] as Map<String, dynamic>? ?? {};
+      final participantDetails = <String, ChatUser>{};
+
+      participantDetailsMap.forEach((userId, details) {
+        try {
+          if (details != null && details is Map<String, dynamic>) {
+            participantDetails[userId] = ChatUserModel.fromMap(details, userId);
+          }
+        } catch (e) {
+          log('Error parsing participant $userId: $e');
+          // Skip this participant if there's an error
+        }
+      });
+
+      // Parse last message with null safety
+      LastMessageModel? lastMessage;
+      if (data['lastMessage'] != null) {
+        try {
+          lastMessage = LastMessageModel.fromMap(
+            data['lastMessage'] as Map<String, dynamic>,
+          );
+        } catch (e) {
+          log('Error parsing last message: $e');
+          // lastMessage remains null if parsing fails
+        }
+      }
+
+      // Parse participants list with null safety
+      final participantsList = data['participants'];
+      List<String> participants = [];
+
+      if (participantsList is List) {
+        participants = participantsList
+            .where((p) => p != null)
+            .map((p) => p.toString())
+            .toList();
+      }
+
+      // Parse timestamps with null safety
+      DateTime createdAt;
+      try {
+        createdAt =
+            (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+      } catch (e) {
+        log('Error parsing createdAt: $e');
+        createdAt = DateTime.now();
+      }
+
+      DateTime updatedAt;
+      try {
+        updatedAt =
+            (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+      } catch (e) {
+        log('Error parsing updatedAt: $e');
+        updatedAt = DateTime.now();
+      }
+
+      return ChatModel(
+        chatId: doc.id,
+        participants: participants,
+        participantDetails: participantDetails,
+        lastMessage: lastMessage,
+        createdAt: createdAt,
+        updatedAt: updatedAt,
       );
-    });
-
-    // Parse last message
-    LastMessageModel? lastMessage;
-    if (data['lastMessage'] != null) {
-      lastMessage = LastMessageModel.fromMap(
-        data['lastMessage'] as Map<String, dynamic>,
-      );
+    } catch (e) {
+      log('Error parsing ChatModel from Firestore: $e');
+      rethrow;
     }
-    return ChatModel(
-      chatId: doc.id,
-      participants: List<String>.from(data['participants'] ?? []),
-      participantDetails: participantDetails,
-      lastMessage: lastMessage,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp).toDate(),
-    );
   }
 
   Map<String, dynamic> toMap() {
     final participantDetailsMap = <String, dynamic>{};
     participantDetails.forEach((userId, user) {
-      participantDetailsMap[userId] = ChatUserModel.fromEntity(
-        user,
-      ).toParticipantMap();
+      try {
+        participantDetailsMap[userId] = ChatUserModel.fromEntity(
+          user,
+        ).toParticipantMap();
+      } catch (e) {
+        log('Error converting participant $userId to map: $e');
+      }
     });
 
     return {
