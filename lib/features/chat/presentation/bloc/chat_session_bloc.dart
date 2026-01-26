@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/text_constants.dart';
@@ -28,6 +29,7 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
   StreamSubscription? _userStatusSubscription;
   StreamSubscription? _messagesSubscription;
   String? currentChatId;
+  String? currentUserId;
   List<Message> _lastEmittedMessages = [];
 
   ChatSessionBloc({
@@ -49,9 +51,21 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     _userStatusSubscription?.cancel();
     _messagesSubscription?.cancel();
+
+    // Set current user to offline when closing the chat
+    if (currentUserId != null && currentChatId != null) {
+      try {
+        await updateOnlineStatus(
+          UpdateStatusParams(userId: currentUserId!, isOnline: false),
+        );
+      } catch (e) {
+        log("error from close() while updating current user online status:$e");
+      }
+    }
+
     return super.close();
   }
 
@@ -136,8 +150,9 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
     await result.fold(
       (failure) async => emit(ChatSessionFailure(failure.message)),
       (chat) async {
-        // Store the chat ID for later use
+        // Store the chat ID and current user ID for later use
         currentChatId = chat.chatId;
+        currentUserId = event.currentUser.uid;
 
         // Initial Setup (Mark read + online)
         await markMessagesAsRead(
@@ -155,13 +170,13 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
         await _setupUserStatusStream(event.otherUser.uid, emit);
 
         // Load initial messages and set up stream
-        await _loadAndSubscribeToMessages(chat.chatId);
+        await _loadAndSubscribeToMessages(chat.chatId, event.currentUser.uid);
       },
     );
   }
 
   /// Load initial messages and set up persistent stream subscription
-  Future<void> _loadAndSubscribeToMessages(String chatId) async {
+  Future<void> _loadAndSubscribeToMessages(String chatId, String userId) async {
     try {
       // Get first batch of messages to populate initial state
       final initialResult = await getMessagesUseCase(
@@ -177,7 +192,7 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
           add(MessagesUpdated(messages: messages));
 
           // Now set up the persistent stream subscription for real-time updates
-          _setupMessagesStreamSubscription(chatId);
+          _setupMessagesStreamSubscription(chatId, userId);
         },
       );
     } catch (e) {
@@ -186,7 +201,10 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
   }
 
   /// Set up persistent messages stream subscription for real-time updates
-  Future<void> _setupMessagesStreamSubscription(String chatId) async {
+  Future<void> _setupMessagesStreamSubscription(
+    String chatId,
+    String userId,
+  ) async {
     await _messagesSubscription?.cancel();
 
     _messagesSubscription =
@@ -201,11 +219,31 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
               // Handle error silently - keep existing messages
             },
             (messages) {
+              // Mark new incoming messages as read (only those not sent by current user)
+              _markNewMessagesAsRead(chatId, userId, messages);
+
               // Dispatch an event to update messages from stream
               add(MessagesUpdated(messages: messages));
             },
           );
         });
+  }
+
+  /// Mark new incoming messages as read
+  Future<void> _markNewMessagesAsRead(
+    String chatId,
+    String userId,
+    List<Message> messages,
+  ) async {
+    // Check if there are any unread messages not sent by the current user
+    final hasUnreadMessages = messages.any(
+      (msg) => !msg.isRead && msg.senderId != userId,
+    );
+
+    if (hasUnreadMessages) {
+      // Mark all unread messages as read
+      await markMessagesAsRead(MarkParams(chatId: chatId, userId: userId));
+    }
   }
 
   /// Handle messages updates from stream
@@ -239,7 +277,7 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
       emit(
         ChatSessionLoaded(
           messages: event.messages,
-          chatId: currentChatId ?? '',
+          chatId: currentChatId ?? 'no chat id',
           hasMoreMessages:
               event.messages.length >= TextConstants.messagePageSize,
           isInitializing: false,
