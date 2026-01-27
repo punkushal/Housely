@@ -24,6 +24,7 @@ class CustomTextField extends StatelessWidget {
     this.isFilled = false,
     this.fillColor,
     this.textCapitalization = .none,
+    this.maxLength,
   });
 
   /// [TextEditingController] controller
@@ -76,6 +77,7 @@ class CustomTextField extends StatelessWidget {
 
   /// border
   final InputBorder? border;
+
   /// boolean for fill color
   final bool isFilled;
 
@@ -84,6 +86,9 @@ class CustomTextField extends StatelessWidget {
 
   /// text capitalization
   final TextCapitalization textCapitalization;
+
+  /// max length
+  final int? maxLength;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -97,9 +102,11 @@ class CustomTextField extends StatelessWidget {
       validator: validator,
       onChanged: onChanged,
       maxLines: maxLines,
+      maxLength: maxLength,
       onTap: onTap,
       textCapitalization: textCapitalization,
       decoration: InputDecoration(
+        counterText: '', // hide default counter
         filled: isFilled,
         fillColor: fillColor,
         hintText: hintText,
@@ -108,14 +115,15 @@ class CustomTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         contentPadding: contentPadding,
         border: border,
-        enabledBorder: border,
         focusedBorder: border,
-        enabledBorder: isFilled
-            ? OutlineInputBorder(
-                borderSide: .none,
-                borderRadius: BorderRadius.circular(14),
-              )
-            : null,
+        enabledBorder:
+            border ??
+            (isFilled
+                ? OutlineInputBorder(
+                    borderSide: .none,
+                    borderRadius: BorderRadius.circular(14),
+                  )
+                : null),
       ),
     );
   }
