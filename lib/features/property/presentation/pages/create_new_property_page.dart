@@ -528,16 +528,44 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                   ),
 
                   // upload profile image
-                  UploadContainer(
-                    labelText: "Property Cover Image",
-                    coverUrl: property?.media.coverImage['url'],
+                  BlocBuilder<PropertyFormCubit, PropertyFormState>(
+                    builder: (context, state) {
+                      return UploadContainer(
+                        labelText: "Property Cover Image",
+                        singleImage: state.image,
+                        coverUrl: property?.media.coverImage['url'],
+                        imageList: [],
+                        networkImages: [],
+                        onImageSelected: (file) {
+                          context.read<PropertyFormCubit>().setSingleImage(
+                            file,
+                          );
+                        },
+                      );
+                    },
                   ),
 
                   // upload property images
-                  UploadContainer(
-                    labelText: "Property Images",
-                    hasMany: true,
-                    property: property,
+                  BlocBuilder<PropertyFormCubit, PropertyFormState>(
+                    builder: (context, state) {
+                      return UploadContainer(
+                        labelText: "Property Images",
+                        hasMany: true,
+                        imageList: state.imageList,
+                        networkImages: state.existingNetworkImages
+                            .map((e) => e['url'] as String)
+                            .toList(),
+                        onImagesSelected: (files) => context
+                            .read<PropertyFormCubit>()
+                            .setMultipleImages(files),
+                        onRemoveLocal: (index) => context
+                            .read<PropertyFormCubit>()
+                            .removeImage(index),
+                        onRemoveNetwork: (index) => context
+                            .read<PropertyFormCubit>()
+                            .removeNetworkImage(index),
+                      );
+                    },
                   ),
 
                   // location

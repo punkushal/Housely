@@ -5,31 +5,23 @@ import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
-import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
-import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
 
 class ImagesGridView extends StatelessWidget {
   const ImagesGridView({
     super.key,
     required this.localImages,
-    // required this.networkImages,
-    this.property,
+    this.networkImages = const [],
+    required this.onRemoveLocal,
+    this.onRemoveNetwork,
   });
   final List<File> localImages;
-
-  /// network image urls for other properties
-  // final List<dynamic> networkImages;
-
-  /// to update the gallery images from it
-  final Property? property;
+  final List<String> networkImages;
+  final Function(int index) onRemoveLocal;
+  final Function(int index)? onRemoveNetwork;
 
   @override
   Widget build(BuildContext context) {
-    final networkImages = context
-        .read<PropertyFormCubit>()
-        .state
-        .existingNetworkImages;
     final totalCount = networkImages.length + localImages.length;
     return BlocListener<PropertyCubit, PropertyState>(
       listener: (context, state) {
@@ -69,7 +61,7 @@ class ImagesGridView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   child: isNetworkImage
                       ? CustomCacheContainer(
-                          imageUrl: networkImages[fileIndex]['url'],
+                          imageUrl: networkImages[fileIndex],
                           width: ResponsiveDimensions.getSize(context, 98),
                           height: ResponsiveDimensions.getSize(context, 68),
                         )
@@ -87,13 +79,9 @@ class ImagesGridView extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     if (isNetworkImage) {
-                      if (property != null) {
-                        context.read<PropertyFormCubit>().removeNetworkImage(
-                          fileIndex,
-                        );
-                      }
+                      onRemoveNetwork?.call(fileIndex);
                     } else {
-                      context.read<PropertyFormCubit>().removeImage(fileIndex);
+                      onRemoveLocal(fileIndex);
                     }
                   },
                   child: Container(
