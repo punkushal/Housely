@@ -22,7 +22,9 @@ class ReviewModel extends Review {
       rating: (json['rating'] as num).toDouble(),
       comment: json['comment'],
       createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.tryParse(json['updatedAt']),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
       reviewImages: json['reviewImages'],
     );
   }
