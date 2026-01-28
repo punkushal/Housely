@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/appwrite.dart' hide Query;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/error/exception.dart';
@@ -86,6 +86,39 @@ class ReviewRemoteDataSource {
       await docRef.set(updateModel.toFireStore());
     } catch (e) {
       throw ServerException("Failed to add new review: $e");
+    }
+  }
+
+  Future<({DocumentSnapshot? lastDoc, List<Review> reviews})> getAllReviews({
+    int limit = 10,
+    required String propertyId,
+    DocumentSnapshot? lastDoc,
+  }) async {
+    try {
+      Query<Map<String, dynamic>> query = firestore
+          .collection(TextConstants.properties)
+          .doc(propertyId)
+          .collection(TextConstants.reviewsCollection)
+          .orderBy("createdAt");
+
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc);
+      }
+
+      query = query.limit(limit);
+
+      final snapshot = await query.get();
+      final jsonList = snapshot.docs;
+
+      final reviewList = jsonList
+          .map((doc) => ReviewModel.fromFireStore(doc.data()))
+          .toList();
+
+      final newLastDoc = jsonList.isNotEmpty ? jsonList.last : null;
+
+      return (reviews: reviewList, lastDoc: newLastDoc);
+    } catch (e) {
+      throw ServerException("Failed to fetch reviews: $e");
     }
   }
 }
