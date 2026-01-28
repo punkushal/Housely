@@ -9,6 +9,7 @@ class Review extends Equatable {
   final String comment;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final List<Map<String, dynamic>> reviewImages;
 
   const Review({
     required this.reviewId,
@@ -19,6 +20,7 @@ class Review extends Equatable {
     required this.comment,
     required this.createdAt,
     required this.updatedAt,
+    required this.reviewImages,
   });
   @override
   List<Object?> get props => [
@@ -30,5 +32,6 @@ class Review extends Equatable {
     comment,
     createdAt,
     updatedAt,
+    reviewImages,
   ];
 }
