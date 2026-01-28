@@ -197,7 +197,7 @@ class MyBookingCard extends StatelessWidget {
         status == .completed
             ? GestureDetector(
                 onTap: () {
-                  context.router.push(AddReviewRoute());
+                  context.router.push(AddReviewRoute(property: property));
                 },
                 child: _buildOptionContent(
                   context,
