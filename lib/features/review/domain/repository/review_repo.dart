@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/review/domain/entity/review.dart';
 
@@ -12,4 +13,8 @@ abstract interface class ReviewRepo {
     required String userEmail,
     required List<File> images,
   });
+
+  /// Fetch all reviews
+  ResultFuture<({List<Review> reviews, DocumentSnapshot? lastDoc})>
+  getAllReviews({required String propertyId, DocumentSnapshot? lastDoc});
 }
