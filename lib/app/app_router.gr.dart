@@ -60,18 +60,49 @@ import 'package:housely/features/search/presentation/page/explore_page.dart'
 
 /// generated route for
 /// [_i1.AddReviewPage]
-class AddReviewRoute extends _i22.PageRouteInfo<void> {
-  const AddReviewRoute({List<_i22.PageRouteInfo>? children})
-    : super(AddReviewRoute.name, initialChildren: children);
+class AddReviewRoute extends _i22.PageRouteInfo<AddReviewRouteArgs> {
+  AddReviewRoute({
+    _i23.Key? key,
+    required _i24.Property property,
+    List<_i22.PageRouteInfo>? children,
+  }) : super(
+         AddReviewRoute.name,
+         args: AddReviewRouteArgs(key: key, property: property),
+         initialChildren: children,
+       );
 
   static const String name = 'AddReviewRoute';
 
   static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
-      return const _i1.AddReviewPage();
+      final args = data.argsAs<AddReviewRouteArgs>();
+      return _i1.AddReviewPage(key: args.key, property: args.property);
     },
   );
+}
+
+class AddReviewRouteArgs {
+  const AddReviewRouteArgs({this.key, required this.property});
+
+  final _i23.Key? key;
+
+  final _i24.Property property;
+
+  @override
+  String toString() {
+    return 'AddReviewRouteArgs{key: $key, property: $property}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! AddReviewRouteArgs) return false;
+    return key == other.key && property == other.property;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ property.hashCode;
 }
 
 /// generated route for
