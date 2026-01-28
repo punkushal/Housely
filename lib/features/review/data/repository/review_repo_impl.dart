@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:appwrite/appwrite.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:housely/core/error/failure.dart';
@@ -45,6 +46,23 @@ class ReviewRepoImpl implements ReviewRepo {
       return Left(handleAppWriteError(e));
     } catch (e) {
       return Left(ServerFailure("Failed to upload review images :$e"));
+    }
+  }
+
+  @override
+  ResultFuture<({DocumentSnapshot? lastDoc, List<Review> reviews})>
+  getAllReviews({required String propertyId, DocumentSnapshot? lastDoc}) async {
+    try {
+      final result = await remoteDataSource.getAllReviews(
+        propertyId: propertyId,
+        lastDoc: lastDoc,
+      );
+
+      return Right(result);
+    } on FirebaseException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(ServerFailure("Failed to fetch all the reviews :$e"));
     }
   }
 }
