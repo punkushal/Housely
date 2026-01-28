@@ -9,7 +9,7 @@ class ReviewModel extends Review {
     required super.comment,
     required super.createdAt,
     required super.updatedAt,
-    required super.reviewImages,
+    super.reviewImages,
     super.userProfile,
   });
 
@@ -55,6 +55,7 @@ class ReviewModel extends Review {
     );
   }
 
+  @override
   ReviewModel copyWith({
     String? reviewId,
     String? userId,
@@ -64,7 +65,7 @@ class ReviewModel extends Review {
     String? comment,
     DateTime? createdAt,
     DateTime? updatedAt,
-    List<Map<String, dynamic>>? reviewImages,
+    Map<String, dynamic>? reviewImages,
   }) {
     return ReviewModel(
       reviewId: reviewId ?? this.reviewId,
