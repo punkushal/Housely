@@ -17,4 +17,7 @@ abstract interface class ReviewRepo {
   /// Fetch all reviews
   ResultFuture<({List<Review> reviews, DocumentSnapshot? lastDoc})>
   getAllReviews({required String propertyId, DocumentSnapshot? lastDoc});
+
+  /// Update review
+  ResultVoid updateReview({required Review review, required String propertyId});
 }
