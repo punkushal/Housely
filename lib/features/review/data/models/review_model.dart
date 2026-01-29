@@ -38,7 +38,7 @@ class ReviewModel extends Review {
       'rating': rating,
       'comment': comment,
       'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt ?? updatedAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
       'reviewImages': reviewImages,
     };
   }
