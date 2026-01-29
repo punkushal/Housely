@@ -22,11 +22,16 @@ abstract interface class ReviewRepo {
   getAllReviews({required String propertyId, DocumentSnapshot? lastDoc});
 
   /// Update review
-  ResultVoid updateReview({required Review review, required String propertyId});
+  ResultVoid updateReview({
+    required Review review,
+    required String propertyId,
+    required double oldRating,
+  });
 
   /// Delete review
   ResultVoid deleteReview({
     required String reviewId,
     required String propertyId,
+    required double ratingToDelete,
   });
 }

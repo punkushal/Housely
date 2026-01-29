@@ -76,21 +76,31 @@ final class AddReview extends ReviewEvent {
 final class UpdateReview extends ReviewEvent {
   final Review updatedReview;
   final String propertyId;
+  final double oldRating;
 
-  const UpdateReview({required this.updatedReview, required this.propertyId});
+  const UpdateReview({
+    required this.updatedReview,
+    required this.propertyId,
+    required this.oldRating,
+  });
 
   @override
-  List<Object> get props => [updatedReview, propertyId];
+  List<Object> get props => [updatedReview, propertyId, oldRating];
 }
 
 final class DeleteReview extends ReviewEvent {
   final Review review;
   final String propertyId;
+  final double ratingToDelete;
 
-  const DeleteReview({required this.review, required this.propertyId});
+  const DeleteReview({
+    required this.review,
+    required this.propertyId,
+    required this.ratingToDelete,
+  });
 
   @override
-  List<Object> get props => [review, propertyId];
+  List<Object> get props => [review, propertyId, ratingToDelete];
 }
 
 final class GetAllReviews extends ReviewEvent {

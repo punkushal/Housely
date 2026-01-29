@@ -69,11 +69,13 @@ class ReviewRepoImpl implements ReviewRepo {
   ResultVoid updateReview({
     required Review review,
     required String propertyId,
+    required double oldRating,
   }) async {
     try {
       await remoteDataSource.updateReview(
         propertyId: propertyId,
         review: review,
+        oldRating: oldRating,
       );
       return Right(null);
     } on FirebaseException catch (e) {
@@ -101,11 +103,13 @@ class ReviewRepoImpl implements ReviewRepo {
   ResultVoid deleteReview({
     required String reviewId,
     required String propertyId,
+    required double ratingToDelete,
   }) async {
     try {
       await remoteDataSource.deleteReview(
         reviewId: reviewId,
         propertyId: propertyId,
+        ratingToDelete: ratingToDelete,
       );
       return Right(null);
     } on FirebaseException catch (e) {

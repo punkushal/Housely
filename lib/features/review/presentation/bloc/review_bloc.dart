@@ -234,7 +234,11 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
       );
 
       final result = await updateReviewUseCase(
-        UpdateReviewParams(propertyId: event.propertyId, review: updatedReview),
+        UpdateReviewParams(
+          propertyId: event.propertyId,
+          review: updatedReview,
+          oldRating: event.oldRating,
+        ),
       );
 
       result.fold(
@@ -246,6 +250,7 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
         UpdateReviewParams(
           propertyId: event.propertyId,
           review: event.updatedReview,
+          oldRating: event.oldRating,
         ),
       );
 
@@ -287,6 +292,7 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
         DeleteReviewParams(
           reviewId: event.review.reviewId,
           propertyId: event.propertyId,
+          ratingToDelete: event.ratingToDelete,
         ),
       );
 

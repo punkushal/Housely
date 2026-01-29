@@ -13,6 +13,7 @@ class UpdateReviewUseCase implements UseCase<void, UpdateReviewParams> {
     return await repo.updateReview(
       review: params.review,
       propertyId: params.propertyId,
+      oldRating: params.oldRating,
     );
   }
 }
@@ -20,8 +21,13 @@ class UpdateReviewUseCase implements UseCase<void, UpdateReviewParams> {
 class UpdateReviewParams extends Equatable {
   final String propertyId;
   final Review review;
+  final double oldRating;
 
-  const UpdateReviewParams({required this.propertyId, required this.review});
+  const UpdateReviewParams({
+    required this.propertyId,
+    required this.review,
+    required this.oldRating,
+  });
   @override
-  List<Object?> get props => [review, propertyId];
+  List<Object?> get props => [review, propertyId, oldRating];
 }

@@ -74,6 +74,9 @@ class ReviewRemoteDataSource {
     required Review review,
   }) async {
     try {
+      final propRef = firestore
+          .collection(TextConstants.properties)
+          .doc(propertyId);
       final docRef = firestore
           .collection(TextConstants.properties)
           .doc(propertyId)
@@ -83,7 +86,23 @@ class ReviewRemoteDataSource {
 
       final updateModel = reviewModel.copyWith(reviewId: docRef.id);
 
-      await docRef.set(updateModel.toFireStore());
+      await firestore.runTransaction((transaction) async {
+        final propSnapshot = await transaction.get(propRef);
+
+        double oldTotalRating =
+            (propSnapshot.data()?['averageRating'] ?? 0.0) *
+            (propSnapshot.data()?['totalReviews'] ?? 0);
+
+        int newTotalReviews = (propSnapshot.data()?['totalReviews'] ?? 0) + 1;
+
+        double newAverage = (oldTotalRating + review.rating) / newTotalReviews;
+
+        transaction.set(docRef, updateModel.toFireStore());
+        transaction.set(propRef, {
+          'averageRating': newAverage,
+          'totalReviews': newTotalReviews,
+        }, SetOptions(merge: true));
+      });
     } catch (e) {
       throw ServerException("Failed to add new review: $e");
     }
@@ -92,16 +111,33 @@ class ReviewRemoteDataSource {
   Future<void> updateReview({
     required String propertyId,
     required Review review,
+    required double oldRating,
   }) async {
     try {
-      final docRef = firestore
+      final propRef = firestore
           .collection(TextConstants.properties)
-          .doc(propertyId)
+          .doc(propertyId);
+      final docRef = propRef
           .collection(TextConstants.reviewsCollection)
           .doc(review.reviewId);
       final reviewModel = ReviewModel.fromEntity(review);
+      await firestore.runTransaction((transaction) async {
+        final propDoc = await transaction.get(propRef);
+        if (!propDoc.exists) return;
 
-      await docRef.set(reviewModel.toFireStore(), SetOptions(merge: true));
+        final data = propDoc.data()!;
+        int count = data['totalReviews'] ?? 0;
+        double currentAvg = (data['averageRating'] ?? 0.0).toDouble();
+
+        // Math: Remove old, add new. Count stays same.
+        double newAvg =
+            ((currentAvg * count) - oldRating + review.rating) / count;
+
+        transaction.update(docRef, reviewModel.toFireStore());
+        transaction.set(propRef, {
+          'averageRating': newAvg,
+        }, SetOptions(merge: true));
+      });
     } catch (e) {
       throw ServerException("Failed to update existing review: $e");
     }
@@ -110,14 +146,37 @@ class ReviewRemoteDataSource {
   Future<void> deleteReview({
     required String reviewId,
     required String propertyId,
+    required double ratingToDelete,
   }) async {
     try {
-      await firestore
+      final propRef = firestore
           .collection(TextConstants.properties)
-          .doc(propertyId)
+          .doc(propertyId);
+
+      final reviewRef = propRef
           .collection(TextConstants.reviewsCollection)
-          .doc(reviewId)
-          .delete();
+          .doc(reviewId);
+      await firestore.runTransaction((transaction) async {
+        final propDoc = await transaction.get(propRef);
+        if (!propDoc.exists) return;
+
+        final data = propDoc.data()!;
+        int oldCount = data['totalReviews'] ?? 0;
+        double currentAvg = (data['averageRating'] ?? 0.0).toDouble();
+
+        int newCount = oldCount - 1;
+        double newAvg = 0.0;
+
+        if (newCount > 0) {
+          newAvg = ((currentAvg * oldCount) - ratingToDelete) / newCount;
+        }
+
+        transaction.delete(reviewRef);
+        transaction.update(propRef, {
+          'totalReviews': newCount,
+          'averageRating': newAvg,
+        });
+      });
     } catch (e) {
       throw ServerException("Failed to delete existing review: $e");
     }

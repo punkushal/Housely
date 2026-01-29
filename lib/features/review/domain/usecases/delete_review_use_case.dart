@@ -12,6 +12,7 @@ class DeleteReviewUseCase implements UseCase<void, DeleteReviewParams> {
     return await repo.deleteReview(
       reviewId: params.reviewId,
       propertyId: params.propertyId,
+      ratingToDelete: params.ratingToDelete,
     );
   }
 }
@@ -19,9 +20,14 @@ class DeleteReviewUseCase implements UseCase<void, DeleteReviewParams> {
 class DeleteReviewParams extends Equatable {
   final String reviewId;
   final String propertyId;
+  final double ratingToDelete;
 
-  const DeleteReviewParams({required this.reviewId, required this.propertyId});
+  const DeleteReviewParams({
+    required this.reviewId,
+    required this.propertyId,
+    required this.ratingToDelete,
+  });
 
   @override
-  List<Object?> get props => [reviewId, propertyId];
+  List<Object?> get props => [reviewId, propertyId, ratingToDelete];
 }
