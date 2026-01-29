@@ -386,12 +386,16 @@ class PropertyDetailSection extends StatelessWidget {
                               context.router.push(
                                 AllReviewListRoute(
                                   allReviews: state.allReviews,
+                                  property: property,
                                 ),
                               );
                             },
                           ),
 
-                          ReviewList(allReviewsList: state.allReviews),
+                          ReviewList(
+                            allReviewsList: state.allReviews,
+                            property: property,
+                          ),
                         ],
                       );
                     }

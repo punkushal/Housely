@@ -134,10 +134,15 @@ class AllReviewListRoute extends _i24.PageRouteInfo<AllReviewListRouteArgs> {
   AllReviewListRoute({
     _i25.Key? key,
     required List<_i27.Review> allReviews,
+    required _i26.Property property,
     List<_i24.PageRouteInfo>? children,
   }) : super(
          AllReviewListRoute.name,
-         args: AllReviewListRouteArgs(key: key, allReviews: allReviews),
+         args: AllReviewListRouteArgs(
+           key: key,
+           allReviews: allReviews,
+           property: property,
+         ),
          initialChildren: children,
        );
 
@@ -147,21 +152,31 @@ class AllReviewListRoute extends _i24.PageRouteInfo<AllReviewListRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<AllReviewListRouteArgs>();
-      return _i2.AllReviewListPage(key: args.key, allReviews: args.allReviews);
+      return _i2.AllReviewListPage(
+        key: args.key,
+        allReviews: args.allReviews,
+        property: args.property,
+      );
     },
   );
 }
 
 class AllReviewListRouteArgs {
-  const AllReviewListRouteArgs({this.key, required this.allReviews});
+  const AllReviewListRouteArgs({
+    this.key,
+    required this.allReviews,
+    required this.property,
+  });
 
   final _i25.Key? key;
 
   final List<_i27.Review> allReviews;
 
+  final _i26.Property property;
+
   @override
   String toString() {
-    return 'AllReviewListRouteArgs{key: $key, allReviews: $allReviews}';
+    return 'AllReviewListRouteArgs{key: $key, allReviews: $allReviews, property: $property}';
   }
 
   @override
@@ -172,12 +187,15 @@ class AllReviewListRouteArgs {
         const _i28.ListEquality<_i27.Review>().equals(
           allReviews,
           other.allReviews,
-        );
+        ) &&
+        property == other.property;
   }
 
   @override
   int get hashCode =>
-      key.hashCode ^ const _i28.ListEquality<_i27.Review>().hash(allReviews);
+      key.hashCode ^
+      const _i28.ListEquality<_i27.Review>().hash(allReviews) ^
+      property.hashCode;
 }
 
 /// generated route for
@@ -701,18 +719,66 @@ class ProfileRoute extends _i24.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i20.ReviewDetailPage]
-class ReviewDetailRoute extends _i24.PageRouteInfo<void> {
-  const ReviewDetailRoute({List<_i24.PageRouteInfo>? children})
-    : super(ReviewDetailRoute.name, initialChildren: children);
+class ReviewDetailRoute extends _i24.PageRouteInfo<ReviewDetailRouteArgs> {
+  ReviewDetailRoute({
+    _i25.Key? key,
+    required _i27.Review review,
+    required _i26.Property property,
+    List<_i24.PageRouteInfo>? children,
+  }) : super(
+         ReviewDetailRoute.name,
+         args: ReviewDetailRouteArgs(
+           key: key,
+           review: review,
+           property: property,
+         ),
+         initialChildren: children,
+       );
 
   static const String name = 'ReviewDetailRoute';
 
   static _i24.PageInfo page = _i24.PageInfo(
     name,
     builder: (data) {
-      return const _i20.ReviewDetailPage();
+      final args = data.argsAs<ReviewDetailRouteArgs>();
+      return _i20.ReviewDetailPage(
+        key: args.key,
+        review: args.review,
+        property: args.property,
+      );
     },
   );
+}
+
+class ReviewDetailRouteArgs {
+  const ReviewDetailRouteArgs({
+    this.key,
+    required this.review,
+    required this.property,
+  });
+
+  final _i25.Key? key;
+
+  final _i27.Review review;
+
+  final _i26.Property property;
+
+  @override
+  String toString() {
+    return 'ReviewDetailRouteArgs{key: $key, review: $review, property: $property}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ReviewDetailRouteArgs) return false;
+    return key == other.key &&
+        review == other.review &&
+        property == other.property;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ review.hashCode ^ property.hashCode;
 }
 
 /// generated route for

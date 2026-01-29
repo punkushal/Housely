@@ -1,6 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/review_card.dart';
+import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/review/domain/entity/review.dart';
 
 class ReviewList extends StatelessWidget {
@@ -8,9 +11,11 @@ class ReviewList extends StatelessWidget {
     super.key,
     required this.allReviewsList,
     this.showAll = false,
+    required this.property,
   });
   final List<Review> allReviewsList;
   final bool showAll;
+  final Property property;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -30,9 +35,19 @@ class ReviewList extends StatelessWidget {
               bottom: showAll ? 12 : 0,
               left: showAll ? 20 : 0,
             ),
-            child: ReviewCard(
-              review: allReviewsList[index],
-              isDetailView: showAll,
+            child: GestureDetector(
+              onTap: () {
+                context.router.push(
+                  ReviewDetailRoute(
+                    review: allReviewsList[index],
+                    property: property,
+                  ),
+                );
+              },
+              child: ReviewCard(
+                review: allReviewsList[index],
+                isDetailView: showAll,
+              ),
             ),
           );
         },
