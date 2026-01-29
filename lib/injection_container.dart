@@ -88,6 +88,16 @@ import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
+import 'package:housely/features/review/data/datasource/review_remote_data_source.dart';
+import 'package:housely/features/review/data/repository/review_repo_impl.dart';
+import 'package:housely/features/review/domain/repository/review_repo.dart';
+import 'package:housely/features/review/domain/usecases/add_review_use_case.dart';
+import 'package:housely/features/review/domain/usecases/delete_review_image_use_case.dart';
+import 'package:housely/features/review/domain/usecases/delete_review_use_case.dart';
+import 'package:housely/features/review/domain/usecases/get_all_reviews_use_case.dart';
+import 'package:housely/features/review/domain/usecases/update_review_use_case.dart';
+import 'package:housely/features/review/domain/usecases/upload_reveiw_images_use_case.dart';
+import 'package:housely/features/review/presentation/bloc/review_bloc.dart';
 import 'package:housely/features/search/presentation/bloc/property_search_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -180,6 +190,12 @@ Future<void> initializeDependencies() async {
   );
   sl.registerLazySingleton<ChatRepository>(() => ChatRepoImpl(sl()));
 
+  // review
+  sl.registerLazySingleton(
+    () => ReviewRemoteDataSource(storage: sl(), firestore: sl()),
+  );
+  sl.registerLazySingleton<ReviewRepo>(() => ReviewRepoImpl(sl()));
+
   // ============== Domain layer ===============
   sl.registerLazySingleton(
     () => SetOnboardingStatusUsecase(
@@ -251,6 +267,14 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => CreateOrGetChatUseCase(sl()));
   sl.registerLazySingleton(() => DeleteChatUseCase(sl()));
   sl.registerLazySingleton(() => mark_message.MarkMessageAsRead(sl()));
+
+  // review use cases
+  sl.registerLazySingleton(() => UploadReveiwImagesUseCase(sl()));
+  sl.registerLazySingleton(() => AddReviewUseCase(sl()));
+  sl.registerLazySingleton(() => GetAllReviewsUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateReviewUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteReviewImageUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteReviewUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -342,4 +366,16 @@ Future<void> initializeDependencies() async {
   );
 
   sl.registerFactory(() => ChatListBloc(deleteChat: sl(), getChatList: sl()));
+
+  // review
+  sl.registerFactory(
+    () => ReviewBloc(
+      uploadReveiwImagesUseCase: sl(),
+      addReviewUseCase: sl(),
+      getAllReviewsUseCase: sl(),
+      updateReviewUseCase: sl(),
+      deleteReviewImageUseCase: sl(),
+      deleteReviewUseCase: sl(),
+    ),
+  );
 }
