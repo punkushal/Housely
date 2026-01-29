@@ -89,6 +89,24 @@ class ReviewRemoteDataSource {
     }
   }
 
+  Future<void> updateReview({
+    required String propertyId,
+    required Review review,
+  }) async {
+    try {
+      final docRef = firestore
+          .collection(TextConstants.properties)
+          .doc(propertyId)
+          .collection(TextConstants.reviewsCollection)
+          .doc(review.reviewId);
+      final reviewModel = ReviewModel.fromEntity(review);
+
+      await docRef.set(reviewModel.toFireStore(), SetOptions(merge: true));
+    } catch (e) {
+      throw ServerException("Failed to add update existing review: $e");
+    }
+  }
+
   Future<({DocumentSnapshot? lastDoc, List<Review> reviews})> getAllReviews({
     int limit = 10,
     required String propertyId,
