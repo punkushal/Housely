@@ -23,4 +23,10 @@ abstract interface class ReviewRepo {
 
   /// Update review
   ResultVoid updateReview({required Review review, required String propertyId});
+
+  /// Delete review
+  ResultVoid deleteReview({
+    required String reviewId,
+    required String propertyId,
+  });
 }

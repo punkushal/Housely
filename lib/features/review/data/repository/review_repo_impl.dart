@@ -96,4 +96,22 @@ class ReviewRepoImpl implements ReviewRepo {
       );
     }
   }
+
+  @override
+  ResultVoid deleteReview({
+    required String reviewId,
+    required String propertyId,
+  }) async {
+    try {
+      await remoteDataSource.deleteReview(
+        reviewId: reviewId,
+        propertyId: propertyId,
+      );
+      return Right(null);
+    } on FirebaseException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(ServerFailure("Failed to deleted review : $e"));
+    }
+  }
 }
