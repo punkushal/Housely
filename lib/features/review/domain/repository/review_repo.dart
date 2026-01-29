@@ -14,6 +14,9 @@ abstract interface class ReviewRepo {
     required List<File> images,
   });
 
+  /// delete review images
+  ResultVoid deleteImageFile({required String fileId});
+
   /// Fetch all reviews
   ResultFuture<({List<Review> reviews, DocumentSnapshot? lastDoc})>
   getAllReviews({required String propertyId, DocumentSnapshot? lastDoc});

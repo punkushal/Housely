@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:appwrite/appwrite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:housely/core/error/failure.dart';
 import 'package:housely/core/utils/handle_error.dart';
@@ -81,6 +80,20 @@ class ReviewRepoImpl implements ReviewRepo {
       return Left(handleFirebaseError(e));
     } catch (e) {
       return Left(ServerFailure("Failed to update review :$e"));
+    }
+  }
+
+  @override
+  ResultVoid deleteImageFile({required String fileId}) async {
+    try {
+      await remoteDataSource.deleteImageFile(fileId: fileId);
+      return Right(null);
+    } on AppwriteException catch (e) {
+      return Left(handleAppWriteError(e));
+    } catch (e) {
+      return Left(
+        InvalidFileFailure("Failed to deleted review image file: $e"),
+      );
     }
   }
 }

@@ -103,7 +103,7 @@ class ReviewRemoteDataSource {
 
       await docRef.set(reviewModel.toFireStore(), SetOptions(merge: true));
     } catch (e) {
-      throw ServerException("Failed to add update existing review: $e");
+      throw ServerException("Failed to update existing review: $e");
     }
   }
 
