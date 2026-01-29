@@ -65,4 +65,22 @@ class ReviewRepoImpl implements ReviewRepo {
       return Left(ServerFailure("Failed to fetch all the reviews :$e"));
     }
   }
+
+  @override
+  ResultVoid updateReview({
+    required Review review,
+    required String propertyId,
+  }) async {
+    try {
+      await remoteDataSource.updateReview(
+        propertyId: propertyId,
+        review: review,
+      );
+      return Right(null);
+    } on FirebaseException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(ServerFailure("Failed to update review :$e"));
+    }
+  }
 }
