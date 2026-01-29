@@ -1,10 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/review_card.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/review/domain/entity/review.dart';
+import 'package:housely/features/review/presentation/bloc/review_bloc.dart';
 
 class ReviewList extends StatelessWidget {
   const ReviewList({
@@ -36,13 +38,26 @@ class ReviewList extends StatelessWidget {
               left: showAll ? 20 : 0,
             ),
             child: GestureDetector(
-              onTap: () {
-                context.router.push(
+              onTap: () async {
+                final result = await context.router.push(
                   ReviewDetailRoute(
                     review: allReviewsList[index],
                     property: property,
+                    totalReviews: allReviewsList.length,
                   ),
                 );
+
+                // If review was deleted or updated, refresh the reviews list
+                if (result == true && context.mounted) {
+                  // Trigger refresh by fetching all reviews
+                  try {
+                    context.read<ReviewBloc>().add(
+                      GetAllReviews(propertyId: property.id!),
+                    );
+                  } catch (e) {
+                    // Bloc not available in context
+                  }
+                }
               },
               child: ReviewCard(
                 review: allReviewsList[index],

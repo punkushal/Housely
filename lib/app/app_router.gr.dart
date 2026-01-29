@@ -88,10 +88,12 @@ class AddReviewRoute extends _i24.PageRouteInfo<AddReviewRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<AddReviewRouteArgs>();
-      return _i1.AddReviewPage(
-        key: args.key,
-        property: args.property,
-        existedReview: args.existedReview,
+      return _i24.WrappedRoute(
+        child: _i1.AddReviewPage(
+          key: args.key,
+          property: args.property,
+          existedReview: args.existedReview,
+        ),
       );
     },
   );
@@ -724,6 +726,7 @@ class ReviewDetailRoute extends _i24.PageRouteInfo<ReviewDetailRouteArgs> {
     _i25.Key? key,
     required _i27.Review review,
     required _i26.Property property,
+    required int totalReviews,
     List<_i24.PageRouteInfo>? children,
   }) : super(
          ReviewDetailRoute.name,
@@ -731,6 +734,7 @@ class ReviewDetailRoute extends _i24.PageRouteInfo<ReviewDetailRouteArgs> {
            key: key,
            review: review,
            property: property,
+           totalReviews: totalReviews,
          ),
          initialChildren: children,
        );
@@ -745,6 +749,7 @@ class ReviewDetailRoute extends _i24.PageRouteInfo<ReviewDetailRouteArgs> {
         key: args.key,
         review: args.review,
         property: args.property,
+        totalReviews: args.totalReviews,
       );
     },
   );
@@ -755,6 +760,7 @@ class ReviewDetailRouteArgs {
     this.key,
     required this.review,
     required this.property,
+    required this.totalReviews,
   });
 
   final _i25.Key? key;
@@ -763,9 +769,11 @@ class ReviewDetailRouteArgs {
 
   final _i26.Property property;
 
+  final int totalReviews;
+
   @override
   String toString() {
-    return 'ReviewDetailRouteArgs{key: $key, review: $review, property: $property}';
+    return 'ReviewDetailRouteArgs{key: $key, review: $review, property: $property, totalReviews: $totalReviews}';
   }
 
   @override
@@ -774,11 +782,16 @@ class ReviewDetailRouteArgs {
     if (other is! ReviewDetailRouteArgs) return false;
     return key == other.key &&
         review == other.review &&
-        property == other.property;
+        property == other.property &&
+        totalReviews == other.totalReviews;
   }
 
   @override
-  int get hashCode => key.hashCode ^ review.hashCode ^ property.hashCode;
+  int get hashCode =>
+      key.hashCode ^
+      review.hashCode ^
+      property.hashCode ^
+      totalReviews.hashCode;
 }
 
 /// generated route for
