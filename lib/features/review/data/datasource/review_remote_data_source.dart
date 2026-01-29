@@ -107,6 +107,22 @@ class ReviewRemoteDataSource {
     }
   }
 
+  Future<void> deleteReview({
+    required String reviewId,
+    required String propertyId,
+  }) async {
+    try {
+      await firestore
+          .collection(TextConstants.properties)
+          .doc(propertyId)
+          .collection(TextConstants.reviewsCollection)
+          .doc(reviewId)
+          .delete();
+    } catch (e) {
+      throw ServerException("Failed to delete existing review: $e");
+    }
+  }
+
   Future<({DocumentSnapshot? lastDoc, List<Review> reviews})> getAllReviews({
     int limit = 10,
     required String propertyId,
