@@ -30,5 +30,8 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: BookingRequestRoute.page),
     AutoRoute(page: ChatRoute.page),
     AutoRoute(page: ChatListRoute.page),
+    AutoRoute(page: AddReviewRoute.page),
+    AutoRoute(page: AllReviewListRoute.page),
+    AutoRoute(page: ReviewDetailRoute.page),
   ];
 }

@@ -35,6 +35,7 @@ class PropertyRepoImpl implements PropertyRepo {
         facilities: property.facilities,
         createdAt: property.createdAt,
         updatedAt: property.updatedAt,
+        rating: PropertyRating(), // initially no rating given
       );
       await firebase.addNewProperty(model);
       return Right(null);
@@ -137,6 +138,7 @@ class PropertyRepoImpl implements PropertyRepo {
       facilities: property.facilities,
       createdAt: property.createdAt,
       updatedAt: property.updatedAt,
+      rating: property.rating,
     );
     try {
       await firebase.updateProperty(model);

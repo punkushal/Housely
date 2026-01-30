@@ -1,5 +1,7 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
@@ -195,7 +197,7 @@ class MyBookingCard extends StatelessWidget {
         status == .completed
             ? GestureDetector(
                 onTap: () {
-                  //TODO: Navigation to review writing page
+                  context.router.push(AddReviewRoute(property: property));
                 },
                 child: _buildOptionContent(
                   context,
@@ -204,7 +206,9 @@ class MyBookingCard extends StatelessWidget {
                 ),
               )
             : SizedBox.shrink(),
-        Divider(color: AppColors.divider),
+        status == .completed
+            ? Divider(color: AppColors.divider)
+            : SizedBox.shrink(),
         GestureDetector(
           onTap: () {
             // Navigation to phone contact
