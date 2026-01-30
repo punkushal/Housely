@@ -49,17 +49,22 @@ class ProfileSection extends StatelessWidget {
               ],
             ),
             SizedBox(height: ResponsiveDimensions.spacing16(context)),
-            Text(
-              authState.currentUser!.username,
-              style: AppTextStyle.bodySemiBold(context),
-            ),
-            Text(
-              authState.currentUser!.email,
-              style: AppTextStyle.bodyRegular(
-                context,
-                color: AppColors.textHint,
+            if (!isEditing)
+              Column(
+                children: [
+                  Text(
+                    authState.currentUser!.username,
+                    style: AppTextStyle.bodySemiBold(context),
+                  ),
+                  Text(
+                    authState.currentUser!.email,
+                    style: AppTextStyle.bodyRegular(
+                      context,
+                      color: AppColors.textHint,
+                    ),
+                  ),
+                ],
               ),
-            ),
           ],
         );
       },
