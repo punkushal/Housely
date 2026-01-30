@@ -8,8 +8,8 @@ import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 
 class ProfileSection extends StatelessWidget {
-  const ProfileSection({super.key});
-
+  const ProfileSection({super.key, this.isEditing = false});
+  final bool isEditing;
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
@@ -31,19 +31,21 @@ class ProfileSection extends StatelessWidget {
                   ),
                 ),
 
-                Positioned(
-                  bottom: 0,
-                  right: ResponsiveDimensions.getSize(context, 6),
-                  child: GestureDetector(
-                    onTap: () {
-                      // open camera
-                    },
-                    child: CircleAvatar(
-                      radius: ResponsiveDimensions.spacing16(context),
-                      child: SvgPicture.asset(ImageConstant.cameraIcon),
-                    ),
-                  ),
-                ),
+                isEditing
+                    ? Positioned(
+                        bottom: 0,
+                        right: ResponsiveDimensions.getSize(context, 12),
+                        child: GestureDetector(
+                          onTap: () {
+                            // open camera
+                          },
+                          child: CircleAvatar(
+                            radius: ResponsiveDimensions.spacing12(context),
+                            child: SvgPicture.asset(ImageConstant.cameraIcon),
+                          ),
+                        ),
+                      )
+                    : SizedBox.shrink(),
               ],
             ),
             SizedBox(height: ResponsiveDimensions.spacing16(context)),
