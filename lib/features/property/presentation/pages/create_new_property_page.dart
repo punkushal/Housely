@@ -269,6 +269,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
       facilities: formState.facilities,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      rating: PropertyRating(),
     );
 
     await context.read<PropertyCubit>().addProperty(

@@ -16,6 +16,7 @@ class PropertyModel extends Property {
     required super.facilities,
     required super.createdAt,
     required super.updatedAt,
+    required super.rating,
   });
 
   // FROM FIRESTORE
@@ -51,6 +52,10 @@ class PropertyModel extends Property {
       ),
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      rating: PropertyRating(
+        totalReviews: json['totalReviews'],
+        averageRating: json['averageRating'],
+      ),
     );
   }
 
@@ -103,6 +108,7 @@ class PropertyModel extends Property {
     List<String>? facilities,
     DateTime? createdAt,
     DateTime? updatedAt,
+    PropertyRating? rating,
   }) {
     return PropertyModel(
       id: id ?? this.id,
@@ -118,6 +124,7 @@ class PropertyModel extends Property {
       facilities: facilities ?? this.facilities,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      rating: rating ?? this.rating,
     );
   }
 }

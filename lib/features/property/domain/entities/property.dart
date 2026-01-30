@@ -64,6 +64,14 @@ class PropertyMedia {
   }
 }
 
+/// Property rating
+class PropertyRating {
+  final int totalReviews;
+  final double averageRating;
+
+  PropertyRating({this.totalReviews = 0, this.averageRating = 0});
+}
+
 class Property {
   String? id;
   final String name;
@@ -78,6 +86,7 @@ class Property {
   final List<String> facilities;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final PropertyRating rating;
 
   Property({
     this.id,
@@ -93,6 +102,7 @@ class Property {
     required this.facilities,
     required this.createdAt,
     required this.updatedAt,
+    required this.rating,
   });
 
   Property copyWith({
@@ -109,6 +119,7 @@ class Property {
     List<String>? facilities,
     DateTime? createdAt,
     DateTime? updatedAt,
+    PropertyRating? rating,
   }) {
     return Property(
       id: id ?? this.id,
@@ -124,6 +135,7 @@ class Property {
       facilities: facilities ?? this.facilities,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      rating: rating ?? this.rating,
     );
   }
 }
