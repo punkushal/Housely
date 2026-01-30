@@ -6,7 +6,7 @@ import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 class RatingStars extends StatelessWidget {
   const RatingStars({super.key, required this.ratings});
-  final int ratings;
+  final double ratings;
   @override
   Widget build(BuildContext context) {
     return Row(

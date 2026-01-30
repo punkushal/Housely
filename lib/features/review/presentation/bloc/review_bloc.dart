@@ -42,9 +42,10 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   }
 
   void _setInitialValues(SetInitialValues event, Emitter<ReviewState> emit) {
+    final int? index = event.ratings > 0 ? event.ratings - 1 : null;
     emit(
       state.copyWith(
-        ratings: event.ratings - 1,
+        ratings: index,
         existingNetworkImages: event.existingNetworkImages,
       ),
     );
@@ -100,7 +101,11 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
   }
 
   void _addRatings(AddRatings event, Emitter<ReviewState> emit) {
-    emit(state.copyWith(ratings: event.ratings));
+    if (event.ratings < 0) {
+      emit(state.copyWith(ratings: null));
+    } else {
+      emit(state.copyWith(ratings: event.ratings));
+    }
   }
 
   // upload review images

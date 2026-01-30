@@ -80,7 +80,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
 
     final ratings = reviewState.ratings;
 
-    if (ratings == null) {
+    if (ratings == null || ratings < 0) {
       return SnackbarHelper.showError(context, "Please give your ratings");
     }
     final hasReview = widget.existedReview != null;

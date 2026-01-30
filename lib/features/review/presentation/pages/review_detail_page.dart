@@ -125,7 +125,18 @@ class ReviewDetailPage extends StatelessWidget {
                               ),
                             );
                           },
-                          icon: Icon(Icons.edit),
+                          icon: Container(
+                            padding: ResponsiveDimensions.paddingAll8(context),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.7),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.edit_rounded,
+                              color: AppColors.background,
+                              size: ResponsiveDimensions.spacing16(context),
+                            ),
+                          ),
                         );
                       }
 
@@ -166,9 +177,9 @@ class ReviewDetailPage extends StatelessWidget {
                         Row(
                           spacing: ResponsiveDimensions.spacing4(context),
                           children: [
-                            RatingStars(ratings: review.rating.toInt()),
+                            RatingStars(ratings: property.rating.averageRating),
                             Text(
-                              review.rating.toString(),
+                              '${property.rating.averageRating}',
                               style: AppTextStyle.bodySemiBold(
                                 context,
                                 fontSize: 16,
@@ -201,14 +212,27 @@ class ReviewDetailPage extends StatelessWidget {
 
                         // review comment
                         Text(review.comment),
-
-                        review.reviewImages != null
-                            ? ReviewerPhotos(
-                                imageUrls: review.reviewImages!['images'],
-                              )
-                            : SizedBox.shrink(),
                         SizedBox(
-                          height: ResponsiveDimensions.spacing48(context),
+                          height: ResponsiveDimensions.spacing8(context),
+                        ),
+                        if (review.reviewImages != null &&
+                            review.reviewImages!['images'].isNotEmpty)
+                          Column(
+                            spacing: ResponsiveDimensions.spacing4(context),
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text(
+                                "User photos",
+                                style: AppTextStyle.bodySemiBold(context),
+                              ),
+                              ReviewerPhotos(
+                                imageUrls: review.reviewImages!['images'],
+                              ),
+                            ],
+                          ),
+
+                        SizedBox(
+                          height: ResponsiveDimensions.spacing32(context),
                         ),
                         BlocBuilder<ReviewBloc, ReviewState>(
                           builder: (context, state) {
@@ -220,6 +244,10 @@ class ReviewDetailPage extends StatelessWidget {
                               isLoading: state.status == .loading,
                             );
                           },
+                        ),
+
+                        SizedBox(
+                          height: ResponsiveDimensions.spacing4(context),
                         ),
                       ],
                     ),

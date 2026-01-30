@@ -40,7 +40,7 @@ class RatingSection extends StatelessWidget {
                 height: ResponsiveDimensions.spacing24(context),
                 width: ResponsiveDimensions.spacing24(context),
                 colorFilter: ColorFilter.mode(
-                  state.ratings == null
+                  (state.ratings == null || state.ratings! < 0)
                       ? AppColors.border
                       : index <= state.ratings!
                       ? AppColors.ratingStrong
