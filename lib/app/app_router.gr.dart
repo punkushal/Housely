@@ -12,6 +12,7 @@
 import 'package:auto_route/auto_route.dart' as _i25;
 import 'package:collection/collection.dart' as _i29;
 import 'package:flutter/material.dart' as _i26;
+import 'package:housely/features/auth/domain/entities/app_user.dart' as _i31;
 import 'package:housely/features/auth/presentation/pages/forgot_password_page.dart'
     as _i12;
 import 'package:housely/features/auth/presentation/pages/login_page.dart'
@@ -35,7 +36,7 @@ import 'package:housely/features/home/presentation/pages/home_page.dart'
 import 'package:housely/features/home/presentation/pages/see_all_list_page.dart'
     as _i22;
 import 'package:housely/features/location/domain/entities/location.dart'
-    as _i31;
+    as _i32;
 import 'package:housely/features/location/presentation/pages/location_page.dart'
     as _i14;
 import 'package:housely/features/location/presentation/pages/map_picker_page.dart'
@@ -467,18 +468,49 @@ class DetailRouteArgs {
 
 /// generated route for
 /// [_i10.EditProfilePage]
-class EditProfileRoute extends _i25.PageRouteInfo<void> {
-  const EditProfileRoute({List<_i25.PageRouteInfo>? children})
-    : super(EditProfileRoute.name, initialChildren: children);
+class EditProfileRoute extends _i25.PageRouteInfo<EditProfileRouteArgs> {
+  EditProfileRoute({
+    _i26.Key? key,
+    required _i31.AppUser appUser,
+    List<_i25.PageRouteInfo>? children,
+  }) : super(
+         EditProfileRoute.name,
+         args: EditProfileRouteArgs(key: key, appUser: appUser),
+         initialChildren: children,
+       );
 
   static const String name = 'EditProfileRoute';
 
   static _i25.PageInfo page = _i25.PageInfo(
     name,
     builder: (data) {
-      return const _i10.EditProfilePage();
+      final args = data.argsAs<EditProfileRouteArgs>();
+      return _i10.EditProfilePage(key: args.key, appUser: args.appUser);
     },
   );
+}
+
+class EditProfileRouteArgs {
+  const EditProfileRouteArgs({this.key, required this.appUser});
+
+  final _i26.Key? key;
+
+  final _i31.AppUser appUser;
+
+  @override
+  String toString() {
+    return 'EditProfileRouteArgs{key: $key, appUser: $appUser}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! EditProfileRouteArgs) return false;
+    return key == other.key && appUser == other.appUser;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ appUser.hashCode;
 }
 
 /// generated route for
@@ -600,7 +632,7 @@ class MapPickerRoute extends _i25.PageRouteInfo<MapPickerRouteArgs> {
   MapPickerRoute({
     _i26.Key? key,
     bool isOwner = false,
-    _i31.Location? initialLocation,
+    _i32.Location? initialLocation,
     bool isVisitor = false,
     List<_i25.PageRouteInfo>? children,
   }) : super(
@@ -646,7 +678,7 @@ class MapPickerRouteArgs {
 
   final bool isOwner;
 
-  final _i31.Location? initialLocation;
+  final _i32.Location? initialLocation;
 
   final bool isVisitor;
 

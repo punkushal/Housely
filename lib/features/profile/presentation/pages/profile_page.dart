@@ -5,6 +5,7 @@ import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:housely/features/profile/presentation/widgets/option_tile.dart';
 import 'package:housely/features/profile/presentation/widgets/profile_section.dart';
@@ -79,7 +80,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         label: "Edit profile",
                         iconPath: ImageConstant.personIcon,
                         onTap: () {
-                          context.router.push(EditProfileRoute());
+                          final authUser =
+                              context.read<AuthCubit>().state as Authenticated;
+                          context.router.push(
+                            EditProfileRoute(appUser: authUser.currentUser!),
+                          );
                         },
                       ),
 
