@@ -78,7 +78,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       OptionTile(
                         label: "Edit profile",
                         iconPath: ImageConstant.personIcon,
-                        onTap: () {},
+                        onTap: () {
+                          context.router.push(EditProfileRoute());
+                        },
                       ),
 
                       BlocBuilder<OwnerCubit, OwnerState>(
