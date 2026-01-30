@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/error/exception.dart';
 import 'package:housely/features/review/data/models/review_model.dart';
+import 'package:housely/features/review/data/utils/rating_utils.dart';
 import 'package:housely/features/review/domain/entity/review.dart';
 
 import '../../../../env/env.dart';
@@ -89,18 +90,23 @@ class ReviewRemoteDataSource {
       await firestore.runTransaction((transaction) async {
         final propSnapshot = await transaction.get(propRef);
 
-        double oldTotalRating =
-            (propSnapshot.data()?['averageRating'] ?? 0.0) *
-            (propSnapshot.data()?['totalReviews'] ?? 0);
+        final currentAvg =
+            (propSnapshot.data()?['rating']['averageRating'] ?? 0.0).toDouble();
+        final totalReviews =
+            (propSnapshot.data()?['rating']['totalReviews'] ?? 0) as int;
 
-        int newTotalReviews = (propSnapshot.data()?['totalReviews'] ?? 0) + 1;
-
-        double newAverage = (oldTotalRating + review.rating) / newTotalReviews;
+        final double newAverage = RatingUtils.computeNewAverageOnAdd(
+          currentAvg: currentAvg,
+          totalReviews: totalReviews,
+          newRating: review.rating,
+        );
 
         transaction.set(docRef, updateModel.toFireStore());
         transaction.set(propRef, {
-          'averageRating': newAverage,
-          'totalReviews': newTotalReviews,
+          'rating': {
+            'averageRating': newAverage,
+            'totalReviews': totalReviews + 1,
+          },
         }, SetOptions(merge: true));
       });
     } catch (e) {
@@ -126,16 +132,19 @@ class ReviewRemoteDataSource {
         if (!propDoc.exists) return;
 
         final data = propDoc.data()!;
-        int count = data['totalReviews'] ?? 0;
-        double currentAvg = (data['averageRating'] ?? 0.0).toDouble();
+        int count = data['rating']['totalReviews'] ?? 0;
+        double currentAvg = (data['rating']['averageRating'] ?? 0.0).toDouble();
 
-        // Math: Remove old, add new. Count stays same.
-        double newAvg =
-            ((currentAvg * count) - oldRating + review.rating) / count;
+        final double newAvg = RatingUtils.computeNewAverageOnUpdate(
+          currentAvg: currentAvg,
+          totalReviews: count,
+          oldRating: oldRating,
+          newRating: review.rating,
+        );
 
         transaction.update(docRef, reviewModel.toFireStore());
         transaction.set(propRef, {
-          'averageRating': newAvg,
+          'rating': {'averageRating': newAvg},
         }, SetOptions(merge: true));
       });
     } catch (e) {
@@ -161,20 +170,20 @@ class ReviewRemoteDataSource {
         if (!propDoc.exists) return;
 
         final data = propDoc.data()!;
-        int oldCount = data['totalReviews'] ?? 0;
-        double currentAvg = (data['averageRating'] ?? 0.0).toDouble();
+        int oldCount = data['rating']['totalReviews'] ?? 0;
+        double currentAvg = (data['rating']['averageRating'] ?? 0.0).toDouble();
 
-        int newCount = oldCount - 1;
-        double newAvg = 0.0;
+        final double newAvg = RatingUtils.computeNewAverageOnDelete(
+          currentAvg: currentAvg,
+          totalReviews: oldCount,
+          ratingToDelete: ratingToDelete,
+        );
 
-        if (newCount > 0) {
-          newAvg = ((currentAvg * oldCount) - ratingToDelete) / newCount;
-        }
+        final int newCount = oldCount - 1;
 
         transaction.delete(reviewRef);
         transaction.update(propRef, {
-          'totalReviews': newCount,
-          'averageRating': newAvg,
+          'rating': {'averageRating': newAvg, 'totalReviews': newCount},
         });
       });
     } catch (e) {
