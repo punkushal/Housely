@@ -69,11 +69,12 @@ class FirebaseRemoteDataSource {
       }
 
       // pagination
-      query = query.limit(limit);
 
       if (lastDoc != null) {
         query = query.startAfterDocument(lastDoc);
       }
+
+      query = query.limit(limit);
 
       final snapshot = await query.get();
       final jsonList = snapshot.docs;
