@@ -20,9 +20,11 @@ class CustomTextField extends StatelessWidget {
     this.initialValue,
     this.fieldKey,
     this.onTap,
+    this.border,
     this.isFilled = false,
     this.fillColor,
     this.textCapitalization = .none,
+    this.maxLength,
   });
 
   /// [TextEditingController] controller
@@ -73,6 +75,9 @@ class CustomTextField extends StatelessWidget {
   /// on tap if any tapping functionality needed
   final void Function()? onTap;
 
+  /// border
+  final InputBorder? border;
+
   /// boolean for fill color
   final bool isFilled;
 
@@ -81,6 +86,9 @@ class CustomTextField extends StatelessWidget {
 
   /// text capitalization
   final TextCapitalization textCapitalization;
+
+  /// max length
+  final int? maxLength;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -94,9 +102,11 @@ class CustomTextField extends StatelessWidget {
       validator: validator,
       onChanged: onChanged,
       maxLines: maxLines,
+      maxLength: maxLength,
       onTap: onTap,
       textCapitalization: textCapitalization,
       decoration: InputDecoration(
+        counterText: '', // hide default counter
         filled: isFilled,
         fillColor: fillColor,
         hintText: hintText,
@@ -104,12 +114,16 @@ class CustomTextField extends StatelessWidget {
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         contentPadding: contentPadding,
-        enabledBorder: isFilled
-            ? OutlineInputBorder(
-                borderSide: .none,
-                borderRadius: BorderRadius.circular(14),
-              )
-            : null,
+        border: border,
+        focusedBorder: border,
+        enabledBorder:
+            border ??
+            (isFilled
+                ? OutlineInputBorder(
+                    borderSide: .none,
+                    borderRadius: BorderRadius.circular(14),
+                  )
+                : null),
       ),
     );
   }
