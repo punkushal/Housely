@@ -32,8 +32,6 @@ import 'package:housely/features/detail/presentation/pages/detail_page.dart'
     as _i9;
 import 'package:housely/features/home/presentation/pages/home_page.dart'
     as _i12;
-import 'package:housely/features/home/presentation/pages/profile_page.dart'
-    as _i19;
 import 'package:housely/features/home/presentation/pages/see_all_list_page.dart'
     as _i21;
 import 'package:housely/features/location/domain/entities/location.dart'
@@ -46,6 +44,8 @@ import 'package:housely/features/onboarding/presentation/pages/onboarding_page.d
     as _i18;
 import 'package:housely/features/onboarding/presentation/pages/splash_page.dart'
     as _i23;
+import 'package:housely/features/profile/presentation/pages/profile_page.dart'
+    as _i19;
 import 'package:housely/features/property/domain/entities/property.dart'
     as _i26;
 import 'package:housely/features/property/presentation/pages/complete_owner_profile_page.dart'
