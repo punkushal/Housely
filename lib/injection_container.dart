@@ -309,8 +309,8 @@ Future<void> initializeDependencies() async {
     ),
   );
   sl.registerFactory(() => PropertyFormCubit());
-  sl.registerLazySingleton(() => PropertyBloc(sl()));
-  sl.registerLazySingleton(() => PropertySearchBloc(sl()));
+  sl.registerFactory(() => PropertyBloc(sl()));
+  sl.registerFactory(() => PropertySearchBloc(sl()));
 
   sl.registerFactory(
     () => OwnerCubit(
