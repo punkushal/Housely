@@ -9,6 +9,7 @@ class ImageConstant {
 
   // icons
   static final String logoIcon = "${_baseIconUrl}logo_icon.png";
+  static final String payIcon = "${_baseIconUrl}pay_icon.svg";
   static final String googleIcon = "${_baseIconUrl}google_icon.png";
   static final String acIcon = "${_baseIconUrl}ac_icon.svg";
   static final String uploadIcon = "${_baseIconUrl}upload_icon.svg";
