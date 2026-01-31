@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/error/exception.dart';
 import 'package:housely/core/utils/handle_error.dart';
 import 'package:housely/features/auth/data/models/app_user_model.dart';
@@ -174,13 +175,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<AppUser?> getCurrentUser() async {
     try {
-      final hasCurrentUser = firebaseAuth.currentUser != null;
-      if (hasCurrentUser) {
-        return AppUser(
-          uid: firebaseAuth.currentUser!.uid,
-          email: firebaseAuth.currentUser!.email!,
-          username: firebaseAuth.currentUser!.displayName!,
-        );
+      final user = firebaseAuth.currentUser;
+      if (user != null) {
+        final uid = user.uid;
+
+        final doc = await firestore
+            .collection(TextConstants.users)
+            .doc(uid)
+            .get();
+
+        if (doc.exists && doc.data() != null) {
+          return AppUserModel.fromMap(doc.data()!);
+        } else {
+          return AppUser(
+            uid: user.uid,
+            email: user.email!,
+            username: user.displayName ?? "New User",
+          );
+        }
       }
       return null;
     } catch (e) {
