@@ -156,13 +156,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Stream<AppUser?> get authStateChanges =>
-      firebaseAuth.authStateChanges().map((user) {
+      firebaseAuth.authStateChanges().asyncMap((user) async {
         if (user != null) {
-          return AppUser(
-            uid: user.uid,
-            email: user.email!,
-            username: user.displayName ?? "no user name",
-          );
+          return await getCurrentUser();
         }
         return null;
       });
