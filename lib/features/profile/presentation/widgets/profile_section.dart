@@ -108,14 +108,14 @@ class ProfileSection extends StatelessWidget {
                     borderRadius: BorderRadius.circular(
                       ResponsiveDimensions.getSize(context, 80),
                     ),
-                    child: hasNetWorkImage
+                    child: hasLocalImage
+                        ? Image.file(state.pickedProfileImage!, fit: .cover)
+                        : hasNetWorkImage
                         ? CustomCacheContainer(
                             imageUrl: state.profileImageUrl!['url'],
                             width: .infinity,
                             height: .infinity,
                           )
-                        : hasLocalImage
-                        ? Image.file(state.pickedProfileImage!)
                         : SvgPicture.asset(
                             ImageConstant.personIcon,
                             width: ResponsiveDimensions.getSize(context, 16),
