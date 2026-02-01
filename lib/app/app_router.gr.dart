@@ -36,7 +36,7 @@ import 'package:housely/features/home/presentation/pages/home_page.dart'
 import 'package:housely/features/home/presentation/pages/see_all_list_page.dart'
     as _i22;
 import 'package:housely/features/location/domain/entities/location.dart'
-    as _i33;
+    as _i34;
 import 'package:housely/features/location/presentation/pages/location_page.dart'
     as _i14;
 import 'package:housely/features/location/presentation/pages/map_picker_page.dart'
@@ -53,6 +53,8 @@ import 'package:housely/features/profile/presentation/pages/profile_page.dart'
     as _i20;
 import 'package:housely/features/property/domain/entities/property.dart'
     as _i27;
+import 'package:housely/features/property/domain/entities/property_owner.dart'
+    as _i33;
 import 'package:housely/features/property/presentation/pages/complete_owner_profile_page.dart'
     as _i7;
 import 'package:housely/features/property/presentation/pages/create_new_property_page.dart'
@@ -475,6 +477,7 @@ class EditProfileRoute extends _i25.PageRouteInfo<EditProfileRouteArgs> {
     _i26.Key? key,
     required _i31.AppUser appUser,
     required _i32.ProfileCubit profileCubit,
+    _i33.PropertyOwner? owner,
     List<_i25.PageRouteInfo>? children,
   }) : super(
          EditProfileRoute.name,
@@ -482,6 +485,7 @@ class EditProfileRoute extends _i25.PageRouteInfo<EditProfileRouteArgs> {
            key: key,
            appUser: appUser,
            profileCubit: profileCubit,
+           owner: owner,
          ),
          initialChildren: children,
        );
@@ -496,6 +500,7 @@ class EditProfileRoute extends _i25.PageRouteInfo<EditProfileRouteArgs> {
         key: args.key,
         appUser: args.appUser,
         profileCubit: args.profileCubit,
+        owner: args.owner,
       );
     },
   );
@@ -506,6 +511,7 @@ class EditProfileRouteArgs {
     this.key,
     required this.appUser,
     required this.profileCubit,
+    this.owner,
   });
 
   final _i26.Key? key;
@@ -514,9 +520,11 @@ class EditProfileRouteArgs {
 
   final _i32.ProfileCubit profileCubit;
 
+  final _i33.PropertyOwner? owner;
+
   @override
   String toString() {
-    return 'EditProfileRouteArgs{key: $key, appUser: $appUser, profileCubit: $profileCubit}';
+    return 'EditProfileRouteArgs{key: $key, appUser: $appUser, profileCubit: $profileCubit, owner: $owner}';
   }
 
   @override
@@ -525,11 +533,13 @@ class EditProfileRouteArgs {
     if (other is! EditProfileRouteArgs) return false;
     return key == other.key &&
         appUser == other.appUser &&
-        profileCubit == other.profileCubit;
+        profileCubit == other.profileCubit &&
+        owner == other.owner;
   }
 
   @override
-  int get hashCode => key.hashCode ^ appUser.hashCode ^ profileCubit.hashCode;
+  int get hashCode =>
+      key.hashCode ^ appUser.hashCode ^ profileCubit.hashCode ^ owner.hashCode;
 }
 
 /// generated route for
@@ -651,7 +661,7 @@ class MapPickerRoute extends _i25.PageRouteInfo<MapPickerRouteArgs> {
   MapPickerRoute({
     _i26.Key? key,
     bool isOwner = false,
-    _i33.Location? initialLocation,
+    _i34.Location? initialLocation,
     bool isVisitor = false,
     List<_i25.PageRouteInfo>? children,
   }) : super(
@@ -697,7 +707,7 @@ class MapPickerRouteArgs {
 
   final bool isOwner;
 
-  final _i33.Location? initialLocation;
+  final _i34.Location? initialLocation;
 
   final bool isVisitor;
 
