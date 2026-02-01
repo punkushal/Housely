@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/utils/file_utils.dart';
@@ -67,7 +65,6 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(state.copyWith(status: .loading));
 
     AppUser updatedUser = appUser;
-    log("local picked image : ${state.pickedProfileImage != null}");
     // Upload profile image if user picked one
     if (state.pickedProfileImage != null) {
       final uploaded = await _uploadImage(
@@ -117,6 +114,20 @@ class ProfileCubit extends Cubit<ProfileState> {
           ),
         );
       },
+    );
+  }
+
+  void reset() {
+    emit(
+      state.copyWith(
+        status: .initial,
+        errorMessage: null,
+        appUser: null,
+        owner: null,
+        imageError: null,
+        pickedProfileImage: null,
+        profileImageUrl: null,
+      ),
     );
   }
 }
