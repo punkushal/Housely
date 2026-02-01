@@ -67,6 +67,7 @@ import 'package:housely/features/onboarding/domain/repositories/onboarding_repos
 import 'package:housely/features/onboarding/domain/usecases/get_onboarding_status_usecase.dart';
 import 'package:housely/features/onboarding/domain/usecases/set_onboarding_status_usecase.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
+import 'package:housely/features/profile/domain/usecases/delete_profile_image_use_case.dart';
 import 'package:housely/features/profile/domain/usecases/upload_profile_image_use_case.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:housely/features/profile/data/datasources/profile_remote_data_source.dart';
@@ -207,6 +208,7 @@ Future<void> initializeDependencies() async {
     () => ProfileRemoteDataSource(
       firestore: sl<FirebaseFirestore>(),
       firebaseAuth: sl<FirebaseAuth>(),
+      appwriteStorageDataSource: sl(),
     ),
   );
   sl.registerLazySingleton<ProfileRepo>(
@@ -296,6 +298,7 @@ Future<void> initializeDependencies() async {
   // profile use cases
   sl.registerLazySingleton(() => UpdateUserProfileUseCase(sl()));
   sl.registerLazySingleton(() => UploadProfileImageUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteProfileImageUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -402,6 +405,10 @@ Future<void> initializeDependencies() async {
 
   // profile
   sl.registerFactory(
-    () => ProfileCubit(updateUserProfileUseCase: sl(), uploadCoverImage: sl()),
+    () => ProfileCubit(
+      updateUserProfileUseCase: sl(),
+      uploadCoverImage: sl(),
+      deleteImageFile: sl(),
+    ),
   );
 }
