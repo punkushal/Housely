@@ -72,4 +72,8 @@ class OwnerCubit extends Cubit<OwnerState> {
       (owner) => emit(OwnerLoaded(owner: owner)),
     );
   }
+
+  void reset() {
+    emit(OwnerInitial());
+  }
 }
