@@ -1,3 +1,4 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:housely/core/constants/text_constants.dart';
@@ -5,16 +6,19 @@ import 'package:housely/core/error/exception.dart';
 import 'package:housely/core/utils/handle_error.dart';
 import 'package:housely/features/auth/data/models/app_user_model.dart';
 import 'package:housely/features/auth/domain/entities/app_user.dart';
+import 'package:housely/features/property/data/datasources/app_write_data_source.dart';
 import 'package:housely/features/property/data/models/property_owner_model.dart';
 import 'package:housely/features/property/domain/entities/property_owner.dart';
 
 class ProfileRemoteDataSource {
   final FirebaseFirestore firestore;
   final FirebaseAuth firebaseAuth;
+  final AppwriteStorageDataSource appwriteStorageDataSource;
 
   ProfileRemoteDataSource({
     required this.firestore,
     required this.firebaseAuth,
+    required this.appwriteStorageDataSource,
   });
 
   Future<void> updateUserProfile({
@@ -41,6 +45,16 @@ class ProfileRemoteDataSource {
       handleFirebaseError(e);
     } catch (e) {
       throw ServerException("Failed to update user profile");
+    }
+  }
+
+  Future<void> deleteProfileImage({required String fileId}) async {
+    try {
+      await appwriteStorageDataSource.deleteImageFile(fileId: fileId);
+    } on AppwriteException catch (e) {
+      handleAppWriteError(e);
+    } catch (e) {
+      throw ServerException("Failed to delete profile image: $e");
     }
   }
 }
