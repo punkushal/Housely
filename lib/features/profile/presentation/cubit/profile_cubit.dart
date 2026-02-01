@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/utils/file_utils.dart';
 import 'package:housely/features/auth/domain/entities/app_user.dart';
+import 'package:housely/features/profile/domain/usecases/delete_profile_image_use_case.dart';
 import 'package:housely/features/profile/domain/usecases/update_user_profile_use_case.dart';
 import 'package:housely/features/profile/domain/usecases/upload_profile_image_use_case.dart';
 import 'package:housely/features/property/domain/entities/property_owner.dart';
@@ -12,10 +13,12 @@ part 'profile_state.dart';
 class ProfileCubit extends Cubit<ProfileState> {
   final UpdateUserProfileUseCase updateUserProfileUseCase;
   final UploadProfileImageUseCase uploadCoverImage;
+  final DeleteProfileImageUseCase deleteImageFile;
 
   ProfileCubit({
     required this.updateUserProfileUseCase,
     required this.uploadCoverImage,
+    required this.deleteImageFile,
   }) : super(ProfileState());
 
   void setProfileUrl(AppUser user) {
@@ -58,6 +61,17 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
   }
 
+  Future<void> _deleteImageFile({required String fileId}) async {
+    final result = await deleteImageFile(DeleteProfileImageParam(fileId));
+
+    result.fold(
+      (f) => emit(state.copyWith(errorMessage: f.message, status: .error)),
+      (_) {
+        emit(state.copyWith(status: .imageDeleted));
+      },
+    );
+  }
+
   Future<void> updateUserProfile({
     required AppUser appUser,
     PropertyOwner? owner,
@@ -67,6 +81,9 @@ class ProfileCubit extends Cubit<ProfileState> {
     AppUser updatedUser = appUser;
     // Upload profile image if user picked one
     if (state.pickedProfileImage != null) {
+      if (state.profileImageUrl != null) {
+        await _deleteImageFile(fileId: state.profileImageUrl!['id']);
+      }
       final uploaded = await _uploadImage(
         image: state.pickedProfileImage!,
         folderType: "Profile",

@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'profile_cubit.dart';
 
-enum ProfileStatus { initial, loading, error, success, loaded }
+enum ProfileStatus { initial, loading, error, success, loaded, imageDeleted }
 
 class ProfileState extends Equatable {
   final File? pickedProfileImage;
