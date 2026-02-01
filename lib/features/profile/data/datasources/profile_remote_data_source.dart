@@ -29,10 +29,10 @@ class ProfileRemoteDataSource {
 
       await userRef.doc(appUser.uid).update(userModel.toMap());
 
-      await firebaseAuth.currentUser!.updateDisplayName(appUser.username);
-
       if (owner != null) {
-        final ownerModel = PropertyOwnerModel.fromEntity(owner);
+        final ownerModel = PropertyOwnerModel.fromEntity(
+          owner.copyWith(profileImage: appUser.photoUrl),
+        );
         ownerRef.doc(appUser.email).update(ownerModel.toJson());
       }
     } on FirebaseAuthException catch (e) {
