@@ -8,6 +8,7 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/home/data/bottom_nav_list.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
 import 'package:housely/features/home/presentation/widgets/custom_tab_item.dart';
@@ -16,6 +17,8 @@ import 'package:housely/features/home/presentation/widgets/icon_wrapper.dart';
 import 'package:housely/features/home/presentation/widgets/nearby_list.dart';
 import 'package:housely/features/home/presentation/widgets/recommended_list.dart';
 import 'package:housely/features/home/presentation/widgets/top_location_list.dart';
+import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:housely/injection_container.dart';
 
 @RoutePage()
 class TabWrapper extends StatelessWidget {
@@ -23,8 +26,16 @@ class TabWrapper extends StatelessWidget {
   final String? address;
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => FavoriteToggleCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => FavoriteToggleCubit()),
+        BlocProvider(
+          create: (context) => sl<ProfileCubit>()
+            ..setProfileUrl(
+              (context.read<AuthCubit>().state as Authenticated).currentUser!,
+            ),
+        ),
+      ],
       child: AutoTabsScaffold(
         routes: [
           HomeRoute(address: address),
