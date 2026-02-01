@@ -16,4 +16,7 @@ abstract interface class ProfileRepo {
     required String folderType,
     required String email,
   });
+
+  /// delete existing profile image from app write
+  ResultVoid deleteProfileImage({required String fileId});
 }
