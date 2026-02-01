@@ -6,7 +6,6 @@ import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
-import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
 
 @RoutePage()
 class SplashPage extends StatefulWidget {
@@ -72,7 +71,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   }
 
   //  Navigate only when both animation is done AND state is loaded
-  void _tryNavigate() {
+  void _tryNavigate() async {
     if (_hasNavigated || !_animationCompleted || !mounted) return;
 
     final state = context.read<OnboardingCubit>().state;
@@ -83,7 +82,6 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
       context.router.replace(const LoginRoute());
     } else if (state is OnboardingCompleted && authState is Authenticated) {
       _hasNavigated = true;
-      context.read<OwnerCubit>().fetchProfile();
       context.router.replace(const LocationRoute());
     } else if (state is OnboardingInitial) {
       _hasNavigated = true;
