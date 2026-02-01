@@ -25,14 +25,11 @@ class ProfileRemoteDataSource {
       final userRef = firestore.collection(TextConstants.users);
       final ownerRef = firestore.collection(TextConstants.owners);
 
-      final user = firebaseAuth.currentUser;
-      final currentEmail = user!.email!;
       final userModel = AppUserModel.fromEntity(appUser);
 
-      if (currentEmail != appUser.email) {
-        await user.verifyBeforeUpdateEmail(appUser.email);
-      }
       await userRef.doc(appUser.uid).update(userModel.toMap());
+
+      await firebaseAuth.currentUser!.updateDisplayName(appUser.username);
 
       if (owner != null) {
         final ownerModel = PropertyOwnerModel.fromEntity(owner);
@@ -44,27 +41,6 @@ class ProfileRemoteDataSource {
       handleFirebaseError(e);
     } catch (e) {
       throw ServerException("Failed to update user profile");
-    }
-  }
-
-  Future<void> reauthenticateUser(String password) async {
-    try {
-      final user = firebaseAuth.currentUser;
-
-      if (user == null) {
-        throw AuthException("User not authenticated");
-      }
-
-      final credential = EmailAuthProvider.credential(
-        email: user.email!,
-        password: password,
-      );
-
-      await user.reauthenticateWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      handleFirebaseException(e);
-    } catch (e) {
-      throw AuthException("Failed to reauthenticate user: $e");
     }
   }
 }
