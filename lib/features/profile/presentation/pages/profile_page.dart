@@ -7,6 +7,7 @@ import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
+import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:housely/features/profile/presentation/widgets/option_tile.dart';
 import 'package:housely/features/profile/presentation/widgets/profile_section.dart';
 import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
@@ -23,14 +24,14 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<LogoutCubit>(),
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (context) => sl<LogoutCubit>())],
       child: Builder(
         builder: (context) {
           return BlocListener<LogoutCubit, LogoutState>(
             listener: (context, state) {
               if (state is LogoutSuccess) {
-                context.router.replace(LoginRoute());
+                context.router.replaceAll([LoginRoute()]);
               }
             },
             child: Scaffold(
@@ -76,14 +77,42 @@ class _ProfilePageState extends State<ProfilePage> {
                         onTap: () {},
                       ),
 
-                      OptionTile(
-                        label: "Edit profile",
-                        iconPath: ImageConstant.personIcon,
-                        onTap: () {
-                          final authUser =
-                              context.read<AuthCubit>().state as Authenticated;
-                          context.router.push(
-                            EditProfileRoute(appUser: authUser.currentUser!),
+                      BlocBuilder<OwnerCubit, OwnerState>(
+                        builder: (context, state) {
+                          if (state is OwnerLoaded && state.owner != null) {
+                            return OptionTile(
+                              label: "Edit profile",
+                              iconPath: ImageConstant.personIcon,
+                              onTap: () {
+                                final authUser =
+                                    context.read<AuthCubit>().state
+                                        as Authenticated;
+                                final cubit = context.read<ProfileCubit>();
+                                context.router.push(
+                                  EditProfileRoute(
+                                    appUser: authUser.currentUser!,
+                                    profileCubit: cubit,
+                                    owner: state.owner,
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                          return OptionTile(
+                            label: "Edit profile",
+                            iconPath: ImageConstant.personIcon,
+                            onTap: () {
+                              final authUser =
+                                  context.read<AuthCubit>().state
+                                      as Authenticated;
+                              final cubit = context.read<ProfileCubit>();
+                              context.router.push(
+                                EditProfileRoute(
+                                  appUser: authUser.currentUser!,
+                                  profileCubit: cubit,
+                                ),
+                              );
+                            },
                           );
                         },
                       ),
