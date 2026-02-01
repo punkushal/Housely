@@ -230,6 +230,7 @@ class _SignupPageState extends State<SignupPage> {
                       BlocConsumer<RegisterCubit, RegisterState>(
                         listener: (context, state) {
                           if (state is RegisterSuccess) {
+                            context.router.replaceAll([LocationRoute()]);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 backgroundColor: AppColors.success,
@@ -284,7 +285,7 @@ class _SignupPageState extends State<SignupPage> {
                           }
 
                           if (state is GoogleSigninSuccess) {
-                            context.router.replace(LocationRoute());
+                            context.router.replaceAll([LocationRoute()]);
                             SnackbarHelper.showSuccess(
                               context,
                               'Successfully logged in via google',
