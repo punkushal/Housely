@@ -64,4 +64,16 @@ class ProfileRepoImpl implements ProfileRepo {
       return Left(InvalidFileFailure("Failed to upload cover image: $e"));
     }
   }
+
+  @override
+  ResultVoid deleteProfileImage({required String fileId}) async {
+    try {
+      await storageDataSource.deleteImageFile(fileId: fileId);
+      return Right(null);
+    } on AppwriteException catch (e) {
+      return Left(handleAppWriteError(e));
+    } catch (e) {
+      return Left(InvalidFileFailure("Failed to delete profile image: $e"));
+    }
+  }
 }
