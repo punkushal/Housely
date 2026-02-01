@@ -47,27 +47,23 @@ class _SignupPageState extends State<SignupPage> {
   // handle registration functionality
   void _handleRegistration(BuildContext context) {
     if (_formKey.currentState!.validate()) {
+      final isConnected = context
+          .read<ConnectivityCubit>()
+          .checkConnectivityForAction();
+
+      if (!isConnected) {
+        SnackbarHelper.showError(
+          context,
+          "No internet connection. Please try again",
+        );
+        return;
+      }
+
       context.read<RegisterCubit>().signUp(
         name: _usernameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      final isConnected = context
-          .read<ConnectivityCubit>()
-          .checkConnectivityForAction();
-      if (isConnected) {
-        context.read<RegisterCubit>().signUp(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-          name: _usernameController.text.trim(),
-        );
-        return;
-      } else {
-        SnackbarHelper.showError(
-          context,
-          "No internet connection. Please try again",
-        );
-      }
     }
   }
 
@@ -149,7 +145,7 @@ class _SignupPageState extends State<SignupPage> {
                           hintText: 'Username',
                           controller: _usernameController,
                           validator: (value) =>
-                              FormValidators.validateUsername(value),
+                              FormValidators.validateFullName(value),
                         ),
                       ),
 
@@ -243,8 +239,6 @@ class _SignupPageState extends State<SignupPage> {
                                 ),
                               ),
                             );
-
-                            context.router.pop();
                           }
 
                           if (state is RegisterError) {
