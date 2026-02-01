@@ -23,6 +23,14 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await context.read<OwnerCubit>().fetchProfile();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (context) => sl<LogoutCubit>())],
@@ -31,6 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
           return BlocListener<LogoutCubit, LogoutState>(
             listener: (context, state) {
               if (state is LogoutSuccess) {
+                context.read<OwnerCubit>().reset();
                 context.router.replaceAll([LoginRoute()]);
               }
             },
