@@ -71,7 +71,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       OptionTile(
                         label: "Payments",
                         iconPath: ImageConstant.payIcon,
-                        onTap: () {},
+                        onTap: () {
+                          context.router.push(PaymentHistoryRoute());
+                        },
                       ),
 
                       OptionTile(
