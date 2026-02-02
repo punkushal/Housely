@@ -92,3 +92,8 @@ final class ResourceExceedFailure extends Failure {
 final class DeadlineExceedFailure extends Failure {
   const DeadlineExceedFailure(super.message);
 }
+
+// sqflite failure
+final class SqfliteFailure extends Failure {
+  const SqfliteFailure(super.message);
+}
