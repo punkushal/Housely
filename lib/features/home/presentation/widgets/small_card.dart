@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
@@ -7,7 +6,7 @@ import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
-import 'package:housely/features/favorites/presentation/bloc/favorites_bloc.dart';
+import 'package:housely/features/favorites/presentation/widgets/favorite_toggle_button.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 
 class SmallCard extends StatelessWidget {
@@ -112,24 +111,7 @@ class SmallCard extends StatelessWidget {
               mainAxisAlignment: .end,
               children: [
                 // favorite section
-                GestureDetector(
-                  onTap: favoriteToggle,
-                  child: BlocBuilder<FavoritesBloc, FavoritesState>(
-                    builder: (context, state) {
-                      bool isFav = _isFavorited(state, property.id);
-
-                      return SvgPicture.asset(
-                        isFav
-                            ? ImageConstant.favoriteFilledIcon
-                            : ImageConstant.favoriteIcon,
-                        width: ResponsiveDimensions.getSize(context, 24),
-                        height: ResponsiveDimensions.getHeight(context, 24),
-                        fit: .scaleDown,
-                        colorFilter: ColorFilter.mode(AppColors.error, .srcIn),
-                      );
-                    },
-                  ),
-                ),
+                FavoriteToggleButton(property: property),
                 Spacer(),
                 // rating container
                 Container(
@@ -169,30 +151,5 @@ class SmallCard extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // helper method to check if property is favorited
-  bool _isFavorited(FavoritesState state, String? propertyId) {
-    if (propertyId == null) return false;
-
-    return switch (state) {
-      // When favorites are loaded, check if this property is in the list
-      FavoritesLoaded(:final favorites) => favorites.any(
-        (f) => f.favoriteId == propertyId,
-      ),
-
-      // After adding, check the updated list
-      FavoriteAdded(:final favorites) => favorites.any(
-        (f) => f.favoriteId == propertyId,
-      ),
-
-      // After removing, check the updated list
-      FavoriteRemoved(:final favorites) => favorites.any(
-        (f) => f.favoriteId == propertyId,
-      ),
-
-      // Default cases (initial, loading, error)
-      _ => false,
-    };
   }
 }

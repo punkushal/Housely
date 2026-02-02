@@ -1,15 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_carousel_slider.dart';
 import 'package:housely/features/detail/presentation/widgets/image_list.dart';
 import 'package:housely/features/detail/presentation/widgets/property_detail_section.dart';
+import 'package:housely/features/favorites/presentation/widgets/favorite_toggle_button.dart';
 import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
@@ -75,43 +74,7 @@ class DetailPage extends StatelessWidget {
                       )
                     :
                       // favorite icon button
-                      GestureDetector(
-                        onTap: () {
-                          context.read<FavoriteToggleCubit>().toggleFavorite();
-                        },
-                        child:
-                            BlocSelector<
-                              FavoriteToggleCubit,
-                              FavoriteToggleState,
-                              bool
-                            >(
-                              selector: (state) {
-                                return state.isSelected;
-                              },
-                              builder: (context, state) {
-                                bool isFavorite = state;
-                                return SvgPicture.asset(
-                                  isFavorite
-                                      ? ImageConstant.favoriteFilledIcon
-                                      : ImageConstant.favoriteIcon,
-                                  width: ResponsiveDimensions.getSize(
-                                    context,
-                                    24,
-                                  ),
-                                  height: ResponsiveDimensions.getHeight(
-                                    context,
-                                    24,
-                                  ),
-                                  colorFilter: ColorFilter.mode(
-                                    isFavorite
-                                        ? AppColors.error
-                                        : AppColors.textPrimary,
-                                    .srcIn,
-                                  ),
-                                );
-                              },
-                            ),
-                      ),
+                      FavoriteToggleButton(property: property),
               ],
             ),
             body: SafeArea(
