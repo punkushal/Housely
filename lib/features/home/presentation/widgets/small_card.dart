@@ -7,7 +7,7 @@ import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
-import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
+import 'package:housely/features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 
 class SmallCard extends StatelessWidget {
@@ -114,30 +114,21 @@ class SmallCard extends StatelessWidget {
                 // favorite section
                 GestureDetector(
                   onTap: favoriteToggle,
-                  child:
-                      BlocSelector<
-                        FavoriteToggleCubit,
-                        FavoriteToggleState,
-                        bool
-                      >(
-                        selector: (state) {
-                          return state.isSelected;
-                        },
-                        builder: (context, state) {
-                          return SvgPicture.asset(
-                            state
-                                ? ImageConstant.favoriteFilledIcon
-                                : ImageConstant.favoriteIcon,
-                            width: ResponsiveDimensions.getSize(context, 24),
-                            height: ResponsiveDimensions.getHeight(context, 24),
-                            fit: .scaleDown,
-                            colorFilter: ColorFilter.mode(
-                              AppColors.error,
-                              .srcIn,
-                            ),
-                          );
-                        },
-                      ),
+                  child: BlocBuilder<FavoritesBloc, FavoritesState>(
+                    builder: (context, state) {
+                      bool isFav = _isFavorited(state, property.id);
+
+                      return SvgPicture.asset(
+                        isFav
+                            ? ImageConstant.favoriteFilledIcon
+                            : ImageConstant.favoriteIcon,
+                        width: ResponsiveDimensions.getSize(context, 24),
+                        height: ResponsiveDimensions.getHeight(context, 24),
+                        fit: .scaleDown,
+                        colorFilter: ColorFilter.mode(AppColors.error, .srcIn),
+                      );
+                    },
+                  ),
                 ),
                 Spacer(),
                 // rating container
@@ -178,5 +169,34 @@ class SmallCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // helper method to check if property is favorited
+  bool _isFavorited(FavoritesState state, String? propertyId) {
+    if (propertyId == null) return false;
+
+    return switch (state) {
+      // When favorites are loaded, check if this property is in the list
+      FavoritesLoaded(:final favorites) => favorites.any(
+        (f) => f.favoriteId == propertyId,
+      ),
+
+      // After adding, check the updated list
+      FavoriteAdded(:final favorites) => favorites.any(
+        (f) => f.favoriteId == propertyId,
+      ),
+
+      // After removing, check the updated list
+      FavoriteRemoved(:final favorites) => favorites.any(
+        (f) => f.favoriteId == propertyId,
+      ),
+
+      // When checking a specific favorite
+      FavoriteChecked(:final favoriteId, :final isFavorite) =>
+        favoriteId == propertyId ? isFavorite : false,
+
+      // Default cases (initial, loading, error)
+      _ => false,
+    };
   }
 }
