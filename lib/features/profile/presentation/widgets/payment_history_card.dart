@@ -4,13 +4,25 @@ import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/features/booking/domain/entity/booking.dart';
+import 'package:housely/features/property/domain/entities/property.dart';
 
 class PaymentHistoryCard extends StatelessWidget {
-  const PaymentHistoryCard({super.key});
-
+  const PaymentHistoryCard({
+    super.key,
+    required this.booking,
+    required this.property,
+  });
+  final Booking booking;
+  final Property property;
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: ResponsiveDimensions.paddingSymmetric(
+        context,
+        horizontal: 22,
+        vertical: 12,
+      ),
       width: .infinity,
       height: ResponsiveDimensions.getSize(context, 68),
       decoration: BoxDecoration(
@@ -29,12 +41,12 @@ class PaymentHistoryCard extends StatelessWidget {
           child: SvgPicture.asset(ImageConstant.hospitalIcon, fit: .scaleDown),
         ),
         title: Text(
-          "123 Maple St, NY",
+          property.name,
           style: AppTextStyle.bodySemiBold(context, fontSize: 12),
         ),
 
         subtitle: Text(
-          "Rent",
+          property.status.name,
           style: AppTextStyle.bodyRegular(context, color: AppColors.textHint),
         ),
 
@@ -42,7 +54,7 @@ class PaymentHistoryCard extends StatelessWidget {
           mainAxisSize: .min,
           children: [
             Text(
-              "Rs 24,000",
+              "Rs${booking.amount}",
               style: AppTextStyle.bodySemiBold(
                 context,
                 fontSize: 12,
