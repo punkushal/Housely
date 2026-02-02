@@ -67,8 +67,13 @@ import 'package:housely/features/onboarding/domain/repositories/onboarding_repos
 import 'package:housely/features/onboarding/domain/usecases/get_onboarding_status_usecase.dart';
 import 'package:housely/features/onboarding/domain/usecases/set_onboarding_status_usecase.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
+import 'package:housely/features/profile/data/datasources/payment_history_remote_data_source.dart';
+import 'package:housely/features/profile/data/repository/payment_history_repo_impl.dart';
+import 'package:housely/features/profile/domain/repository/payment_history_repo.dart';
 import 'package:housely/features/profile/domain/usecases/delete_profile_image_use_case.dart';
+import 'package:housely/features/profile/domain/usecases/get_payment_history_use_case.dart';
 import 'package:housely/features/profile/domain/usecases/upload_profile_image_use_case.dart';
+import 'package:housely/features/profile/presentation/cubit/payments/cubit/payment_history_cubit.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:housely/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:housely/features/profile/data/repository/profile_repo_impl.dart';
@@ -215,6 +220,12 @@ Future<void> initializeDependencies() async {
     () => ProfileRepoImpl(remoteDataSource: sl(), storageDataSource: sl()),
   );
 
+  // payment
+  sl.registerLazySingleton(() => PaymentHistoryRemoteDataSource(sl()));
+  sl.registerLazySingleton<PaymentHistoryRepo>(
+    () => PaymentHistoryRepoImpl(sl()),
+  );
+
   // ============== Domain layer ===============
   sl.registerLazySingleton(
     () => SetOnboardingStatusUsecase(
@@ -299,6 +310,9 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => UpdateUserProfileUseCase(sl()));
   sl.registerLazySingleton(() => UploadProfileImageUseCase(sl()));
   sl.registerLazySingleton(() => DeleteProfileImageUseCase(sl()));
+
+  // payment use case
+  sl.registerLazySingleton(() => GetPaymentHistoryUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -411,4 +425,7 @@ Future<void> initializeDependencies() async {
       deleteImageFile: sl(),
     ),
   );
+
+  // payment
+  sl.registerFactory(() => PaymentHistoryCubit(sl()));
 }
