@@ -24,12 +24,16 @@ class PaymentHistoryCard extends StatelessWidget {
         vertical: 12,
       ),
       width: .infinity,
-      height: ResponsiveDimensions.getSize(context, 68),
+      height: ResponsiveDimensions.getSize(context, 74),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
+        contentPadding: ResponsiveDimensions.paddingSymmetric(
+          context,
+          horizontal: 8,
+        ),
         leading: Container(
           padding: ResponsiveDimensions.paddingAll8(context),
           height: ResponsiveDimensions.getSize(context, 34),
@@ -42,6 +46,7 @@ class PaymentHistoryCard extends StatelessWidget {
         ),
         title: Text(
           property.name,
+          overflow: .ellipsis,
           style: AppTextStyle.bodySemiBold(context, fontSize: 12),
         ),
 
@@ -50,26 +55,13 @@ class PaymentHistoryCard extends StatelessWidget {
           style: AppTextStyle.bodyRegular(context, color: AppColors.textHint),
         ),
 
-        trailing: Column(
-          mainAxisSize: .min,
-          children: [
-            Text(
-              "Rs${booking.amount}",
-              style: AppTextStyle.bodySemiBold(
-                context,
-                fontSize: 12,
-                color: AppColors.primaryPressed,
-              ),
-            ),
-            Text(
-              "Oct 12, 2025",
-              style: AppTextStyle.bodyRegular(
-                context,
-                color: AppColors.textHint,
-                fontSize: 11,
-              ),
-            ),
-          ],
+        trailing: Text(
+          "Rs${booking.amount}",
+          style: AppTextStyle.bodySemiBold(
+            context,
+            fontSize: 12,
+            color: AppColors.primaryPressed,
+          ),
         ),
       ),
     );
