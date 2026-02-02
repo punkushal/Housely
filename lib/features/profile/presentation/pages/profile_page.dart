@@ -48,8 +48,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 title: Text('Profile'),
                 actions: [
                   IconButton(
-                    onPressed: () async {
-                      await context.read<LogoutCubit>().logout();
+                    onPressed: () {
+                      context.read<LogoutCubit>().logout();
                     },
                     icon: Icon(Icons.logout),
                   ),
