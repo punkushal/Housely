@@ -66,21 +66,22 @@ class TextConstants {
   static const int version = 1;
   static const String createFavoritesTable = '''
     CREATE TABLE IF NOT EXISTS favorites (
-      id          INTEGER PRIMARY KEY AUTOINCREMENT,
-      favorite_id   TEXT    NOT NULL UNIQUE,
-      name       TEXT    NOT NULL,
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      favorite_id  TEXT  NOT NULL UNIQUE,
+      name TEXT    NOT NULL,
       description TEXT,
-    status TEXT,
-    type TEXT,
-    amount REAL,
-    location TEXT,
-    specs TEXT,
-    rating TEXT,
-    owner TEXT,
-    media TEXT,
-    facilities TEXT,
-    createdAt TEXT,
-    updatedAt TEXT
+      status TEXT,
+      type TEXT,
+      price TEXT,
+      location TEXT,
+      specs TEXT,
+      rating TEXT,
+      owner TEXT,
+      media TEXT,
+      facilities TEXT,
+      createdAt TEXT,
+      updatedAt TEXT,
+      added_at INTEGER
     );
   ''';
 }
