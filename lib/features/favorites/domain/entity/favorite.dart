@@ -4,15 +4,15 @@ import '../../../property/domain/entities/property.dart';
 
 class Favorite extends Equatable {
   final Property property;
-  final String id;
+  final String favoriteId;
   final DateTime addedAt;
 
   const Favorite({
     required this.property,
     required this.addedAt,
-    required this.id,
+    required this.favoriteId,
   });
 
   @override
-  List<Object?> get props => [id, addedAt, property];
+  List<Object?> get props => [favoriteId, addedAt, property];
 }
