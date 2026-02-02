@@ -204,6 +204,7 @@ class PropertyModel extends Property {
   );
 
   Property toEntity() => Property(
+    id: id,
     name: name,
     description: description,
     owner: owner,
