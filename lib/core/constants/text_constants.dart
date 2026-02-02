@@ -60,4 +60,33 @@ class TextConstants {
   static const String lastSeenField = "lastSeen";
   static const String isReadField = "isRead";
   static const String lastMessageField = "lastMessage";
+
+  // local db
+  static const String databaseName = "app_database.db";
+  static const int version = 1;
+  static const String createFavoritesTable = '''
+    CREATE TABLE IF NOT EXISTS favorites (
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      favorite_id   TEXT    NOT NULL UNIQUE,
+      name       TEXT    NOT NULL,
+      description TEXT,
+    status TEXT,
+    type TEXT,
+    price_amount REAL,
+    location_address TEXT,
+    location_latitude REAL,
+    location_longitude REAL,
+    specs_area REAL,
+    specs_builtYear TEXT,
+    specs_bedrooms INTEGER,
+    specs_bathrooms INTEGER,
+    rating_totalReviews INTEGER,
+    rating_averageRating REAL,
+    owner TEXT,
+    media TEXT,
+    facilities TEXT,
+    createdAt TEXT,
+    updatedAt TEXT
+    );
+  ''';
 }
