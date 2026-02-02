@@ -186,6 +186,23 @@ class PropertyModel extends Property {
     );
   }
 
+  factory PropertyModel.fromEntity(Property entity) => PropertyModel(
+    id: entity.id,
+    name: entity.name,
+    description: entity.description,
+    owner: entity.owner,
+    location: entity.location,
+    price: entity.price,
+    status: entity.status,
+    type: entity.type,
+    specs: entity.specs,
+    media: entity.media,
+    facilities: entity.facilities,
+    createdAt: entity.createdAt,
+    updatedAt: entity.updatedAt,
+    rating: entity.rating,
+  );
+
   @override
   PropertyModel copyWith({
     String? id,
