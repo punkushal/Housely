@@ -16,11 +16,31 @@ class FavoritesLocalDatasource {
   // -----------------------------------------------------------------
   Future<void> insert(FavoriteModel model) async {
     final db = await _db;
-    await db.rawInsert(
-      '''INSERT OR REPLACE INTO $_table
-         (favorite_id, property, added_at)
-         VALUES (?, ?, ?)''',
-      [model.favoriteId, model.property, model.addedAtEpoch],
+
+    final propMap = model.property.toSqfliteMap();
+
+    final insertMap = {
+      'favorite_id': model.favoriteId,
+      'name': propMap['name'],
+      'description': propMap['description'],
+      'status': propMap['status'],
+      'type': propMap['type'],
+      'price': propMap['price'],
+      'location': propMap['location'],
+      'specs': propMap['specs'],
+      'rating': propMap['rating'],
+      'owner': propMap['owner'],
+      'media': propMap['media'],
+      'facilities': propMap['facilities'],
+      'createdAt': propMap['createdAt'],
+      'updatedAt': propMap['updatedAt'],
+      'added_at': model.addedAtEpoch,
+    };
+
+    await db.insert(
+      _table,
+      insertMap,
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
