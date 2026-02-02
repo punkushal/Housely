@@ -147,7 +147,7 @@ class PropertyModel extends Property {
     final ratingData = decode('rating');
 
     return PropertyModel(
-      id: map['id'],
+      id: map['favorite_id'],
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       status: PropertyStatus.values.byName(map['status']),
@@ -162,7 +162,7 @@ class PropertyModel extends Property {
       ),
       specs: PropertySpecs(
         area: (specsData['area'] as num?)?.toDouble() ?? 0.0,
-        builtYear: specsData['builtYear'] ?? 0,
+        builtYear: specsData['builtYear'] ?? '',
         bedrooms: specsData['bedrooms'] ?? 0,
         bathrooms: specsData['bathrooms'] ?? 0,
       ),
@@ -201,6 +201,22 @@ class PropertyModel extends Property {
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
     rating: entity.rating,
+  );
+
+  Property toEntity() => Property(
+    name: name,
+    description: description,
+    owner: owner,
+    location: location,
+    price: price,
+    status: status,
+    type: type,
+    specs: specs,
+    media: media,
+    facilities: facilities,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+    rating: rating,
   );
 
   @override

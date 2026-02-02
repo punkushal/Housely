@@ -31,7 +31,7 @@ class FavoriteModel {
   }
 
   Favorite toEntity() => Favorite(
-    property: property,
+    property: property.toEntity(),
     favoriteId: favoriteId,
     addedAt: DateTime.fromMillisecondsSinceEpoch(addedAtEpoch),
   );
