@@ -26,6 +26,15 @@ class PropertyOwnerModel extends PropertyOwner {
     'profileImage': profileImage,
   };
 
+  factory PropertyOwnerModel.fromEntity(PropertyOwner entity) {
+    return PropertyOwnerModel(
+      ownerId: entity.ownerId,
+      name: entity.name,
+      phone: entity.phone,
+      profileImage: entity.profileImage,
+    );
+  }
+
   @override
   PropertyOwnerModel copyWith({
     String? name,

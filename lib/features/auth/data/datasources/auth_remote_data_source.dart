@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/error/exception.dart';
+import 'package:housely/core/utils/handle_error.dart';
 import 'package:housely/features/auth/data/models/app_user_model.dart';
 import 'package:housely/features/auth/domain/entities/app_user.dart';
 
@@ -47,7 +49,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      throw _handleFirebaseException(e);
+      throw handleFirebaseException(e);
     } catch (e) {
       throw ServerException('An unexpected error occurred');
     }
@@ -88,31 +90,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       // Update display name
       await userCredential.user?.updateDisplayName(username);
     } on FirebaseAuthException catch (e) {
-      throw _handleFirebaseException(e);
+      throw handleFirebaseException(e);
     } catch (e) {
       throw ServerException('An unexpected error occurred');
-    }
-  }
-
-  // handle firebase exception
-  AuthException _handleFirebaseException(FirebaseAuthException e) {
-    switch (e.code) {
-      case 'invalid-email':
-        return AuthException('Invalid email address');
-      case 'wrong-password':
-        return AuthException('Wrong password');
-      case 'user-not-found':
-        return AuthException('User not found');
-      case 'user-disabled':
-        return AuthException('This account has been disabled');
-      case 'email-already-in-use':
-        return AuthException('An account already exists with this email');
-      case 'weak-password':
-        return AuthException('Password is too weak. Use at least 6 characters');
-      case 'network-request-failed':
-        return AuthException('No internet connection');
-      default:
-        return AuthException(e.message ?? 'Authentication failed');
     }
   }
 
@@ -157,7 +137,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return appUser;
     } on FirebaseAuthException catch (e) {
-      throw _handleFirebaseException(e);
+      throw handleFirebaseException(e);
     } catch (e) {
       throw ServerException('An unexpected error occurred : $e');
     }
@@ -168,7 +148,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await firebaseAuth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
-      throw _handleFirebaseException(e);
+      throw handleFirebaseException(e);
     } catch (e) {
       throw ServerException('An unexpected error occurred');
     }
@@ -176,13 +156,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Stream<AppUser?> get authStateChanges =>
-      firebaseAuth.authStateChanges().map((user) {
+      firebaseAuth.authStateChanges().asyncMap((user) async {
         if (user != null) {
-          return AppUser(
-            uid: user.uid,
-            email: user.email!,
-            username: user.displayName ?? "no user name",
-          );
+          return await getCurrentUser();
         }
         return null;
       });
@@ -195,13 +171,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<AppUser?> getCurrentUser() async {
     try {
-      final hasCurrentUser = firebaseAuth.currentUser != null;
-      if (hasCurrentUser) {
-        return AppUser(
-          uid: firebaseAuth.currentUser!.uid,
-          email: firebaseAuth.currentUser!.email!,
-          username: firebaseAuth.currentUser!.displayName!,
-        );
+      final user = firebaseAuth.currentUser;
+      if (user != null) {
+        final uid = user.uid;
+
+        final doc = await firestore
+            .collection(TextConstants.users)
+            .doc(uid)
+            .get();
+
+        if (doc.exists && doc.data() != null) {
+          return AppUserModel.fromMap(doc.data()!);
+        } else {
+          return AppUser(
+            uid: user.uid,
+            email: user.email!,
+            username: user.displayName ?? "New User",
+          );
+        }
       }
       return null;
     } catch (e) {

@@ -18,13 +18,7 @@ class OwnerCubit extends Cubit<OwnerState> {
     required this.createOwnerProfile,
     required this.uploadCoverImage,
     required this.getOwnerProfile,
-  }) : super(OwnerInitial()) {
-    _init();
-  }
-
-  Future<void> _init() async {
-    fetchProfile();
-  }
+  }) : super(OwnerInitial());
 
   // upload profile image
   Future<Map<String, String>?> _uploadImage({
@@ -77,5 +71,9 @@ class OwnerCubit extends Cubit<OwnerState> {
       (f) => emit(OwnerError(f.message)),
       (owner) => emit(OwnerLoaded(owner: owner)),
     );
+  }
+
+  void reset() {
+    emit(OwnerInitial());
   }
 }

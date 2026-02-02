@@ -71,7 +71,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   }
 
   //  Navigate only when both animation is done AND state is loaded
-  void _tryNavigate() {
+  void _tryNavigate() async {
     if (_hasNavigated || !_animationCompleted || !mounted) return;
 
     final state = context.read<OnboardingCubit>().state;

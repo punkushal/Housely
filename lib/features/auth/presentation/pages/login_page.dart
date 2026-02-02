@@ -204,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                       BlocConsumer<LoginCubit, LoginState>(
                         listener: (context, state) {
                           if (state is LoginSuccess) {
-                            context.router.replace(LocationRoute());
+                            context.router.replaceAll([LocationRoute()]);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 backgroundColor: AppColors.success,
@@ -257,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
 
                           if (state is GoogleSigninSuccess) {
                             // navigate to location page
-                            context.router.replace(LocationRoute());
+                            context.router.replaceAll([LocationRoute()]);
                             SnackbarHelper.showSuccess(
                               context,
                               'Successfully logged in via google',

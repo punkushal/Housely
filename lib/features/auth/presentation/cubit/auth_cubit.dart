@@ -51,6 +51,12 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  void updateUser(AppUser updatedUser) {
+    if (state is Authenticated) {
+      emit(Authenticated(updatedUser));
+    }
+  }
+
   @override
   Future<void> close() {
     _authSubscription?.cancel();

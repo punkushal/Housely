@@ -18,12 +18,17 @@ class AppUserModel extends AppUser {
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    final Map<String, dynamic> map = {
       'userId': uid,
       'email': email,
       'username': username,
-      'photoUrl': photoUrl,
     };
+
+    if (photoUrl != null) {
+      map['photoUrl'] = photoUrl;
+    }
+
+    return map;
   }
 
   factory AppUserModel.fromEntity(AppUser appUser) {

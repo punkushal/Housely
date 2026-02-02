@@ -67,6 +67,18 @@ import 'package:housely/features/onboarding/domain/repositories/onboarding_repos
 import 'package:housely/features/onboarding/domain/usecases/get_onboarding_status_usecase.dart';
 import 'package:housely/features/onboarding/domain/usecases/set_onboarding_status_usecase.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
+import 'package:housely/features/profile/data/datasources/payment_history_remote_data_source.dart';
+import 'package:housely/features/profile/data/repository/payment_history_repo_impl.dart';
+import 'package:housely/features/profile/domain/repository/payment_history_repo.dart';
+import 'package:housely/features/profile/domain/usecases/delete_profile_image_use_case.dart';
+import 'package:housely/features/profile/domain/usecases/get_payment_history_use_case.dart';
+import 'package:housely/features/profile/domain/usecases/upload_profile_image_use_case.dart';
+import 'package:housely/features/profile/presentation/cubit/payments/cubit/payment_history_cubit.dart';
+import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:housely/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:housely/features/profile/data/repository/profile_repo_impl.dart';
+import 'package:housely/features/profile/domain/repository/profile_repo.dart';
+import 'package:housely/features/profile/domain/usecases/update_user_profile_use_case.dart';
 import 'package:housely/features/property/data/datasources/app_write_data_source.dart';
 import 'package:housely/features/property/data/datasources/firebase_remote_data_source.dart';
 import 'package:housely/features/property/data/repository/owner_repo_impl.dart';
@@ -196,6 +208,24 @@ Future<void> initializeDependencies() async {
   );
   sl.registerLazySingleton<ReviewRepo>(() => ReviewRepoImpl(sl()));
 
+  // profile
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSource(
+      firestore: sl<FirebaseFirestore>(),
+      firebaseAuth: sl<FirebaseAuth>(),
+      appwriteStorageDataSource: sl(),
+    ),
+  );
+  sl.registerLazySingleton<ProfileRepo>(
+    () => ProfileRepoImpl(remoteDataSource: sl(), storageDataSource: sl()),
+  );
+
+  // payment
+  sl.registerLazySingleton(() => PaymentHistoryRemoteDataSource(sl()));
+  sl.registerLazySingleton<PaymentHistoryRepo>(
+    () => PaymentHistoryRepoImpl(sl()),
+  );
+
   // ============== Domain layer ===============
   sl.registerLazySingleton(
     () => SetOnboardingStatusUsecase(
@@ -275,6 +305,14 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => UpdateReviewUseCase(sl()));
   sl.registerLazySingleton(() => DeleteReviewImageUseCase(sl()));
   sl.registerLazySingleton(() => DeleteReviewUseCase(sl()));
+
+  // profile use cases
+  sl.registerLazySingleton(() => UpdateUserProfileUseCase(sl()));
+  sl.registerLazySingleton(() => UploadProfileImageUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteProfileImageUseCase(sl()));
+
+  // payment use case
+  sl.registerLazySingleton(() => GetPaymentHistoryUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -378,4 +416,16 @@ Future<void> initializeDependencies() async {
       deleteReviewUseCase: sl(),
     ),
   );
+
+  // profile
+  sl.registerFactory(
+    () => ProfileCubit(
+      updateUserProfileUseCase: sl(),
+      uploadCoverImage: sl(),
+      deleteImageFile: sl(),
+    ),
+  );
+
+  // payment
+  sl.registerFactory(() => PaymentHistoryCubit(sl()));
 }

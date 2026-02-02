@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:housely/core/error/exception.dart';
 import 'package:housely/core/error/failure.dart';
 
 /// handle firebase related error
@@ -40,5 +41,31 @@ Failure handleAppWriteError(AppwriteException e) {
 
     default:
       return InvalidFileFailure("Appwrite Error (${e.code}): ${e.message}");
+  }
+}
+
+/// handle firebase auth exception
+AuthException handleFirebaseException(FirebaseAuthException e) {
+  switch (e.code) {
+    case 'requires-recent-login':
+      return AuthException(
+        "The user must re-authenticate before this operation can be completed.",
+      );
+    case 'invalid-email':
+      return AuthException('Invalid email address');
+    case 'wrong-password':
+      return AuthException('Wrong password');
+    case 'user-not-found':
+      return AuthException('User not found');
+    case 'user-disabled':
+      return AuthException('This account has been disabled');
+    case 'email-already-in-use':
+      return AuthException('An account already exists with this email');
+    case 'weak-password':
+      return AuthException('Password is too weak. Use at least 6 characters');
+    case 'network-request-failed':
+      return AuthException('No internet connection');
+    default:
+      return AuthException(e.message ?? 'Authentication failed');
   }
 }

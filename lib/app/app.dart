@@ -19,11 +19,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => sl<OnboardingCubit>()..checkStatus()),
         BlocProvider(create: (context) => sl<ConnectivityCubit>()),
-        BlocProvider(create: (context) => sl<AuthCubit>()..checkLoginStatus()),
+        BlocProvider(create: (context) => sl<AuthCubit>()),
         BlocProvider(create: (context) => sl<OwnerCubit>()),
-        BlocProvider(
-          create: (context) => sl<PropertyBloc>()..add(GetAllProperties()),
-        ),
+        BlocProvider(create: (context) => sl<PropertyBloc>()),
       ],
       child: MaterialApp.router(
         title: 'Housely',
