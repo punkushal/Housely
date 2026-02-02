@@ -47,6 +47,8 @@ class PaymentHistoryPage extends StatelessWidget {
                         );
                       },
                     );
+                  } else if (state is PaymentHistoryFailure) {
+                    return Center(child: Text(state.message));
                   }
                   return SizedBox.shrink();
                 },
