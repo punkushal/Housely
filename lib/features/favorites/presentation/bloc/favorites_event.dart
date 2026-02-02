@@ -9,23 +9,13 @@ sealed class FavoritesEvent extends Equatable {
 
 class LoadFavoritesRequested extends FavoritesEvent {}
 
-class AddFavoriteRequested extends FavoritesEvent {
+class ToggleFavoriteRequested extends FavoritesEvent {
   final Favorite favorite;
-  const AddFavoriteRequested(this.favorite);
-  @override
-  List<Object> get props => [favorite];
-}
-
-class RemoveFavoriteRequested extends FavoritesEvent {
   final String favoriteId;
-  const RemoveFavoriteRequested(this.favoriteId);
+  const ToggleFavoriteRequested({
+    required this.favorite,
+    required this.favoriteId,
+  });
   @override
-  List<Object> get props => [favoriteId];
-}
-
-class CheckFavoriteRequested extends FavoritesEvent {
-  final String favoriteId;
-  const CheckFavoriteRequested(this.favoriteId);
-  @override
-  List<Object> get props => [favoriteId];
+  List<Object> get props => [favorite, favoriteId];
 }

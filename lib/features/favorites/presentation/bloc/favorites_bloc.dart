@@ -22,9 +22,7 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
     required this.isFavoriteUseCase,
   }) : super(FavoritesInitial()) {
     on<LoadFavoritesRequested>(_onLoad);
-    on<AddFavoriteRequested>(_onAdd);
-    on<RemoveFavoriteRequested>(_onRemove);
-    on<CheckFavoriteRequested>(_onCheck);
+    on<ToggleFavoriteRequested>(_onToggle);
   }
   Future<void> _onLoad(
     LoadFavoritesRequested event,
@@ -38,51 +36,72 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
     });
   }
 
-  // -----------------------------------------------------------------
-  Future<void> _onAdd(
-    AddFavoriteRequested event,
+  Future<void> _onToggle(
+    ToggleFavoriteRequested event,
     Emitter<FavoritesState> emit,
   ) async {
-    final result = await addFavoriteUseCase(AddFavoriteParam(event.favorite));
-
-    result.fold((f) => emit(FavoritesError(f.message)), (_) async {
-      // reload to keep list in sync
-      final result = await getFavoritesUseCase();
-
-      result.fold((f) => emit(FavoritesError(f.message)), (list) {
-        emit(FavoritesLoaded(list));
-      });
-    });
-  }
-
-  // -----------------------------------------------------------------
-  Future<void> _onRemove(
-    RemoveFavoriteRequested event,
-    Emitter<FavoritesState> emit,
-  ) async {
-    final result = await removeFavoriteUseCase(
-      RemoveFavoriteParam(event.favoriteId),
+    // Check if item is currently a favorite
+    final checkResult = await isFavoriteUseCase(
+      IsFavoriteParam(event.favoriteId),
     );
 
-    result.fold((f) => emit(FavoritesError(f.message)), (_) async {
-      // reload to keep list in sync
-      final result = await getFavoritesUseCase();
+    // Extract the check result or return error
+    final isFavorite = checkResult.fold<bool?>((failure) {
+      emit(FavoritesError(failure.message));
+      return null;
+    }, (isFav) => isFav);
 
-      result.fold((f) => emit(FavoritesError(f.message)), (list) {
-        emit(FavoriteRemoved(list));
-      });
-    });
-  }
+    // If check failed, it'll stop
+    if (isFavorite == null) return;
 
-  // -----------------------------------------------------------------
-  Future<void> _onCheck(
-    CheckFavoriteRequested event,
-    Emitter<FavoritesState> emit,
-  ) async {
-    final result = await isFavoriteUseCase(IsFavoriteParam(event.favoriteId));
-    result.fold(
-      (f) => emit(FavoritesError(f.message)),
-      (hasData) => emit(FavoriteChecked(hasData)),
+    // Add or remove based on current state
+    if (isFavorite) {
+      // Remove from favorites
+      final removeResult = await removeFavoriteUseCase(
+        RemoveFavoriteParam(event.favoriteId),
+      );
+
+      // Handle remove error
+      final removeError = removeResult.fold(
+        (failure) => failure.message,
+        (_) => null,
+      );
+
+      if (removeError != null) {
+        emit(FavoritesError(removeError));
+        return;
+      }
+    } else {
+      // Add to favorites
+      final addResult = await addFavoriteUseCase(
+        AddFavoriteParam(event.favorite),
+      );
+
+      // Handle add error
+      final addError = addResult.fold(
+        (failure) => failure.message,
+        (_) => null,
+      );
+
+      if (addError != null) {
+        emit(FavoritesError(addError));
+        return;
+      }
+    }
+
+    // Reload the favorites list
+    final getFavoritesResult = await getFavoritesUseCase();
+
+    getFavoritesResult.fold(
+      (failure) => emit(FavoritesError(failure.message)),
+      (favorites) {
+        // Emit appropriate state based on action
+        if (isFavorite) {
+          emit(FavoriteRemoved(favorites));
+        } else {
+          emit(FavoriteAdded(favorites));
+        }
+      },
     );
   }
 }

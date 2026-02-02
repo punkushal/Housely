@@ -191,10 +191,6 @@ class SmallCard extends StatelessWidget {
         (f) => f.favoriteId == propertyId,
       ),
 
-      // When checking a specific favorite
-      FavoriteChecked(:final favoriteId, :final isFavorite) =>
-        favoriteId == propertyId ? isFavorite : false,
-
       // Default cases (initial, loading, error)
       _ => false,
     };

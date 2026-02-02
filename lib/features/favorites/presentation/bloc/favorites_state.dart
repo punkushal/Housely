@@ -34,14 +34,6 @@ class FavoriteRemoved extends FavoritesState {
   List<Object> get props => [favorites];
 }
 
-// --- Check result (for a single item, e.g. a heart icon on detail page) ---
-class FavoriteChecked extends FavoritesState {
-  final bool isFavorite;
-  const FavoriteChecked(this.isFavorite);
-  @override
-  List<Object> get props => [isFavorite];
-}
-
 class FavoritesError extends FavoritesState {
   final String message;
   const FavoritesError(this.message);
