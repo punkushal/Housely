@@ -432,11 +432,11 @@ class CreateNewPropertyRouteArgs {
 class DetailRoute extends _i27.PageRouteInfo<DetailRouteArgs> {
   DetailRoute({
     _i28.Key? key,
-    required _i29.Property property,
+    required String propertyId,
     List<_i27.PageRouteInfo>? children,
   }) : super(
          DetailRoute.name,
-         args: DetailRouteArgs(key: key, property: property),
+         args: DetailRouteArgs(key: key, propertyId: propertyId),
          initialChildren: children,
        );
 
@@ -446,32 +446,32 @@ class DetailRoute extends _i27.PageRouteInfo<DetailRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<DetailRouteArgs>();
-      return _i9.DetailPage(key: args.key, property: args.property);
+      return _i9.DetailPage(key: args.key, propertyId: args.propertyId);
     },
   );
 }
 
 class DetailRouteArgs {
-  const DetailRouteArgs({this.key, required this.property});
+  const DetailRouteArgs({this.key, required this.propertyId});
 
   final _i28.Key? key;
 
-  final _i29.Property property;
+  final String propertyId;
 
   @override
   String toString() {
-    return 'DetailRouteArgs{key: $key, property: $property}';
+    return 'DetailRouteArgs{key: $key, propertyId: $propertyId}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! DetailRouteArgs) return false;
-    return key == other.key && property == other.property;
+    return key == other.key && propertyId == other.propertyId;
   }
 
   @override
-  int get hashCode => key.hashCode ^ property.hashCode;
+  int get hashCode => key.hashCode ^ propertyId.hashCode;
 }
 
 /// generated route for

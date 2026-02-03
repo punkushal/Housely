@@ -47,7 +47,7 @@ class PropertyList extends StatelessWidget {
                   property: propertyList[index],
                   height: ResponsiveDimensions.getSize(context, 72),
                   navigateTo: () => context.router.push(
-                    DetailRoute(property: propertyList[index]),
+                    DetailRoute(propertyId: propertyList[index].id!),
                   ),
                   favoriteToggle: () =>
                       _toggleFavorite(context, propertyList[index]),
