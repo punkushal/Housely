@@ -1,7 +1,13 @@
 part of 'property_crud_bloc.dart';
 
 /// Status enum to track the overall operation status
-enum PropertyCrudStatus { initial, loading, success, error }
+enum PropertyCrudStatus {
+  initial,
+  loading,
+  success,
+  error,
+  networkPropertyLoaded,
+}
 
 /// Operation type to identify which operation just completed
 enum PropertyOperation { none, create, update, delete }
@@ -28,6 +34,9 @@ class PropertyCrudState extends Equatable {
   // Property data (for holding the original property when editing)
   final Property? originalProperty;
 
+  // Property data (from firebase when updating)
+  final Property? netWorkProperty;
+
   // Track which network images were removed (for deletion during update)
   final List<String> removedNetworkImageIds;
 
@@ -44,6 +53,7 @@ class PropertyCrudState extends Equatable {
     this.isUploadingGallery = false,
     this.originalProperty,
     this.removedNetworkImageIds = const [],
+    this.netWorkProperty,
   });
 
   @override
@@ -60,6 +70,7 @@ class PropertyCrudState extends Equatable {
     originalProperty,
     removedNetworkImageIds,
     networkUrlToIdMap,
+    netWorkProperty,
   ];
 
   PropertyCrudState copyWith({
@@ -73,6 +84,7 @@ class PropertyCrudState extends Equatable {
     bool? isUploadingCover,
     bool? isUploadingGallery,
     Property? originalProperty,
+    Property? netWorkProperty,
     List<String>? removedNetworkImageIds,
     final Map<String, String>? networkUrlToIdMap,
   }) {
@@ -91,6 +103,7 @@ class PropertyCrudState extends Equatable {
       originalProperty: originalProperty ?? this.originalProperty,
       removedNetworkImageIds:
           removedNetworkImageIds ?? this.removedNetworkImageIds,
+      netWorkProperty: netWorkProperty ?? this.netWorkProperty,
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/usecases/create_property.dart';
 import 'package:housely/features/property/domain/usecases/delete_image_file.dart';
 import 'package:housely/features/property/domain/usecases/delete_property.dart';
+import 'package:housely/features/property/domain/usecases/fetch/get_property_by_id_use_case.dart';
 import 'package:housely/features/property/domain/usecases/update_property.dart';
 import 'package:housely/features/property/domain/usecases/upload_cover_image.dart';
 import 'package:housely/features/property/domain/usecases/upload_property_images.dart';
@@ -22,6 +23,7 @@ class PropertyCrudBloc extends Bloc<PropertyCrudEvent, PropertyCrudState> {
   final UploadCoverImage uploadCoverImage;
   final UploadPropertyImages uploadPropertyImages;
   final DeleteImageFile deleteImageFile;
+  final GetPropertyByIdUseCase getPropertyByIdUseCase;
 
   PropertyCrudBloc({
     required this.createProperty,
@@ -30,6 +32,7 @@ class PropertyCrudBloc extends Bloc<PropertyCrudEvent, PropertyCrudState> {
     required this.uploadCoverImage,
     required this.uploadPropertyImages,
     required this.deleteImageFile,
+    required this.getPropertyByIdUseCase,
   }) : super(const PropertyCrudState()) {
     // Register event handlers
     on<PickCoverImage>(_onPickCoverImage);
@@ -41,6 +44,7 @@ class PropertyCrudBloc extends Bloc<PropertyCrudEvent, PropertyCrudState> {
     on<UpdatePropertyEvent>(_onUpdateProperty);
     on<DeletePropertyEvent>(_onDeleteProperty);
     on<ResetPropertyCrud>(_onResetPropertyCrud);
+    on<LoadNetworkPropertyEvent>(_onLoadNetworkProperty);
   }
 
   // ============================================
@@ -229,6 +233,27 @@ class PropertyCrudBloc extends Bloc<PropertyCrudEvent, PropertyCrudState> {
       (failure) =>
           emit(state.copyWith(status: .error, errorMessage: failure.message)),
       (_) => emit(state.copyWith(status: .success, lastOperation: .create)),
+    );
+  }
+
+  // ============================================
+  // LOAD NETWORK PROPERTY HANDLER
+  // ============================================
+  Future<void> _onLoadNetworkProperty(
+    LoadNetworkPropertyEvent event,
+    Emitter<PropertyCrudState> emit,
+  ) async {
+    emit(state.copyWith(status: .loading));
+
+    final result = await getPropertyByIdUseCase(
+      GetPropertyParam(event.propertyId),
+    );
+
+    result.fold(
+      (f) => emit(state.copyWith(status: .error, errorMessage: f.message)),
+      (data) => emit(
+        state.copyWith(netWorkProperty: data, status: .networkPropertyLoaded),
+      ),
     );
   }
 

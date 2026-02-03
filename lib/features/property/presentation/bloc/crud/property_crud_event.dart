@@ -75,6 +75,16 @@ class CreatePropertyEvent extends PropertyCrudEvent {
   List<Object?> get props => [property];
 }
 
+/// This fetches property from firestore when it's data updated
+class LoadNetworkPropertyEvent extends PropertyCrudEvent {
+  final String propertyId;
+
+  const LoadNetworkPropertyEvent(this.propertyId);
+
+  @override
+  List<Object?> get props => [propertyId];
+}
+
 /// Event to update an existing property
 /// This handles deletion of removed images, upload of new images, and update in Firestore
 class UpdatePropertyEvent extends PropertyCrudEvent {
