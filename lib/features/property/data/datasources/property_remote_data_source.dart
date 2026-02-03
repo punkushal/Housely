@@ -194,7 +194,7 @@ class PropertyRemoteDataSource {
         TextConstants.properties,
       );
 
-      query.where('owner.ownerId', isEqualTo: userId);
+      query = query.where('owner.ownerId', isEqualTo: userId);
 
       if (lastDoc != null) {
         query = query.startAfterDocument(lastDoc);
@@ -228,7 +228,7 @@ class PropertyRemoteDataSource {
         TextConstants.properties,
       );
 
-      query.where('rating.averageRating', isGreaterThanOrEqualTo: 4);
+      query = query.where('rating.averageRating', isGreaterThanOrEqualTo: 4);
 
       if (lastDoc != null) {
         query = query.startAfterDocument(lastDoc);
