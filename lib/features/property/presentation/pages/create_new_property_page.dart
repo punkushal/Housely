@@ -355,7 +355,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
 
               // Reset form and navigate back
               _resetForm();
-              context.pop();
+              context.pop(true);
             }
           },
         ),
