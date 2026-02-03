@@ -130,30 +130,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         },
                       ),
 
-                      BlocBuilder<OwnerCubit, OwnerState>(
-                        builder: (context, state) {
-                          if (state is OwnerLoaded && state.owner != null) {
-                            return Column(
-                              children: [
-                                OptionTile(
-                                  label: "My properties list",
-                                  iconPath: ImageConstant.hospitalIcon,
-                                  onTap: () {
-                                    context.router.push(MyPropertyListRoute());
-                                  },
-                                ),
+                      OptionTile(
+                        label: "My properties list",
+                        iconPath: ImageConstant.hospitalIcon,
+                        onTap: () {
+                          context.router.push(MyPropertyListRoute());
+                        },
+                      ),
 
-                                OptionTile(
-                                  label: "Booking request",
-                                  iconPath: ImageConstant.infoSquareIcon,
-                                  onTap: () {
-                                    context.router.push(BookingRequestRoute());
-                                  },
-                                ),
-                              ],
-                            );
-                          }
-                          return SizedBox.shrink();
+                      OptionTile(
+                        label: "Booking request",
+                        iconPath: ImageConstant.infoSquareIcon,
+                        onTap: () {
+                          context.router.push(BookingRequestRoute());
                         },
                       ),
                     ],
