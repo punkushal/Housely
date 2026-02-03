@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:housely/core/constants/text_constants.dart';
+import 'package:housely/core/database/app_database.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/env/env.dart';
 import 'package:housely/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -53,6 +54,14 @@ import 'package:housely/features/chat/domain/usecases/send_message_use_case.dart
 import 'package:housely/features/chat/domain/usecases/update_user_status.dart';
 import 'package:housely/features/chat/presentation/bloc/chat_list_bloc.dart';
 import 'package:housely/features/chat/presentation/bloc/chat_session_bloc.dart';
+import 'package:housely/features/favorites/data/datasources/favorite_local_data_source.dart';
+import 'package:housely/features/favorites/data/repository/favorite_repository_impl.dart';
+import 'package:housely/features/favorites/domain/repository/favorite_repository.dart';
+import 'package:housely/features/favorites/domain/usecases/add_favorite_use_case.dart';
+import 'package:housely/features/favorites/domain/usecases/get_favorites_use_case.dart';
+import 'package:housely/features/favorites/domain/usecases/is_favorite_use_case.dart';
+import 'package:housely/features/favorites/domain/usecases/remove_favorite_use_case.dart';
+import 'package:housely/features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:housely/features/location/data/datasources/location_local_data_source.dart';
 import 'package:housely/features/location/data/repositories/location_repo_impl.dart';
 import 'package:housely/features/location/domain/repositories/location_repo.dart';
@@ -130,6 +139,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => GoogleSignIn.instance);
+  sl.registerLazySingleton(() => AppDatabase());
 
   // ============= Data layer ==============
   sl.registerLazySingleton<OnboardingLocalDataSource>(
@@ -226,6 +236,12 @@ Future<void> initializeDependencies() async {
     () => PaymentHistoryRepoImpl(sl()),
   );
 
+  // favorite
+  sl.registerLazySingleton(() => FavoritesLocalDatasource(sl()));
+  sl.registerLazySingleton<FavoritesRepository>(
+    () => FavoriteRepositoryImpl(sl()),
+  );
+
   // ============== Domain layer ===============
   sl.registerLazySingleton(
     () => SetOnboardingStatusUsecase(
@@ -313,6 +329,12 @@ Future<void> initializeDependencies() async {
 
   // payment use case
   sl.registerLazySingleton(() => GetPaymentHistoryUseCase(sl()));
+
+  // favorite use cases
+  sl.registerLazySingleton(() => AddFavoriteUseCase(sl()));
+  sl.registerLazySingleton(() => RemoveFavoriteUseCase(sl()));
+  sl.registerLazySingleton(() => IsFavoriteUseCase(sl()));
+  sl.registerLazySingleton(() => GetFavoritesUseCase(sl()));
 
   // ============= Presentation layer =================
   sl.registerFactory(
@@ -428,4 +450,14 @@ Future<void> initializeDependencies() async {
 
   // payment
   sl.registerFactory(() => PaymentHistoryCubit(sl()));
+
+  // favorite
+  sl.registerFactory(
+    () => FavoritesBloc(
+      addFavoriteUseCase: sl(),
+      removeFavoriteUseCase: sl(),
+      getFavoritesUseCase: sl(),
+      isFavoriteUseCase: sl(),
+    ),
+  );
 }

@@ -6,6 +6,8 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/features/home/presentation/widgets/property_list.dart';
 import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 
+import '../../../favorites/presentation/bloc/favorites_bloc.dart';
+
 @RoutePage()
 class MyPropertyListPage extends StatefulWidget {
   const MyPropertyListPage({super.key});
@@ -15,6 +17,16 @@ class MyPropertyListPage extends StatefulWidget {
 }
 
 class _MyPropertyListPageState extends State<MyPropertyListPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<PropertyBloc>().add(GetAllProperties());
+      context.read<FavoritesBloc>().add(LoadFavoritesRequested());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

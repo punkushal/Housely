@@ -85,7 +85,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       OptionTile(
                         label: "Favorites",
                         iconPath: ImageConstant.favoriteIcon,
-                        onTap: () {},
+                        onTap: () {
+                          context.router.push(FavoriteRoute());
+                        },
                       ),
 
                       BlocBuilder<OwnerCubit, OwnerState>(

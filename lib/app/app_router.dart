@@ -35,5 +35,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: ReviewDetailRoute.page),
     AutoRoute(page: EditProfileRoute.page),
     AutoRoute(page: PaymentHistoryRoute.page),
+    AutoRoute(page: FavoriteRoute.page),
   ];
 }
