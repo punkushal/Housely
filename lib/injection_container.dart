@@ -105,9 +105,9 @@ import 'package:housely/features/property/domain/usecases/update_image_file.dart
 import 'package:housely/features/property/domain/usecases/update_property.dart';
 import 'package:housely/features/property/domain/usecases/upload_cover_image.dart';
 import 'package:housely/features/property/domain/usecases/upload_property_images.dart';
+import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
 import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
-import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/form/property_form_cubit.dart';
 import 'package:housely/features/review/data/datasource/review_remote_data_source.dart';
 import 'package:housely/features/review/data/repository/review_repo_impl.dart';
@@ -356,18 +356,18 @@ Future<void> initializeDependencies() async {
     () => GoogleSigninCubit(googleSigninUsecase: sl<GoogleSigninUsecase>()),
   );
 
-  // Property cubit
+  // Property bloc
   sl.registerFactory(
-    () => PropertyCubit(
+    () => PropertyCrudBloc(
+      createProperty: sl(),
+      updateProperty: sl(),
+      deleteProperty: sl(),
       uploadCoverImage: sl(),
       uploadPropertyImages: sl(),
       deleteImageFile: sl(),
-      createProperty: sl(),
-      updateImageFile: sl(),
-      updateProperty: sl(),
-      deleteProperty: sl(),
     ),
   );
+
   sl.registerFactory(() => PropertyFormCubit());
   sl.registerFactory(() => PropertyBloc(sl()));
   sl.registerFactory(() => PropertySearchBloc(sl()));
