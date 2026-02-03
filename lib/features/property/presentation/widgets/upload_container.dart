@@ -103,18 +103,19 @@ class UploadContainer extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
-    if (coverUrl != null) {
-      return CustomCacheContainer(
-        imageUrl: coverUrl!,
-        width: .infinity,
-        height: .infinity,
-      );
-    }
     // Single Image Display
     if (!hasMany && singleImage != null) {
       return ClipRRect(
         borderRadius: ResponsiveDimensions.borderRadiusSmall(context),
         child: Image.file(singleImage!, fit: BoxFit.cover),
+      );
+    }
+
+    if (coverUrl != null && !hasMany) {
+      return CustomCacheContainer(
+        imageUrl: coverUrl!,
+        width: .infinity,
+        height: .infinity,
       );
     }
 
