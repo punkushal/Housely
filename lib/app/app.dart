@@ -7,7 +7,7 @@ import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
-import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
 import 'package:housely/injection_container.dart';
 
 class MyApp extends StatelessWidget {

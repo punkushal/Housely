@@ -10,7 +10,7 @@ import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:housely/features/profile/presentation/widgets/option_tile.dart';
 import 'package:housely/features/profile/presentation/widgets/profile_section.dart';
-import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
 import 'package:housely/injection_container.dart';
 
 @RoutePage()

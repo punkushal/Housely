@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
-import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/form/property_form_cubit.dart';
 
 class FacilityList extends StatefulWidget {
   const FacilityList({super.key, this.existedFacilites});

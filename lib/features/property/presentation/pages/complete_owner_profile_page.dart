@@ -15,7 +15,7 @@ import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/core/widgets/custom_label_text_field.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/property/domain/entities/property_owner.dart';
-import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
 import 'package:image_picker/image_picker.dart';
 
 @RoutePage()
