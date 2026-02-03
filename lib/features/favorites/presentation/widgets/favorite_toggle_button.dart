@@ -30,7 +30,6 @@ class FavoriteToggleButton extends StatelessWidget {
                 : ImageConstant.favoriteIcon,
             width: ResponsiveDimensions.getSize(context, 24),
             height: ResponsiveDimensions.getHeight(context, 24),
-            fit: .scaleDown,
             colorFilter: ColorFilter.mode(AppColors.error, .srcIn),
           );
         },
