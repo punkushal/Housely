@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/property/presentation/widgets/default_upload_content.dart';
 import 'package:housely/features/property/presentation/widgets/images_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,8 +44,6 @@ class UploadContainer extends StatelessWidget {
   final Function(File)? onImageSelected;
   final Function(int)? onRemoveLocal;
   final Function(int)? onRemoveNetwork;
-
-  // final Property? property;
 
   final _picker = ImagePicker();
 
@@ -104,6 +103,13 @@ class UploadContainer extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context) {
+    if (coverUrl != null) {
+      return CustomCacheContainer(
+        imageUrl: coverUrl!,
+        width: .infinity,
+        height: .infinity,
+      );
+    }
     // Single Image Display
     if (!hasMany && singleImage != null) {
       return ClipRRect(
