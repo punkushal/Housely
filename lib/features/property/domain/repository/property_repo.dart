@@ -41,4 +41,18 @@ abstract interface class PropertyRepo {
 
   // delete individual property
   ResultVoid deleteProperty(String propertyId);
+
+  // get recommended properties
+  ResultFuture<({List<Property> data, DocumentSnapshot? lastDoc})>
+  fetchRecommendedProperties({DocumentSnapshot? lastDoc});
+
+  //TODO: get nearby properties (if user enables their location)
+  // ResultFuture<List<Property>> fetchNearbyProperties();
+
+  // get property by it's id
+  ResultFuture<Property> fetchPropertyById(String propertyId);
+
+  // get my properties (if user is owner and had their properties)
+  ResultFuture<({List<Property> data, DocumentSnapshot? lastDoc})>
+  fetchMyProperties({required String userId, DocumentSnapshot? lastDoc});
 }
