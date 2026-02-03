@@ -9,10 +9,8 @@ import 'package:housely/features/detail/presentation/widgets/custom_carousel_sli
 import 'package:housely/features/detail/presentation/widgets/image_list.dart';
 import 'package:housely/features/detail/presentation/widgets/property_detail_section.dart';
 import 'package:housely/features/favorites/presentation/widgets/favorite_toggle_button.dart';
-import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
-import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
-import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
+import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
 import 'package:housely/injection_container.dart';
 
 @RoutePage()
@@ -28,10 +26,7 @@ class DetailPage extends StatelessWidget {
         .map((item) => item['url'] as String)
         .toList();
     return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => FavoriteToggleCubit()),
-        BlocProvider(create: (context) => sl<PropertyCubit>()),
-      ],
+      providers: [BlocProvider(create: (context) => sl<PropertyCrudBloc>())],
 
       child: Builder(
         builder: (context) {
@@ -49,15 +44,10 @@ class DetailPage extends StatelessWidget {
               actions: [
                 isOwner
                     ? IconButton(
-                        onPressed: () async {
-                          await context.router.push(
+                        onPressed: () {
+                          context.router.push(
                             CreateNewPropertyRoute(property: property),
                           );
-                          if (context.mounted) {
-                            context.read<PropertyBloc>().add(
-                              GetAllProperties(),
-                            );
-                          }
                         },
                         icon: Container(
                           padding: ResponsiveDimensions.paddingAll8(context),
