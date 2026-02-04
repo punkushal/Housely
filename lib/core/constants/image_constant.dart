@@ -86,6 +86,9 @@ class ImageConstant {
   // delete confirmation image
   static final String deleteConfirmImg = "${_baseOtherUrl}delete_image.png";
 
+  // banner image
+  static final String bannerImg = "${_baseOtherUrl}banner.png";
+
   // villa images
   static final String firstVilla = "${_baseVillaUrl}villa1.jpg";
   static final String secondVilla = "${_baseVillaUrl}villa2.jpg";
