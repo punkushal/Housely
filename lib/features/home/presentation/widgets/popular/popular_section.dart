@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 import '../../../../../app/app_router.gr.dart';
 import '../../../../../core/widgets/handle_error_state.dart';
@@ -33,6 +34,7 @@ class PopularSection extends StatelessWidget {
             return SizedBox.shrink();
           }
           return Column(
+            spacing: ResponsiveDimensions.spacing16(context),
             children: [
               HeadingSection(
                 title: "Popular for you",
@@ -47,6 +49,7 @@ class PopularSection extends StatelessWidget {
                 },
               ),
               PropertyList(
+                vertical: 0,
                 horizontal: 0,
                 propertyList: properties,
                 showAll: false,

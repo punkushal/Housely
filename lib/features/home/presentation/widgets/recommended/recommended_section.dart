@@ -5,6 +5,7 @@ import 'package:housely/features/home/presentation/widgets/heading_section.dart'
 import 'package:housely/features/home/presentation/widgets/recommended/recommended_list.dart';
 
 import '../../../../../app/app_router.gr.dart';
+import '../../../../../core/responsive/responsive_dimensions.dart';
 import '../../../../../core/widgets/handle_error_state.dart';
 import '../../../../property/presentation/bloc/fetch/property_list_bloc.dart';
 
@@ -38,6 +39,7 @@ class _RecommendedSectionState extends State<RecommendedSection> {
 
           return Column(
             crossAxisAlignment: .start,
+            spacing: ResponsiveDimensions.spacing12(context),
             children: [
               HeadingSection(
                 title: 'Recommended',

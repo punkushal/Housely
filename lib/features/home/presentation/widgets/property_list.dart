@@ -33,8 +33,9 @@ class PropertyList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: showAll ? .infinity : ResponsiveDimensions.getSize(context, 400),
+      height: showAll ? .infinity : ResponsiveDimensions.getSize(context, 300),
       child: ListView.builder(
+        padding: .zero,
         itemCount: showAll ? propertyList.length : propertyList.take(3).length,
         itemBuilder: (context, index) {
           return Padding(
