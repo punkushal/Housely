@@ -1,0 +1,71 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:housely/features/home/presentation/widgets/heading_section.dart';
+import 'package:housely/features/home/presentation/widgets/recommended_list.dart';
+
+import '../../../../app/app_router.gr.dart';
+import '../../../../core/widgets/handle_error_state.dart';
+import '../../../property/presentation/bloc/fetch/property_list_bloc.dart';
+
+class RecommendedSection extends StatefulWidget {
+  const RecommendedSection({super.key});
+
+  @override
+  State<RecommendedSection> createState() => _RecommendedSectionState();
+}
+
+class _RecommendedSectionState extends State<RecommendedSection> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<PropertyListBloc>().add(GetRecommendedProperties());
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<PropertyListBloc, PropertyListState>(
+      builder: (context, state) {
+        if (state is PropertyListLoading && state.section == .recommended) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is PropertyListFailure && state.section == .recommended) {
+          return HandleErrorState(
+            message: state.message,
+            retry: () {
+              context.read<PropertyListBloc>().add(GetRecommendedProperties());
+            },
+          );
+        }
+        if (state is PropertyListLoaded) {
+          final properties = state.recommendedProperties;
+
+          if (properties == null) {
+            return SizedBox.shrink();
+          }
+
+          return Column(
+            crossAxisAlignment: .start,
+            children: [
+              HeadingSection(
+                title: 'Recommended',
+                onTapText: "See all",
+                onTap: () => context.router.push(
+                  SeeAllListRoute(
+                    appBarTitle: "Recommended",
+                    section: .recommended,
+                  ),
+                ),
+              ),
+              RecommendedList(propertyList: properties),
+            ],
+          );
+        }
+        return SizedBox.shrink();
+      },
+    );
+  }
+}
