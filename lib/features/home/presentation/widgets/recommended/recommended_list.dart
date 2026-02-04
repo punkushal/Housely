@@ -4,7 +4,7 @@ import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/home/presentation/widgets/big_card.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 
-import '../../../../app/app_router.gr.dart';
+import '../../../../../app/app_router.gr.dart';
 
 class RecommendedList extends StatelessWidget {
   const RecommendedList({super.key, required this.propertyList});

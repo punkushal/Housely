@@ -2,11 +2,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/features/home/presentation/widgets/heading_section.dart';
-import 'package:housely/features/home/presentation/widgets/recommended_list.dart';
+import 'package:housely/features/home/presentation/widgets/recommended/recommended_list.dart';
 
-import '../../../../app/app_router.gr.dart';
-import '../../../../core/widgets/handle_error_state.dart';
-import '../../../property/presentation/bloc/fetch/property_list_bloc.dart';
+import '../../../../../app/app_router.gr.dart';
+import '../../../../../core/widgets/handle_error_state.dart';
+import '../../../../property/presentation/bloc/fetch/property_list_bloc.dart';
 
 class RecommendedSection extends StatefulWidget {
   const RecommendedSection({super.key});
