@@ -59,6 +59,8 @@ import 'package:housely/features/property/domain/entities/property.dart'
     as _i29;
 import 'package:housely/features/property/domain/entities/property_owner.dart'
     as _i35;
+import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart'
+    as _i37;
 import 'package:housely/features/property/presentation/pages/complete_owner_profile_page.dart'
     as _i7;
 import 'package:housely/features/property/presentation/pages/create_new_property_page.dart'
@@ -781,7 +783,7 @@ class MyPropertyListRoute extends _i27.PageRouteInfo<void> {
   static _i27.PageInfo page = _i27.PageInfo(
     name,
     builder: (data) {
-      return const _i19.MyPropertyListPage();
+      return _i27.WrappedRoute(child: const _i19.MyPropertyListPage());
     },
   );
 }
@@ -915,10 +917,15 @@ class SeeAllListRoute extends _i27.PageRouteInfo<SeeAllListRouteArgs> {
   SeeAllListRoute({
     _i28.Key? key,
     required String appBarTitle,
+    required _i37.PropertySection section,
     List<_i27.PageRouteInfo>? children,
   }) : super(
          SeeAllListRoute.name,
-         args: SeeAllListRouteArgs(key: key, appBarTitle: appBarTitle),
+         args: SeeAllListRouteArgs(
+           key: key,
+           appBarTitle: appBarTitle,
+           section: section,
+         ),
          initialChildren: children,
        );
 
@@ -928,32 +935,44 @@ class SeeAllListRoute extends _i27.PageRouteInfo<SeeAllListRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<SeeAllListRouteArgs>();
-      return _i24.SeeAllListPage(key: args.key, appBarTitle: args.appBarTitle);
+      return _i24.SeeAllListPage(
+        key: args.key,
+        appBarTitle: args.appBarTitle,
+        section: args.section,
+      );
     },
   );
 }
 
 class SeeAllListRouteArgs {
-  const SeeAllListRouteArgs({this.key, required this.appBarTitle});
+  const SeeAllListRouteArgs({
+    this.key,
+    required this.appBarTitle,
+    required this.section,
+  });
 
   final _i28.Key? key;
 
   final String appBarTitle;
 
+  final _i37.PropertySection section;
+
   @override
   String toString() {
-    return 'SeeAllListRouteArgs{key: $key, appBarTitle: $appBarTitle}';
+    return 'SeeAllListRouteArgs{key: $key, appBarTitle: $appBarTitle, section: $section}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! SeeAllListRouteArgs) return false;
-    return key == other.key && appBarTitle == other.appBarTitle;
+    return key == other.key &&
+        appBarTitle == other.appBarTitle &&
+        section == other.section;
   }
 
   @override
-  int get hashCode => key.hashCode ^ appBarTitle.hashCode;
+  int get hashCode => key.hashCode ^ appBarTitle.hashCode ^ section.hashCode;
 }
 
 /// generated route for
