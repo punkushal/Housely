@@ -7,6 +7,8 @@ import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 
+import '../../../../core/extensions/number_extension.dart';
+
 class BookingPropertyCard extends StatelessWidget {
   const BookingPropertyCard({super.key, required this.property});
   final Property property;
@@ -69,7 +71,7 @@ class BookingPropertyCard extends StatelessWidget {
               ),
               SizedBox(height: ResponsiveDimensions.spacing12(context)),
               Text(
-                "\$${property.price.amount}/${isMonth ? 'month' : 'night'}",
+                "Rs${property.price.amount.toInt().toCompact}/${isMonth ? 'month' : 'night'}",
                 style: AppTextStyle.labelSemiBold(
                   context,
                   fontSize: 10,
@@ -80,13 +82,17 @@ class BookingPropertyCard extends StatelessWidget {
           ),
 
           // rating
-          Row(
-            children: [
-              SvgPicture.asset(ImageConstant.starIcon),
-              //TODO: later actual rating will be added
-              Text('4.8', style: AppTextStyle.labelBold(context, fontSize: 10)),
-            ],
-          ),
+          property.rating.averageRating == 0
+              ? SizedBox.shrink()
+              : Row(
+                  children: [
+                    SvgPicture.asset(ImageConstant.starIcon),
+                    Text(
+                      property.rating.averageRating.toStringAsFixed(1),
+                      style: AppTextStyle.labelBold(context, fontSize: 10),
+                    ),
+                  ],
+                ),
         ],
       ),
     );
