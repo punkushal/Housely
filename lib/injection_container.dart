@@ -89,7 +89,7 @@ import 'package:housely/features/profile/data/repository/profile_repo_impl.dart'
 import 'package:housely/features/profile/domain/repository/profile_repo.dart';
 import 'package:housely/features/profile/domain/usecases/update_user_profile_use_case.dart';
 import 'package:housely/features/property/data/datasources/app_write_data_source.dart';
-import 'package:housely/features/property/data/datasources/firebase_remote_data_source.dart';
+import 'package:housely/features/property/data/datasources/property_remote_data_source.dart';
 import 'package:housely/features/property/data/repository/owner_repo_impl.dart';
 import 'package:housely/features/property/data/repository/property_repo_impl.dart';
 import 'package:housely/features/property/domain/repository/owner_repo.dart';
@@ -98,6 +98,9 @@ import 'package:housely/features/property/domain/usecases/create_owner_profile.d
 import 'package:housely/features/property/domain/usecases/create_property.dart';
 import 'package:housely/features/property/domain/usecases/delete_image_file.dart';
 import 'package:housely/features/property/domain/usecases/delete_property.dart';
+import 'package:housely/features/property/domain/usecases/fetch/get_my_properties_use_case.dart';
+import 'package:housely/features/property/domain/usecases/fetch/get_property_by_id_use_case.dart';
+import 'package:housely/features/property/domain/usecases/fetch/get_recommended_properties_use_case.dart';
 import 'package:housely/features/property/domain/usecases/fetch_all_properties.dart';
 import 'package:housely/features/property/domain/usecases/get_owner_profile.dart';
 import 'package:housely/features/property/domain/usecases/search_and_filter.dart';
@@ -106,7 +109,7 @@ import 'package:housely/features/property/domain/usecases/update_property.dart';
 import 'package:housely/features/property/domain/usecases/upload_cover_image.dart';
 import 'package:housely/features/property/domain/usecases/upload_property_images.dart';
 import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
-import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
+import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/form/property_form_cubit.dart';
 import 'package:housely/features/review/data/datasource/review_remote_data_source.dart';
@@ -159,7 +162,7 @@ Future<void> initializeDependencies() async {
   );
 
   sl.registerLazySingleton(
-    () => FirebaseRemoteDataSource(
+    () => PropertyRemoteDataSource(
       firestore: sl<FirebaseFirestore>(),
       auth: sl<FirebaseAuth>(),
     ),
@@ -177,7 +180,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<PropertyRepo>(
     () => PropertyRepoImpl(
       dataSource: sl<AppwriteStorageDataSource>(),
-      firebase: sl<FirebaseRemoteDataSource>(),
+      firebase: sl<PropertyRemoteDataSource>(),
     ),
   );
 
@@ -275,6 +278,9 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => UpdateProperty(sl()));
   sl.registerLazySingleton(() => DeleteProperty(sl()));
   sl.registerLazySingleton(() => SearchAndFilter(sl()));
+  sl.registerLazySingleton(() => GetPropertyByIdUseCase(sl()));
+  sl.registerLazySingleton(() => GetRecommendedPropertiesUseCase(sl()));
+  sl.registerLazySingleton(() => GetMyPropertiesUseCase(sl()));
 
   // owner use case
   sl.registerLazySingleton(() => CreateOwnerProfile(sl()));
@@ -365,11 +371,19 @@ Future<void> initializeDependencies() async {
       uploadCoverImage: sl(),
       uploadPropertyImages: sl(),
       deleteImageFile: sl(),
+      getPropertyByIdUseCase: sl(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => PropertyListBloc(
+      fetchAllProperties: sl(),
+      getRecommendedPropertiesUseCase: sl(),
+      getMyPropertiesUseCase: sl(),
     ),
   );
 
   sl.registerFactory(() => PropertyFormCubit());
-  sl.registerFactory(() => PropertyBloc(sl()));
   sl.registerFactory(() => PropertySearchBloc(sl()));
 
   sl.registerFactory(
