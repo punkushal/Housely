@@ -9,15 +9,15 @@ import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:housely/features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:housely/features/home/data/bottom_nav_list.dart';
-import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
+import 'package:housely/features/home/presentation/widgets/banner/banner_section.dart';
 import 'package:housely/features/home/presentation/widgets/custom_tab_item.dart';
-import 'package:housely/features/home/presentation/widgets/heading_section.dart';
 import 'package:housely/features/home/presentation/widgets/icon_wrapper.dart';
-import 'package:housely/features/home/presentation/widgets/nearby_list.dart';
-import 'package:housely/features/home/presentation/widgets/recommended_list.dart';
-import 'package:housely/features/home/presentation/widgets/top_location_list.dart';
+import 'package:housely/features/home/presentation/widgets/popular/popular_section.dart';
+import 'package:housely/features/home/presentation/widgets/recommended/recommended_section.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
 import 'package:housely/injection_container.dart';
 
 @RoutePage()
@@ -28,7 +28,7 @@ class TabWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => FavoriteToggleCubit()),
+        BlocProvider(create: (context) => sl<PropertyListBloc>()),
         BlocProvider(
           create: (context) => sl<ProfileCubit>()
             ..setProfileUrl(
@@ -100,119 +100,132 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<PropertyListBloc>().add(GetAllProperties());
+      context.read<PropertyListBloc>().add(GetRecommendedProperties());
+      context.read<FavoritesBloc>().add(LoadFavoritesRequested());
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          mainAxisSize: .min,
-          children: [
-            Row(
-              children: [
-                Text(
-                  "Location",
-                  style: AppTextStyle.labelMedium(
-                    context,
-                    fontSize: 12,
-                    color: AppColors.textHint,
+      body: BlocBuilder<PropertyListBloc, PropertyListState>(
+        builder: (context, state) {
+          if (state is PropertyListLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                title: Column(
+                  mainAxisSize: .min,
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(
+                      "Location",
+                      style: AppTextStyle.labelMedium(
+                        context,
+                        fontSize: 12,
+                        color: AppColors.textHint,
+                      ),
+                    ),
+
+                    Row(
+                      spacing: ResponsiveDimensions.getSize(context, 2),
+                      children: [
+                        SvgPicture.asset(
+                          ImageConstant.locationFilledIcon,
+                          height: ResponsiveDimensions.getSize(context, 24),
+                        ),
+                        SizedBox(
+                          width: ResponsiveDimensions.getSize(context, 92),
+                          child: Text(
+                            widget.address != null
+                                ? widget.address!
+                                : 'Home page',
+                            overflow: .ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+
+                actionsPadding: ResponsiveDimensions.paddingOnly(
+                  context,
+                  right: 18,
+                ),
+                actions: [
+                  IconWrapper(iconPath: ImageConstant.notificationIcon),
+                  ResponsiveDimensions.gapW8(context),
+                  IconWrapper(
+                    iconPath: ImageConstant.chatIcon,
+                    onTap: () => context.router.push(ChatListRoute()),
                   ),
-                ),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  color: AppColors.primaryPressed,
-                ),
-              ],
-            ),
-            Row(
-              spacing: ResponsiveDimensions.getSize(context, 2),
-              children: [
-                SvgPicture.asset(
-                  ImageConstant.locationFilledIcon,
-                  height: ResponsiveDimensions.getSize(context, 24),
-                ),
-                SizedBox(
-                  width: ResponsiveDimensions.getSize(context, 92),
-                  child: Text(
-                    widget.address != null ? widget.address! : 'Home page',
-                    overflow: .ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconWrapper(iconPath: ImageConstant.notificationIcon),
-          ResponsiveDimensions.gapW8(context),
-          IconWrapper(
-            iconPath: ImageConstant.chatIcon,
-            onTap: () => context.router.push(ChatListRoute()),
-          ),
-          ResponsiveDimensions.gapW24(context),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: ResponsiveDimensions.paddingSymmetric(
-            context,
-            horizontal: 24,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              spacing: ResponsiveDimensions.getHeight(context, 16),
-              children: [
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 16)),
+                ],
+              ),
 
-                // Search section
-                CustomTextField(
-                  prefixIcon: SvgPicture.asset(
-                    ImageConstant.searchIcon,
-                    height: ResponsiveDimensions.getHeight(context, 24),
-                    width: ResponsiveDimensions.getSize(context, 24),
-                    fit: .scaleDown,
-                  ),
-                  hintText: "Search Property",
-                  readOnly: true,
-                  onTap: () => context.router.push(ExploreRoute()),
-                  contentPadding: ResponsiveDimensions.paddingSymmetric(
-                    context,
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
+              // content
+              SliverPadding(
+                padding: ResponsiveDimensions.paddingSymmetric(
+                  context,
+                  horizontal: 24,
                 ),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    Column(
+                      spacing: ResponsiveDimensions.getHeight(context, 16),
+                      children: [
+                        SizedBox(
+                          height: ResponsiveDimensions.getHeight(context, 16),
+                        ),
 
-                // banner section which i will ask dai and then work on it
+                        // Search section
+                        CustomTextField(
+                          prefixIcon: SvgPicture.asset(
+                            ImageConstant.searchIcon,
+                            height: ResponsiveDimensions.getHeight(context, 24),
+                            width: ResponsiveDimensions.getSize(context, 24),
+                            fit: .scaleDown,
+                          ),
+                          hintText: "Search Property",
+                          readOnly: true,
+                          onTap: () => context.router.push(ExploreRoute()),
+                          contentPadding: ResponsiveDimensions.paddingSymmetric(
+                            context,
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                        ),
 
-                // recommended section
-                HeadingSection(
-                  title: 'Recommended',
-                  onTapText: "See all",
-                  onTap: () => context.router.push(
-                    SeeAllListRoute(appBarTitle: "Recommended"),
-                  ),
+                        // banner section
+                        BannerSection(),
+
+                        // recommended section
+                        RecommendedSection(),
+
+                        // SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
+                        // // nearby section : later data fetched from internet with current logged in near properties
+                        // HeadingSection(title: 'Nearby', onTapText: "See all"),
+                        // NearbyList(),
+                        SizedBox(
+                          height: ResponsiveDimensions.getSize(context, 8),
+                        ),
+
+                        // popular section
+                        PopularSection(),
+                      ],
+                    ),
+                  ]),
                 ),
-                RecommendedList(),
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
-                // nearby section : later data fetched from internet with current logged in near properties
-                HeadingSection(title: 'Nearby', onTapText: "See all"),
-                NearbyList(),
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 4)),
-
-                // top location section
-                HeadingSection(title: "Top Locations", onTapText: "See all"),
-                TopLocationList(),
-
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
-                HeadingSection(title: "Popular for you", onTapText: "See all"),
-
-                // Popular property list
-                // SizedBox(
-                //   height: ResponsiveDimensions.getHeight(context, 400),
-                //   child: PropertyList(horizontal: 0),
-                // ),
-              ],
-            ),
-          ),
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
