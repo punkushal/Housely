@@ -245,7 +245,7 @@ class ReviewDetailPage extends StatelessWidget {
                     builder: (context, state) {
                       final isReviewer =
                           (authState as Authenticated).currentUser!.uid ==
-                          review.reviewId;
+                          review.userId;
                       return isReviewer
                           ? Padding(
                               padding: ResponsiveDimensions.paddingSymmetric(
