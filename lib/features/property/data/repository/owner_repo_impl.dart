@@ -7,13 +7,13 @@ import 'package:housely/core/error/failure.dart';
 import 'package:housely/core/utils/handle_error.dart';
 import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/property/data/datasources/app_write_data_source.dart';
-import 'package:housely/features/property/data/datasources/firebase_remote_data_source.dart';
+import 'package:housely/features/property/data/datasources/property_remote_data_source.dart';
 import 'package:housely/features/property/data/models/property_owner_model.dart';
 import 'package:housely/features/property/domain/entities/property_owner.dart';
 import 'package:housely/features/property/domain/repository/owner_repo.dart';
 
 class OwnerRepoImpl implements OwnerRepo {
-  final FirebaseRemoteDataSource firebase;
+  final PropertyRemoteDataSource firebase;
   final AppwriteStorageDataSource dataSource;
 
   OwnerRepoImpl({required this.firebase, required this.dataSource});

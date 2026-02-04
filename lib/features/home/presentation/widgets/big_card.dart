@@ -1,37 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
+import 'package:housely/core/extensions/number_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
-import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
+import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
+import 'package:housely/features/favorites/presentation/widgets/favorite_toggle_button.dart';
+import 'package:housely/features/property/domain/entities/property.dart';
 
 class BigCard extends StatelessWidget {
-  const BigCard({
-    super.key,
-    required this.price,
-    required this.imagePath,
-    required this.propertyName,
-    required this.location,
-    this.onFavorite,
-    this.navigateTo,
-  });
+  const BigCard({super.key, required this.property, this.navigateTo});
 
-  /// per month price
-  final double price;
-
-  /// image path
-  final String imagePath;
-
-  /// property name
-  final String propertyName;
-
-  /// location
-  final String location;
-
-  /// favorite toggle function
-  final void Function()? onFavorite;
+  /// property
+  final Property property;
 
   /// navigation to detail page
   final void Function()? navigateTo;
@@ -42,7 +24,7 @@ class BigCard extends StatelessWidget {
       onTap: navigateTo,
       child: Container(
         width: ResponsiveDimensions.getSize(context, 224),
-        height: ResponsiveDimensions.getHeight(context, 164),
+        height: ResponsiveDimensions.getSize(context, 164),
         decoration: BoxDecoration(
           borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
         ),
@@ -51,7 +33,11 @@ class BigCard extends StatelessWidget {
             // later image will come from network
             ClipRRect(
               borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
-              child: Image.asset(imagePath),
+              child: CustomCacheContainer(
+                imageUrl: property.media.coverImage['url'],
+                width: .infinity,
+                height: .infinity,
+              ),
             ),
             Padding(
               padding: ResponsiveDimensions.paddingOnly(
@@ -66,7 +52,7 @@ class BigCard extends StatelessWidget {
                 children: [
                   // price container
                   Container(
-                    height: ResponsiveDimensions.getHeight(context, 26),
+                    height: ResponsiveDimensions.getSize(context, 26),
                     padding: ResponsiveDimensions.paddingSymmetric(
                       context,
                       horizontal: 8,
@@ -80,14 +66,16 @@ class BigCard extends StatelessWidget {
                     ),
                     child: RichText(
                       text: TextSpan(
-                        text: "\$${price.toString()}",
+                        text: "Rs${property.price.amount.toInt().toCompact}",
                         style: AppTextStyle.labelBold(
                           context,
                           color: AppColors.primaryPressed,
                         ),
                         children: [
                           TextSpan(
-                            text: "/month",
+                            text: property.type.name == 'house'
+                                ? '/month'
+                                : '/night',
                             style: AppTextStyle.labelRegular(
                               context,
                               color: AppColors.textHint,
@@ -101,76 +89,49 @@ class BigCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: .spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          // property name
-                          Text(
-                            propertyName,
-                            style: AppTextStyle.bodySemiBold(
-                              context,
-                              color: AppColors.surface,
-                            ),
-                          ),
-
-                          // location
-                          Row(
-                            children: [
-                              SvgPicture.asset(ImageConstant.locationIcon),
-                              Text(
-                                location,
-                                style: AppTextStyle.bodyRegular(
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: .start,
+                          children: [
+                            // property name
+                            SizedBox(
+                              width: ResponsiveDimensions.getSize(context, 124),
+                              child: Text(
+                                property.name,
+                                style: AppTextStyle.bodySemiBold(
                                   context,
-                                  color: AppColors.border,
+                                  color: AppColors.surface,
                                 ),
+                                overflow: .ellipsis,
                               ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      // favorite button
-                      GestureDetector(
-                        onTap: onFavorite,
-                        child: Container(
-                          width: ResponsiveDimensions.getSize(context, 24),
-                          height: ResponsiveDimensions.getHeight(context, 24),
-                          padding: ResponsiveDimensions.paddingAll4(context),
-                          decoration: BoxDecoration(
-                            shape: .circle,
-                            color: AppColors.surface,
-                          ),
-                          child:
-                              BlocSelector<
-                                FavoriteToggleCubit,
-                                FavoriteToggleState,
-                                bool
-                              >(
-                                selector: (state) {
-                                  return state.isSelected;
-                                },
-                                builder: (context, state) {
-                                  return SvgPicture.asset(
-                                    state
-                                        ? ImageConstant.favoriteFilledIcon
-                                        : ImageConstant.favoriteIcon,
-                                    width: ResponsiveDimensions.getSize(
+                            ),
+
+                            // location
+                            Row(
+                              mainAxisSize: .min,
+                              children: [
+                                SvgPicture.asset(ImageConstant.locationIcon),
+                                SizedBox(
+                                  width: ResponsiveDimensions.getSize(
+                                    context,
+                                    124,
+                                  ),
+                                  child: Text(
+                                    property.location.address,
+                                    style: AppTextStyle.bodyRegular(
                                       context,
-                                      16,
+                                      color: AppColors.border,
                                     ),
-                                    height: ResponsiveDimensions.getHeight(
-                                      context,
-                                      16,
-                                    ),
-                                    fit: .scaleDown,
-                                    colorFilter: ColorFilter.mode(
-                                      AppColors.error,
-                                      .srcIn,
-                                    ),
-                                  );
-                                },
-                              ),
+                                    overflow: .ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
+                      // favorite button
+                      FavoriteToggleButton(property: property),
                     ],
                   ),
                 ],

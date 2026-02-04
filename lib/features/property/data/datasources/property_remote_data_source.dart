@@ -6,10 +6,10 @@ import 'package:housely/features/property/data/models/property_owner_model.dart'
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/entities/property_filter_params.dart';
 
-class FirebaseRemoteDataSource {
+class PropertyRemoteDataSource {
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
-  FirebaseRemoteDataSource({required this.firestore, required this.auth});
+  PropertyRemoteDataSource({required this.firestore, required this.auth});
 
   // add newly created property data
   Future<void> addNewProperty(PropertyModel property) async {
@@ -115,16 +115,27 @@ class FirebaseRemoteDataSource {
   }
 
   // fetch all the properties
-  Future<List<Property>> fetchAllProperties() async {
+  Future<({List<Property> data, DocumentSnapshot? lastDoc})>
+  fetchAllProperties({
+    DocumentSnapshot? lastDoc,
+    int limit = TextConstants.chatListPageSize,
+  }) async {
     try {
-      final snapshot = await firestore
-          .collection(TextConstants.properties)
-          .get();
+      Query<Map<String, dynamic>> query = firestore.collection(
+        TextConstants.properties,
+      );
+
+      query = query.limit(limit);
+
+      final snapshot = await query.get();
       final jsonList = snapshot.docs;
       final propertyList = jsonList
           .map((doc) => PropertyModel.fromJson(doc.data()))
           .toList();
-      return propertyList;
+
+      final newLastDoc = jsonList.isNotEmpty ? jsonList.last : null;
+
+      return (data: propertyList, lastDoc: newLastDoc);
     } catch (e) {
       throw Exception('Failed to fetch all properties: $e');
     }
@@ -178,6 +189,95 @@ class FirebaseRemoteDataSource {
       return PropertyOwnerModel.fromJson(result.data()!);
     } catch (e) {
       throw Exception("Failed to fetch owner profile: $e");
+    }
+  }
+
+  // all fetch functionalities on properties
+
+  // get my properties
+  Future<({List<Property> data, DocumentSnapshot? lastDoc})> fetchMyProperties({
+    required String userId,
+    DocumentSnapshot? lastDoc,
+    int limit = TextConstants.chatListPageSize,
+  }) async {
+    try {
+      Query<Map<String, dynamic>> query = firestore.collection(
+        TextConstants.properties,
+      );
+
+      query = query.where('owner.ownerId', isEqualTo: userId);
+
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc);
+      }
+
+      query = query.limit(limit);
+
+      final snapshot = await query.get();
+      final jsonList = snapshot.docs;
+
+      final propertyList = jsonList
+          .map((doc) => PropertyModel.fromJson(doc.data()))
+          .toList();
+
+      final newLastDoc = jsonList.isNotEmpty ? jsonList.last : null;
+
+      return (data: propertyList, lastDoc: newLastDoc);
+    } catch (e) {
+      throw Exception('Failed to fetch my properties: $e');
+    }
+  }
+
+  // get recommended properties
+  Future<({List<Property> data, DocumentSnapshot? lastDoc})>
+  fetchRecommendedProperties({
+    DocumentSnapshot? lastDoc,
+    int limit = TextConstants.chatListPageSize,
+  }) async {
+    try {
+      Query<Map<String, dynamic>> query = firestore.collection(
+        TextConstants.properties,
+      );
+
+      query = query.where('rating.averageRating', isGreaterThanOrEqualTo: 4);
+
+      if (lastDoc != null) {
+        query = query.startAfterDocument(lastDoc);
+      }
+
+      query = query.limit(limit);
+
+      final snapshot = await query.get();
+      final jsonList = snapshot.docs;
+
+      final propertyList = jsonList
+          .map((doc) => PropertyModel.fromJson(doc.data()))
+          .toList();
+
+      final newLastDoc = jsonList.isNotEmpty ? jsonList.last : null;
+
+      return (data: propertyList, lastDoc: newLastDoc);
+    } catch (e) {
+      throw Exception('Failed to fetch recommended properties: $e');
+    }
+  }
+
+  // get property by it's ID
+  Future<Property> fetchPropertyById(String propertyId) async {
+    try {
+      final docRef = firestore
+          .collection(TextConstants.properties)
+          .doc(propertyId);
+
+      final doc = await docRef.get();
+
+      if (doc.exists && doc.data() != null) {
+        return PropertyModel.fromJson(doc.data()!);
+      } else {
+        throw Exception('Property with ID $propertyId not found');
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch property: $e");
     }
   }
 }

@@ -124,7 +124,7 @@ class ResultList extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     context.router.push(
-                      DetailRoute(property: propertyList[index]),
+                      DetailRoute(propertyId: propertyList[index].id!),
                     );
                   },
                   child: Column(

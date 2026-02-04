@@ -24,7 +24,7 @@ import 'package:housely/features/detail/presentation/widgets/review_list.dart';
 import 'package:housely/features/home/presentation/widgets/heading_section.dart';
 import 'package:housely/features/location/domain/entities/location.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
-import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
+import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
 import 'package:housely/features/review/presentation/bloc/review_bloc.dart';
 import 'package:housely/injection_container.dart';
 
@@ -38,8 +38,8 @@ class PropertyDetailSection extends StatelessWidget {
   final bool isOwner;
 
   // show dialog box before deleting
-  Future<bool> _showConfirmationDailog(BuildContext context) async {
-    return await showDialog(
+  Future<void> _showConfirmationDailog(BuildContext context) async {
+    final confirmed = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -79,6 +79,10 @@ class PropertyDetailSection extends StatelessWidget {
         ],
       ),
     );
+
+    if (confirmed == true && context.mounted) {
+      context.read<PropertyCrudBloc>().add(DeletePropertyEvent(property));
+    }
   }
 
   @override
@@ -86,17 +90,30 @@ class PropertyDetailSection extends StatelessWidget {
     return BlocProvider(
       create: (context) =>
           sl<ReviewBloc>()..add(GetAllReviews(propertyId: property.id!)),
-      child: BlocListener<PropertyCubit, PropertyState>(
+      child: BlocListener<PropertyCrudBloc, PropertyCrudState>(
         listener: (context, state) {
-          if (state is PropertyDeleted) {
-            context.pop();
-            SnackbarHelper.showSuccess(
-              context,
-              "The property is deleted",
-              showTop: true,
+          // Handle loading state - show loading dialog
+          if (state.status == .loading) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => const Center(child: CircularProgressIndicator()),
             );
-          } else if (state is PropertyError) {
-            SnackbarHelper.showError(context, state.message);
+          }
+
+          // Handle error state - close loading dialog and show error
+          if (state.status == .error) {
+            context.pop();
+            SnackbarHelper.showError(
+              context,
+              state.errorMessage ?? 'An error occurred',
+            );
+          }
+          if (state.lastOperation == .delete) {
+            context.pop();
+
+            SnackbarHelper.showSuccess(context, "Property deleted");
+            context.pop();
           }
         },
         child: Builder(
@@ -166,7 +183,7 @@ class PropertyDetailSection extends StatelessWidget {
                     // price
                     RichText(
                       text: TextSpan(
-                        text: "Rs${property.price.amount.toStringAsFixed(2)}",
+                        text: "Rs${property.price.amount.toInt().toCompact}",
                         style: AppTextStyle.labelBold(
                           context,
                           lineHeight: 18,
@@ -404,22 +421,18 @@ class PropertyDetailSection extends StatelessWidget {
                 ),
 
                 // rent button
-                BlocBuilder<PropertyCubit, PropertyState>(
+                BlocBuilder<PropertyCrudBloc, PropertyCrudState>(
                   builder: (context, state) {
+                    final isLoading = state.status == .loading;
                     if (isOwner) {
                       return CustomButton(
-                        onTap: () async {
-                          final result = await _showConfirmationDailog(context);
-                          if (result && context.mounted) {
-                            await context.read<PropertyCubit>().removeProperty(
-                              property,
-                            );
-                          }
+                        onTap: () {
+                          _showConfirmationDailog(context);
                         },
                         buttonLabel: "Delete",
                         textColor: AppColors.error,
                         isOutlined: true,
-                        isLoading: state is PropertyLoading,
+                        isLoading: isLoading,
                       );
                     }
                     return CustomButton(

@@ -7,7 +7,7 @@ import 'package:housely/core/error/failure.dart';
 import 'package:housely/core/utils/handle_error.dart';
 import 'package:housely/core/utils/typedef.dart';
 import 'package:housely/features/property/data/datasources/app_write_data_source.dart';
-import 'package:housely/features/property/data/datasources/firebase_remote_data_source.dart';
+import 'package:housely/features/property/data/datasources/property_remote_data_source.dart';
 import 'package:housely/features/property/data/models/property_model.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/entities/property_filter_params.dart';
@@ -15,7 +15,7 @@ import 'package:housely/features/property/domain/repository/property_repo.dart';
 
 class PropertyRepoImpl implements PropertyRepo {
   final AppwriteStorageDataSource dataSource;
-  final FirebaseRemoteDataSource firebase;
+  final PropertyRemoteDataSource firebase;
 
   PropertyRepoImpl({required this.dataSource, required this.firebase});
   @override
@@ -111,7 +111,8 @@ class PropertyRepoImpl implements PropertyRepo {
   }
 
   @override
-  ResultFuture<List<Property>> fetchAllProperties() async {
+  ResultFuture<({List<Property> data, DocumentSnapshot? lastDoc})>
+  fetchAllProperties({DocumentSnapshot? lastDoc}) async {
     try {
       final result = await firebase.fetchAllProperties();
       return Right(result);
@@ -180,6 +181,53 @@ class PropertyRepoImpl implements PropertyRepo {
       return Right((result.data, result.lastDoc));
     } catch (e) {
       return Left(UnknownFailure("Failed to search and filter properties: $e"));
+    }
+  }
+
+  @override
+  ResultFuture<({List<Property> data, DocumentSnapshot<Object?>? lastDoc})>
+  fetchMyProperties({
+    required String userId,
+    DocumentSnapshot<Object?>? lastDoc,
+  }) async {
+    try {
+      final result = await firebase.fetchMyProperties(
+        userId: userId,
+        lastDoc: lastDoc,
+      );
+
+      return Right(result);
+    } on FirebaseException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(ServerFailure("Failed to fetch my properties: $e"));
+    }
+  }
+
+  @override
+  ResultFuture<Property> fetchPropertyById(String propertyId) async {
+    try {
+      final result = await firebase.fetchPropertyById(propertyId);
+      return Right(result);
+    } on FirebaseException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(ServerFailure("Failed to fetch property by id: $e"));
+    }
+  }
+
+  @override
+  ResultFuture<({List<Property> data, DocumentSnapshot<Object?>? lastDoc})>
+  fetchRecommendedProperties({DocumentSnapshot<Object?>? lastDoc}) async {
+    try {
+      final result = await firebase.fetchRecommendedProperties(
+        lastDoc: lastDoc,
+      );
+      return Right(result);
+    } on FirebaseException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(ServerFailure("Failed to fetch recommended properties: $e"));
     }
   }
 }

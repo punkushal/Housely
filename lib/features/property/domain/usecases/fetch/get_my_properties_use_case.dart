@@ -2,31 +2,35 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:housely/core/usecases/usecase.dart';
 import 'package:housely/core/utils/typedef.dart';
-import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/repository/property_repo.dart';
 
-class FetchAllProperties
+import '../../entities/property.dart';
+
+class GetMyPropertiesUseCase
     implements
         UseCase<
           ({List<Property> data, DocumentSnapshot? lastDoc}),
-          FetchParam
+          MyPropertyParam
         > {
-  final PropertyRepo repo;
+  final PropertyRepo propertyRepo;
 
-  FetchAllProperties(this.repo);
+  GetMyPropertiesUseCase(this.propertyRepo);
   @override
   ResultFuture<({List<Property> data, DocumentSnapshot? lastDoc})> call(
     param,
   ) async {
-    return await repo.fetchAllProperties(lastDoc: param.lastDoc);
+    return await propertyRepo.fetchMyProperties(
+      userId: param.userId,
+      lastDoc: param.lastDoc,
+    );
   }
 }
 
-class FetchParam extends Equatable {
+class MyPropertyParam extends Equatable {
+  final String userId;
   final DocumentSnapshot? lastDoc;
 
-  const FetchParam(this.lastDoc);
-
+  const MyPropertyParam({required this.userId, this.lastDoc});
   @override
-  List<Object?> get props => [lastDoc];
+  List<Object?> get props => [userId, lastDoc];
 }

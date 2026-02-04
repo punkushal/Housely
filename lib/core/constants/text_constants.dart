@@ -26,6 +26,7 @@ class TextConstants {
   static const String rent = "Rent Now";
   static const String submit = "Submit Review";
   static const String addProperty = "Add Property";
+  static const String editProperty = "Edit Property";
   static const String complete = "Complete";
   static const String delete = "Delete";
   static const String update = "Update";

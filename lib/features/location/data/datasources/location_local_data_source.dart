@@ -1,9 +1,11 @@
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:housely/core/error/exception.dart';
-import 'package:housely/features/location/domain/entities/location.dart';
+import 'package:housely/features/location/domain/entities/location.dart'
+    as user_location;
 
 abstract interface class LocationLocalDataSource {
-  Future<Location> getCurrentLocation();
+  Future<user_location.Location> getCurrentLocation();
   Future<bool> requestLocationPermission();
   Future<bool> checkLocationPermission();
   Future<bool> isServiceEnabled();
@@ -11,14 +13,20 @@ abstract interface class LocationLocalDataSource {
 
 class LocationLocalDataSourceImpl implements LocationLocalDataSource {
   @override
-  Future<Location> getCurrentLocation() async {
+  Future<user_location.Location> getCurrentLocation() async {
     try {
       final position = await Geolocator.getCurrentPosition(
         locationSettings: LocationSettings(accuracy: .high),
       );
-      return Location(
+
+      List<Placemark> placemark = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+      return user_location.Location(
         latitude: position.latitude,
         longitude: position.longitude,
+        address: "${placemark[0].name},  ${placemark[0].administrativeArea}",
       );
     } catch (e) {
       throw PermissionException("Couldn't get the current location: $e");

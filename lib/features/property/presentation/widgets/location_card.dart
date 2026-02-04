@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
-import 'package:housely/features/property/presentation/cubit/property_form_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/form/property_form_cubit.dart';
 import 'package:housely/features/property/presentation/widgets/label.dart';
 
 class LocationCard extends StatelessWidget {

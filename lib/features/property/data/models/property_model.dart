@@ -54,8 +54,9 @@ class PropertyModel extends Property {
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       rating: PropertyRating(
-        totalReviews: json['rating']['totalReviews'],
-        averageRating: (json['rating']['averageRating'] as num).toDouble(),
+        totalReviews: json['rating']?['totalReviews'] ?? 0,
+        averageRating: (json['rating']?['averageRating'] as num? ?? 0.0)
+            .toDouble(),
       ),
     );
   }

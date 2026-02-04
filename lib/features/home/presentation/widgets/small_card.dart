@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
+import 'package:housely/core/extensions/number_extension.dart';
 import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
@@ -38,7 +39,7 @@ class SmallCard extends StatelessWidget {
     return GestureDetector(
       onTap: navigateTo,
       child: Container(
-        height: height ?? ResponsiveDimensions.getHeight(context, 84),
+        height: height ?? ResponsiveDimensions.getSize(context, 84),
         decoration: BoxDecoration(
           borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
         ),
@@ -95,7 +96,7 @@ class SmallCard extends StatelessWidget {
                   SizedBox(height: ResponsiveDimensions.getHeight(context, 5)),
                   // Property price
                   Text(
-                    "Rs${property.price.amount}/${isMonth ? "month" : "night"}",
+                    "Rs${property.price.amount.toInt().toCompact}/${isMonth ? "month" : "night"}",
                     style: AppTextStyle.labelSemiBold(
                       context,
                       fontSize: 10,
@@ -113,38 +114,43 @@ class SmallCard extends StatelessWidget {
                 // favorite section
                 FavoriteToggleButton(property: property),
                 Spacer(),
-                // rating container
-                Container(
-                  width: ResponsiveDimensions.getSize(context, 47),
-                  height: ResponsiveDimensions.getHeight(context, 26),
-                  padding: ResponsiveDimensions.paddingSymmetric(
-                    context,
-                    horizontal: 8,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.rating,
-                    borderRadius: ResponsiveDimensions.borderRadiusMedium(
-                      context,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        ImageConstant.starIcon,
-                        width: ResponsiveDimensions.getSize(context, 12),
-                        height: ResponsiveDimensions.getHeight(context, 12),
-                        fit: .scaleDown,
-                      ),
 
-                      // rating
-                      Text(
-                        '4.5',
-                        style: AppTextStyle.labelBold(context, fontSize: 10),
+                // rating container
+                property.rating.averageRating == 0
+                    ? SizedBox.shrink()
+                    : Container(
+                        width: ResponsiveDimensions.getSize(context, 40),
+                        height: ResponsiveDimensions.getHeight(context, 26),
+                        padding: ResponsiveDimensions.paddingSymmetric(
+                          context,
+                          horizontal: 4,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.rating,
+                          borderRadius: ResponsiveDimensions.borderRadiusMedium(
+                            context,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              ImageConstant.starIcon,
+                              width: ResponsiveDimensions.spacing12(context),
+                              height: ResponsiveDimensions.spacing12(context),
+                            ),
+
+                            // rating
+                            Text(
+                              property.rating.averageRating.toStringAsFixed(1),
+                              style: AppTextStyle.labelBold(
+                                context,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ],

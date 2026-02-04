@@ -4,117 +4,174 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_carousel_slider.dart';
 import 'package:housely/features/detail/presentation/widgets/image_list.dart';
 import 'package:housely/features/detail/presentation/widgets/property_detail_section.dart';
 import 'package:housely/features/favorites/presentation/widgets/favorite_toggle_button.dart';
-import 'package:housely/features/home/presentation/cubit/favorite_toggle_cubit.dart';
-import 'package:housely/features/property/domain/entities/property.dart';
-import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
-import 'package:housely/features/property/presentation/cubit/property_cubit.dart';
+import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
 import 'package:housely/injection_container.dart';
 
 @RoutePage()
 class DetailPage extends StatelessWidget {
-  const DetailPage({super.key, required this.property});
+  const DetailPage({super.key, required this.propertyId});
 
-  /// actual property data
-  final Property property;
+  final String propertyId;
   @override
   Widget build(BuildContext context) {
-    final urls = (property.media.gallery['images'] as List)
-        .where((element) => element.containsKey("url"))
-        .map((item) => item['url'] as String)
-        .toList();
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => FavoriteToggleCubit()),
-        BlocProvider(create: (context) => sl<PropertyCubit>()),
-      ],
+    return BlocProvider(
+      create: (context) =>
+          sl<PropertyCrudBloc>()..add(LoadNetworkPropertyEvent(propertyId)),
 
       child: Builder(
         builder: (context) {
-          final authState = context.read<AuthCubit>().state;
-          final user = authState as Authenticated;
-          final isOwner = user.currentUser!.uid == property.owner.ownerId;
           return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              title: Text('Details'),
-              actionsPadding: ResponsiveDimensions.paddingOnly(
-                context,
-                right: 18,
-              ),
-              actions: [
-                isOwner
-                    ? IconButton(
-                        onPressed: () async {
-                          await context.router.push(
-                            CreateNewPropertyRoute(property: property),
-                          );
-                          if (context.mounted) {
-                            context.read<PropertyBloc>().add(
-                              GetAllProperties(),
-                            );
-                          }
-                        },
-                        icon: Container(
-                          padding: ResponsiveDimensions.paddingAll8(context),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.7),
-                            borderRadius: BorderRadius.circular(12),
+            body: BlocBuilder<PropertyCrudBloc, PropertyCrudState>(
+              builder: (context, state) {
+                // Handle loaidng state
+                if (state.status == .loading && state.netWorkProperty == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                // Handle error state
+                if (state.status == .error) {
+                  return _buildErrorState(context, state.errorMessage);
+                }
+
+                // Handle no data state
+                final property = state.netWorkProperty;
+                if (property == null) {
+                  return const Center(child: Text('Property not found'));
+                }
+
+                // Extract gallery URLs for display
+                final urls = (property.media.gallery['images'] as List)
+                    .where((element) => element.containsKey("url"))
+                    .map((item) => item['url'] as String)
+                    .toList();
+
+                // Check if current user is the owner
+                final authState = context.read<AuthCubit>().state;
+                final user = authState as Authenticated;
+                final isOwner = user.currentUser!.uid == property.owner.ownerId;
+                return CustomScrollView(
+                  slivers: [
+                    // AppBar as sliver for better scroll behavior
+                    SliverAppBar(
+                      backgroundColor: Colors.transparent,
+                      title: const Text('Details'),
+                      floating: true,
+                      pinned: false,
+                      actionsPadding: ResponsiveDimensions.paddingOnly(
+                        context,
+                        right: 18,
+                      ),
+                      actions: [
+                        isOwner
+                            ? IconButton(
+                                onPressed: () async {
+                                  // Navigate to edit page and wait for result
+                                  final result = await context.router.push(
+                                    CreateNewPropertyRoute(property: property),
+                                  );
+
+                                  // If edit was successful, refresh the property data
+                                  if (result == true && context.mounted) {
+                                    context.read<PropertyCrudBloc>().add(
+                                      LoadNetworkPropertyEvent(propertyId),
+                                    );
+                                  }
+                                },
+                                icon: Container(
+                                  padding: ResponsiveDimensions.paddingAll8(
+                                    context,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(
+                                    Icons.edit_rounded,
+                                    color: AppColors.background,
+                                    size: ResponsiveDimensions.spacing20(
+                                      context,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : FavoriteToggleButton(property: property),
+                      ],
+                    ),
+
+                    // Content
+                    SliverPadding(
+                      padding: ResponsiveDimensions.paddingSymmetric(
+                        context,
+                        horizontal: 24,
+                      ),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate([
+                          // Property image carousel
+                          CustomCarouselSlider(
+                            imageUrls: [
+                              property.media.coverImage['url'],
+                              ...urls,
+                            ],
                           ),
-                          child: Icon(
-                            Icons.edit_rounded,
-                            color: AppColors.background,
-                            size: ResponsiveDimensions.spacing20(context),
+
+                          SizedBox(
+                            height: ResponsiveDimensions.getHeight(context, 12),
                           ),
-                        ),
-                      )
-                    :
-                      // favorite icon button
-                      FavoriteToggleButton(property: property),
-              ],
-            ),
-            body: SafeArea(
-              child: Padding(
-                padding: ResponsiveDimensions.paddingSymmetric(
-                  context,
-                  horizontal: 24,
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    spacing: ResponsiveDimensions.getHeight(context, 12),
-                    children: [
-                      // property image carousel
-                      CustomCarouselSlider(
-                        imageUrls: [property.media.coverImage['url'], ...urls],
-                      ),
 
-                      // images list
-                      ImageList(imageUrls: urls),
+                          // Images list
+                          ImageList(imageUrls: urls),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 12),
-                      ),
+                          SizedBox(
+                            height: ResponsiveDimensions.getHeight(context, 12),
+                          ),
 
-                      // Detail section
-                      PropertyDetailSection(
-                        property: property,
-                        isOwner: isOwner,
-                      ),
+                          // Detail section
+                          PropertyDetailSection(
+                            property: property,
+                            isOwner: isOwner,
+                          ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 6),
+                          SizedBox(
+                            height: ResponsiveDimensions.getHeight(context, 6),
+                          ),
+                        ]),
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
+                  ],
+                );
+              },
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String? message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(message ?? 'Failed to load property'),
+          const SizedBox(height: 16),
+          CustomButton(
+            onTap: () {
+              // Retry loading
+              context.read<PropertyCrudBloc>().add(
+                LoadNetworkPropertyEvent(propertyId),
+              );
+            },
+            buttonLabel: 'Retry',
+          ),
+        ],
       ),
     );
   }

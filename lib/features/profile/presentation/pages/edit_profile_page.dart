@@ -10,7 +10,7 @@ import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/auth/domain/entities/app_user.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:housely/features/profile/presentation/widgets/profile_section.dart';
-import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
 import 'package:housely/features/property/domain/entities/property_owner.dart';
 
 @RoutePage()

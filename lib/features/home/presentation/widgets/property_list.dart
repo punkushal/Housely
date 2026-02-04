@@ -16,6 +16,7 @@ class PropertyList extends StatelessWidget {
     this.horizontal = 24,
     this.vertical = 12,
     required this.propertyList,
+    this.showAll = false,
   });
 
   /// property list
@@ -26,39 +27,46 @@ class PropertyList extends StatelessWidget {
 
   /// vertical padding
   final double vertical;
+
+  /// boolean checker to show all
+  final bool showAll;
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: propertyList.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: ResponsiveDimensions.paddingSymmetric(
-            context,
-            horizontal: horizontal,
-            vertical: vertical,
-          ),
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              mainAxisSize: .min,
-              spacing: ResponsiveDimensions.getSize(context, 12),
-              children: [
-                SmallCard(
-                  property: propertyList[index],
-                  height: ResponsiveDimensions.getSize(context, 72),
-                  navigateTo: () => context.router.push(
-                    DetailRoute(property: propertyList[index]),
-                  ),
-                  favoriteToggle: () =>
-                      _toggleFavorite(context, propertyList[index]),
-                ),
-
-                Divider(color: AppColors.divider),
-              ],
+    return SizedBox(
+      height: showAll ? .infinity : ResponsiveDimensions.getSize(context, 300),
+      child: ListView.builder(
+        padding: .zero,
+        itemCount: showAll ? propertyList.length : propertyList.take(3).length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: ResponsiveDimensions.paddingSymmetric(
+              context,
+              horizontal: horizontal,
+              vertical: vertical,
             ),
-          ),
-        );
-      },
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: .min,
+                spacing: ResponsiveDimensions.getSize(context, 12),
+                children: [
+                  SmallCard(
+                    property: propertyList[index],
+                    height: ResponsiveDimensions.getSize(context, 72),
+                    navigateTo: () => context.router.push(
+                      DetailRoute(propertyId: propertyList[index].id!),
+                    ),
+                    favoriteToggle: () =>
+                        _toggleFavorite(context, propertyList[index]),
+                  ),
+
+                  Divider(color: AppColors.divider),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 

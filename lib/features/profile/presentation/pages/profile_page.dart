@@ -10,7 +10,7 @@ import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:housely/features/profile/presentation/widgets/option_tile.dart';
 import 'package:housely/features/profile/presentation/widgets/profile_section.dart';
-import 'package:housely/features/property/presentation/cubit/owner_cubit.dart';
+import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
 import 'package:housely/injection_container.dart';
 
 @RoutePage()
@@ -130,30 +130,19 @@ class _ProfilePageState extends State<ProfilePage> {
                         },
                       ),
 
-                      BlocBuilder<OwnerCubit, OwnerState>(
-                        builder: (context, state) {
-                          if (state is OwnerLoaded && state.owner != null) {
-                            return Column(
-                              children: [
-                                OptionTile(
-                                  label: "My properties list",
-                                  iconPath: ImageConstant.hospitalIcon,
-                                  onTap: () {
-                                    context.router.push(MyPropertyListRoute());
-                                  },
-                                ),
+                      OptionTile(
+                        label: "My properties list",
+                        iconPath: ImageConstant.hospitalIcon,
+                        onTap: () {
+                          context.router.push(MyPropertyListRoute());
+                        },
+                      ),
 
-                                OptionTile(
-                                  label: "Booking request",
-                                  iconPath: ImageConstant.infoSquareIcon,
-                                  onTap: () {
-                                    context.router.push(BookingRequestRoute());
-                                  },
-                                ),
-                              ],
-                            );
-                          }
-                          return SizedBox.shrink();
+                      OptionTile(
+                        label: "Booking request",
+                        iconPath: ImageConstant.infoSquareIcon,
+                        onTap: () {
+                          context.router.push(BookingRequestRoute());
                         },
                       ),
                     ],
