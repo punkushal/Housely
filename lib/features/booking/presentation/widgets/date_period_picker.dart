@@ -9,25 +9,51 @@ import 'package:housely/features/booking/presentation/cubit/calendar_cubit.dart'
 import 'package:housely/features/booking/presentation/widgets/smart_property_calendar.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
 
+import '../bloc/booking_bloc.dart';
+
 class DatePeriodPicker extends StatelessWidget {
   const DatePeriodPicker({
     super.key,
     required this.propertyType,
     required this.price,
+    required this.propertyId,
   });
   final String propertyType;
+  final String propertyId;
   final double price;
   void showCalender(BuildContext context) {
     final calendarCubit = context.read<CalendarCubit>();
+    final bookingBloc = context.read<BookingBloc>();
+
+    bookingBloc.add(LoadPropertyBookingsEvent(propertyId));
+
+    // If bookings were already loaded before the bottom sheet is shown,
+    // set them immediately to avoid a race where the listener is not yet attached.
+    final currentBookingState = bookingBloc.state;
+    if (currentBookingState is PropertyBookingsLoaded) {
+      calendarCubit.setBlockedBookings(currentBookingState.bookings);
+    }
+
     showModalBottomSheet(
       context: context,
       builder: (context) => Padding(
         padding: ResponsiveDimensions.paddingSymmetric(context, horizontal: 24),
-        child: BlocProvider.value(
-          value: calendarCubit,
-          child: SmartPropertyCalendar(
-            propertyType: propertyType,
-            price: price,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: calendarCubit),
+            BlocProvider.value(value: bookingBloc),
+          ],
+          child: BlocListener<BookingBloc, BookingState>(
+            listener: (context, state) {
+              // Once the property bookings are loaded, store them in the calendar cubit
+              if (state is PropertyBookingsLoaded) {
+                calendarCubit.setBlockedBookings(state.bookings);
+              }
+            },
+            child: SmartPropertyCalendar(
+              propertyType: propertyType,
+              price: price,
+            ),
           ),
         ),
       ),

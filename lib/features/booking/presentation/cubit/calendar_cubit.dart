@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/utils/calculate_duration.dart';
 import 'package:intl/intl.dart';
 
+import '../../domain/entity/booking.dart';
+
 part 'calendar_state.dart';
 
 class CalendarCubit extends Cubit<CalendarState> {
@@ -16,6 +18,10 @@ class CalendarCubit extends Cubit<CalendarState> {
         bookingType: isHouse ? BookingType.monthly : BookingType.nightly,
       ),
     );
+  }
+
+  void setBlockedBookings(List<Booking> bookings) {
+    emit(state.copyWith(blockedBookings: bookings));
   }
 
   /// Logic for "House" (Monthly selection)

@@ -181,6 +181,7 @@ class BookingPage extends StatelessWidget {
                         DatePeriodPicker(
                           price: property.price.amount,
                           propertyType: property.type.name,
+                          propertyId: property.id!,
                         ),
 
                         // Payment section
@@ -235,7 +236,9 @@ class BookingPage extends StatelessWidget {
                                         buttonLabel = "Check status";
                                         isButtonEnabled = true;
                                         onTap = () {
-                                          context.router.push(MyBookingRoute());
+                                          context.router.replaceAll([
+                                            MyBookingRoute(),
+                                          ]);
                                         };
                                         break;
 
