@@ -28,8 +28,6 @@ import 'package:housely/features/property/presentation/bloc/crud/property_crud_b
 import 'package:housely/features/review/presentation/bloc/review_bloc.dart';
 import 'package:housely/injection_container.dart';
 
-import '../../../property/presentation/bloc/property_bloc.dart';
-
 class PropertyDetailSection extends StatelessWidget {
   const PropertyDetailSection({
     super.key,
@@ -113,7 +111,6 @@ class PropertyDetailSection extends StatelessWidget {
           }
           if (state.lastOperation == .delete) {
             context.pop();
-            context.read<PropertyBloc>().add(GetAllProperties());
 
             SnackbarHelper.showSuccess(context, "Property deleted");
             context.pop();

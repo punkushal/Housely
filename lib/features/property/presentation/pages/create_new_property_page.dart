@@ -15,7 +15,6 @@ import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/location/domain/entities/location.dart';
 import 'package:housely/features/property/domain/entities/property_owner.dart';
-import 'package:housely/features/property/presentation/bloc/property_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/form/property_form_cubit.dart';
 import 'package:housely/features/property/presentation/widgets/enum_drop_down.dart';
@@ -341,12 +340,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
             else if (state.status == .success) {
               context.pop();
 
-              // refresh the property list afte successful operation
-              // later i don't need this bcuz in detail page i will fetch individual property data using property id
-              context.read<PropertyBloc>().add(GetAllProperties());
-
               // Show success messsage based on operation type
-
               final message = state.lastOperation == PropertyOperation.create
                   ? 'Property created successfully'
                   : 'Property updated successfully';
