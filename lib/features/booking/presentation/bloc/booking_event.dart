@@ -20,6 +20,14 @@ final class ListenBookingChangesEvent extends BookingEvent {}
 
 final class LoadBookingRequestEvent extends BookingEvent {}
 
+class LoadPropertyBookingsEvent extends BookingEvent {
+  final String propertyId;
+  const LoadPropertyBookingsEvent(this.propertyId);
+
+  @override
+  List<Object> get props => [propertyId];
+}
+
 final class ResponseBookingRequestEvent extends BookingEvent {
   final BookingStatus status;
   final String bookingId;

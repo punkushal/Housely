@@ -31,6 +31,7 @@ import 'package:housely/features/booking/data/repository/esewa_payment_repo_impl
 import 'package:housely/features/booking/domain/repository/booking_repo.dart';
 import 'package:housely/features/booking/domain/repository/esewa_payment_repo.dart';
 import 'package:housely/features/booking/domain/usecases/get_booking_request_list_use_case.dart';
+import 'package:housely/features/booking/domain/usecases/get_property_bookings_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/initiate_esewa_pay_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/listen_booking_changes_use_case.dart';
 import 'package:housely/features/booking/domain/usecases/request_booking_use_case.dart';
@@ -305,6 +306,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => ListenBookingChangesUseCase(sl()));
   sl.registerLazySingleton(() => RespondBookingUseCase(sl()));
   sl.registerLazySingleton(() => GetBookingRequestListUseCase(sl()));
+  sl.registerLazySingleton(() => GetPropertyBookingsUseCase(sl()));
 
   // payment use cases
   sl.registerLazySingleton(() => InitiateEsewaPayUseCase(sl()));
@@ -418,6 +420,7 @@ Future<void> initializeDependencies() async {
       listenBookingChangesUseCase: sl(),
       respondBookingUseCase: sl(),
       getBookingRequestListUseCase: sl(),
+      getPropertyBookingsUseCase: sl(),
     ),
   );
 
