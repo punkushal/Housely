@@ -32,37 +32,40 @@ class PropertyList extends StatelessWidget {
   final bool showAll;
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: showAll ? propertyList.length : propertyList.take(3).length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: ResponsiveDimensions.paddingSymmetric(
-            context,
-            horizontal: horizontal,
-            vertical: vertical,
-          ),
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              mainAxisSize: .min,
-              spacing: ResponsiveDimensions.getSize(context, 12),
-              children: [
-                SmallCard(
-                  property: propertyList[index],
-                  height: ResponsiveDimensions.getSize(context, 72),
-                  navigateTo: () => context.router.push(
-                    DetailRoute(propertyId: propertyList[index].id!),
-                  ),
-                  favoriteToggle: () =>
-                      _toggleFavorite(context, propertyList[index]),
-                ),
-
-                Divider(color: AppColors.divider),
-              ],
+    return SizedBox(
+      height: showAll ? .infinity : ResponsiveDimensions.getSize(context, 400),
+      child: ListView.builder(
+        itemCount: showAll ? propertyList.length : propertyList.take(3).length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: ResponsiveDimensions.paddingSymmetric(
+              context,
+              horizontal: horizontal,
+              vertical: vertical,
             ),
-          ),
-        );
-      },
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: .min,
+                spacing: ResponsiveDimensions.getSize(context, 12),
+                children: [
+                  SmallCard(
+                    property: propertyList[index],
+                    height: ResponsiveDimensions.getSize(context, 72),
+                    navigateTo: () => context.router.push(
+                      DetailRoute(propertyId: propertyList[index].id!),
+                    ),
+                    favoriteToggle: () =>
+                        _toggleFavorite(context, propertyList[index]),
+                  ),
+
+                  Divider(color: AppColors.divider),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
