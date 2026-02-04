@@ -234,25 +234,37 @@ class ReviewDetailPage extends StatelessWidget {
                         SizedBox(
                           height: ResponsiveDimensions.spacing32(context),
                         ),
-                        BlocBuilder<ReviewBloc, ReviewState>(
-                          builder: (context, state) {
-                            return CustomButton(
-                              onTap: () => _confirmReviewDeletion(context),
-                              buttonLabel: "Delete Review",
-                              isOutlined: true,
-                              textColor: AppColors.error,
-                              isLoading: state.status == .loading,
-                            );
-                          },
-                        ),
-
-                        SizedBox(
-                          height: ResponsiveDimensions.spacing4(context),
-                        ),
                       ],
                     ),
                   ),
                 ),
+              ),
+              bottomSheet: BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, authState) {
+                  return BlocBuilder<ReviewBloc, ReviewState>(
+                    builder: (context, state) {
+                      final isReviewer =
+                          (authState as Authenticated).currentUser!.uid ==
+                          review.userId;
+                      return isReviewer
+                          ? Padding(
+                              padding: ResponsiveDimensions.paddingSymmetric(
+                                context,
+                                horizontal: 22,
+                                vertical: 10,
+                              ),
+                              child: CustomButton(
+                                onTap: () => _confirmReviewDeletion(context),
+                                buttonLabel: "Delete Review",
+                                isOutlined: true,
+                                textColor: AppColors.error,
+                                isLoading: state.status == .loading,
+                              ),
+                            )
+                          : SizedBox.shrink();
+                    },
+                  );
+                },
               ),
             ),
           );

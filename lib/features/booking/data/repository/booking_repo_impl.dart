@@ -69,4 +69,16 @@ class BookingRepoImpl implements BookingRepo {
       return Left(ServerFailure("Failed to fetch booking request list"));
     }
   }
+
+  @override
+  ResultFuture<List<Booking>> getPropertyBookings(String propertyId) async {
+    try {
+      final result = await dataSource.getPropertyBookings(propertyId);
+      return Right(result);
+    } on FirebaseException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(ServerFailure("Failed to fetch bookings"));
+    }
+  }
 }

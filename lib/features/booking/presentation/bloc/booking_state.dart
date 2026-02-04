@@ -24,6 +24,14 @@ final class BookingLoaded extends BookingState {
   List<Object> get props => [allBookings];
 }
 
+class PropertyBookingsLoaded extends BookingState {
+  final List<Booking> bookings;
+  const PropertyBookingsLoaded(this.bookings);
+
+  @override
+  List<Object> get props => [bookings];
+}
+
 final class BookingFailure extends BookingState {
   final String message;
 

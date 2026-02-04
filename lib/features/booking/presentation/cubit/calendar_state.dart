@@ -13,6 +13,9 @@ class CalendarState extends Equatable {
   final DateTime? startDate;
   final DateTime? endDate;
 
+  // blocked dates
+  final List<Booking> blockedBookings;
+
   // Calculation
   final double totalPrice;
   final int totalDuration; // Days for nightly, Months for monthly
@@ -21,6 +24,7 @@ class CalendarState extends Equatable {
     this.selectedMonths = const [],
     this.startDate,
     this.endDate,
+    this.blockedBookings = const [],
     this.totalPrice = 0.0,
     this.totalDuration = 0,
   });
@@ -64,6 +68,7 @@ class CalendarState extends Equatable {
     startDate,
     endDate,
     selectedMonths,
+    blockedBookings,
   ];
 
   CalendarState copyWith({
@@ -73,6 +78,7 @@ class CalendarState extends Equatable {
     DateTime? endDate,
     double? totalPrice,
     int? totalDuration,
+    List<Booking>? blockedBookings,
   }) {
     return CalendarState(
       bookingType: bookingType ?? this.bookingType,
@@ -81,6 +87,7 @@ class CalendarState extends Equatable {
       endDate: endDate ?? this.endDate,
       totalPrice: totalPrice ?? this.totalPrice,
       totalDuration: totalDuration ?? this.totalDuration,
+      blockedBookings: blockedBookings ?? this.blockedBookings,
     );
   }
 }

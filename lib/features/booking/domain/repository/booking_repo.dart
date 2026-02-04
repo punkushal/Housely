@@ -17,4 +17,7 @@ abstract interface class BookingRepo {
 
   // Booking request list
   ResultFuture<List<BookingDetail>> get bookingRequestList;
+
+  // Booking list whose status are accepted or completed
+  ResultFuture<List<Booking>> getPropertyBookings(String propertyId);
 }

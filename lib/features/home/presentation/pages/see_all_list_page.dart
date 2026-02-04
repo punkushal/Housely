@@ -89,7 +89,7 @@ class _SeeAllListPageState extends State<SeeAllListPage> {
                 return const Center(child: Text('No properties available'));
               }
 
-              return PropertyList(propertyList: properties);
+              return PropertyList(propertyList: properties, showAll: true);
             }
 
             return const SizedBox.shrink();

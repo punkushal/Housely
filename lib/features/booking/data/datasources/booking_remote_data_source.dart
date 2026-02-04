@@ -115,4 +115,21 @@ class BookingRemoteDataSource {
       throw Exception("Failed to fetch booking request list: $e");
     }
   }
+
+  // get all the bookings whose status is either accepted or completed
+  Future<List<Booking>> getPropertyBookings(String propertyId) async {
+    try {
+      final snapshots = await firestore
+          .collection(TextConstants.bookings)
+          .where('propertyId', isEqualTo: propertyId)
+          .where('bookingStatus', whereIn: ['accepted', 'completed'])
+          .get();
+
+      return snapshots.docs.map((doc) {
+        return BookingModel.fromJson(doc.data());
+      }).toList();
+    } catch (e) {
+      throw Exception("Failed to fetch property bookings: $e");
+    }
+  }
 }
