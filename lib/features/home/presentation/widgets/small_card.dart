@@ -38,7 +38,7 @@ class SmallCard extends StatelessWidget {
     return GestureDetector(
       onTap: navigateTo,
       child: Container(
-        height: height ?? ResponsiveDimensions.getHeight(context, 84),
+        height: height ?? ResponsiveDimensions.getSize(context, 84),
         decoration: BoxDecoration(
           borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
         ),
@@ -113,38 +113,43 @@ class SmallCard extends StatelessWidget {
                 // favorite section
                 FavoriteToggleButton(property: property),
                 Spacer(),
-                // rating container
-                Container(
-                  width: ResponsiveDimensions.getSize(context, 47),
-                  height: ResponsiveDimensions.getHeight(context, 26),
-                  padding: ResponsiveDimensions.paddingSymmetric(
-                    context,
-                    horizontal: 8,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.rating,
-                    borderRadius: ResponsiveDimensions.borderRadiusMedium(
-                      context,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        ImageConstant.starIcon,
-                        width: ResponsiveDimensions.getSize(context, 12),
-                        height: ResponsiveDimensions.getHeight(context, 12),
-                        fit: .scaleDown,
-                      ),
 
-                      // rating
-                      Text(
-                        '4.5',
-                        style: AppTextStyle.labelBold(context, fontSize: 10),
+                // rating container
+                property.rating.averageRating == 0
+                    ? SizedBox.shrink()
+                    : Container(
+                        width: ResponsiveDimensions.getSize(context, 40),
+                        height: ResponsiveDimensions.getHeight(context, 26),
+                        padding: ResponsiveDimensions.paddingSymmetric(
+                          context,
+                          horizontal: 4,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.rating,
+                          borderRadius: ResponsiveDimensions.borderRadiusMedium(
+                            context,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              ImageConstant.starIcon,
+                              width: ResponsiveDimensions.spacing12(context),
+                              height: ResponsiveDimensions.spacing12(context),
+                            ),
+
+                            // rating
+                            Text(
+                              property.rating.averageRating.toStringAsFixed(1),
+                              style: AppTextStyle.labelBold(
+                                context,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ],
