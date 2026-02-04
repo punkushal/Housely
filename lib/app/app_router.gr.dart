@@ -705,13 +705,11 @@ class MapPickerRoute extends _i27.PageRouteInfo<MapPickerRouteArgs> {
       final args = data.argsAs<MapPickerRouteArgs>(
         orElse: () => const MapPickerRouteArgs(),
       );
-      return _i27.WrappedRoute(
-        child: _i17.MapPickerPage(
-          key: args.key,
-          isOwner: args.isOwner,
-          initialLocation: args.initialLocation,
-          isVisitor: args.isVisitor,
-        ),
+      return _i17.MapPickerPage(
+        key: args.key,
+        isOwner: args.isOwner,
+        initialLocation: args.initialLocation,
+        isVisitor: args.isVisitor,
       );
     },
   );
@@ -935,10 +933,12 @@ class SeeAllListRoute extends _i27.PageRouteInfo<SeeAllListRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<SeeAllListRouteArgs>();
-      return _i24.SeeAllListPage(
-        key: args.key,
-        appBarTitle: args.appBarTitle,
-        section: args.section,
+      return _i27.WrappedRoute(
+        child: _i24.SeeAllListPage(
+          key: args.key,
+          appBarTitle: args.appBarTitle,
+          section: args.section,
+        ),
       );
     },
   );

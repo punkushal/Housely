@@ -11,8 +11,9 @@ import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/location/presentation/cubit/location_cubit.dart';
 import 'package:housely/features/location/presentation/widgets/drop_shadow.dart';
 import 'package:housely/features/onboarding/presentation/widgets/skip_button.dart';
-import 'package:housely/injection_container.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../../../injection_container.dart';
 
 @RoutePage()
 class LocationPage extends StatefulWidget {
@@ -113,8 +114,7 @@ class _LocationPageState extends State<LocationPage> {
                       builder: (context, state) {
                         final isLoading = state is LocationLoading;
                         return CustomButton(
-                          onTap: () =>
-                              isLoading ? null : _getCurrentLocation(context),
+                          onTap: () => _getCurrentLocation(context),
                           buttonLabel: "Use current location",
                           horizontal: 24,
                           isLoading: isLoading,
