@@ -37,7 +37,7 @@ class ResultList extends StatelessWidget {
     } else if (type == 'facility') {
       filterCubit.toggleFacility(value);
     } else if (type == 'price') {
-      filterCubit.updatePriceRange(const RangeValues(10, 1000));
+      filterCubit.clearPriceRange();
     }
 
     // Get updated state and trigger search
@@ -99,7 +99,7 @@ class ResultList extends StatelessWidget {
                       if (state.isPriceRangeActive)
                         ResultFilterChip(
                           label:
-                              "\$${state.priceRange!.start.toInt()} - \$${state.priceRange!.end.toInt()}",
+                              "Rs${state.priceRange!.start.toInt()} - Rs${state.priceRange!.end.toInt()}",
                           onDeleted: () =>
                               _removeFilter(context, 'price', null),
                         ),
@@ -116,7 +116,7 @@ class ResultList extends StatelessWidget {
           child: ListView.builder(
             itemCount: itemCount,
             itemBuilder: (context, index) {
-              if (index > propertyList.length) {
+              if (index >= propertyList.length) {
                 return Center(child: CircularProgressIndicator());
               }
               return Padding(

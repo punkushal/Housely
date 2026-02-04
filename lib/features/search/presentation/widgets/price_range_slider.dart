@@ -20,13 +20,13 @@ class PriceRangeSlider extends StatelessWidget {
         BlocBuilder<SearchFilterCubit, SearchFilterState>(
           builder: (context, state) {
             final currentRange =
-                state.priceRange ?? const RangeValues(10, 1000);
+                state.priceRange ?? const RangeValues(700, 100000);
             return Column(
               children: [
                 RangeSlider(
                   values: currentRange,
-                  min: 10,
-                  max: 1000,
+                  min: 700,
+                  max: 100000,
                   inactiveColor: AppColors.divider,
                   divisions: 100,
                   onChanged: (value) {
@@ -39,7 +39,7 @@ class PriceRangeSlider extends StatelessWidget {
                   mainAxisAlignment: .spaceBetween,
                   children: [
                     Text(
-                      "\$${currentRange.start.round()}",
+                      "Rs${currentRange.start.round()}",
                       style: AppTextStyle.bodySemiBold(
                         context,
                         fontSize: 12,
@@ -47,7 +47,7 @@ class PriceRangeSlider extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      "\$${currentRange.end.round()}",
+                      "Rs${currentRange.end.round()}",
                       style: AppTextStyle.bodySemiBold(
                         context,
                         fontSize: 12,
