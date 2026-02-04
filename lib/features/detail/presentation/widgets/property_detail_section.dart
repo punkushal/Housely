@@ -183,7 +183,7 @@ class PropertyDetailSection extends StatelessWidget {
                     // price
                     RichText(
                       text: TextSpan(
-                        text: "Rs${property.price.amount.toStringAsFixed(2)}",
+                        text: "Rs${property.price.amount.toInt().toCompact}",
                         style: AppTextStyle.labelBold(
                           context,
                           lineHeight: 18,
