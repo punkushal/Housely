@@ -115,16 +115,27 @@ class PropertyRemoteDataSource {
   }
 
   // fetch all the properties
-  Future<List<Property>> fetchAllProperties() async {
+  Future<({List<Property> data, DocumentSnapshot? lastDoc})>
+  fetchAllProperties({
+    DocumentSnapshot? lastDoc,
+    int limit = TextConstants.chatListPageSize,
+  }) async {
     try {
-      final snapshot = await firestore
-          .collection(TextConstants.properties)
-          .get();
+      Query<Map<String, dynamic>> query = firestore.collection(
+        TextConstants.properties,
+      );
+
+      query = query.limit(limit);
+
+      final snapshot = await query.get();
       final jsonList = snapshot.docs;
       final propertyList = jsonList
           .map((doc) => PropertyModel.fromJson(doc.data()))
           .toList();
-      return propertyList;
+
+      final newLastDoc = jsonList.isNotEmpty ? jsonList.last : null;
+
+      return (data: propertyList, lastDoc: newLastDoc);
     } catch (e) {
       throw Exception('Failed to fetch all properties: $e');
     }

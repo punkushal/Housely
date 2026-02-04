@@ -27,7 +27,8 @@ abstract interface class PropertyRepo {
   ResultVoid createProperty(Property property);
 
   // fetch all properties
-  ResultFuture<List<Property>> fetchAllProperties();
+  ResultFuture<({List<Property> data, DocumentSnapshot? lastDoc})>
+  fetchAllProperties({DocumentSnapshot? lastDoc});
 
   // search property and filter it
   ResultFuture<(List<Property> data, DocumentSnapshot? lastDoc)>

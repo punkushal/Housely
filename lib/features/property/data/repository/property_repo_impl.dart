@@ -111,7 +111,8 @@ class PropertyRepoImpl implements PropertyRepo {
   }
 
   @override
-  ResultFuture<List<Property>> fetchAllProperties() async {
+  ResultFuture<({List<Property> data, DocumentSnapshot? lastDoc})>
+  fetchAllProperties({DocumentSnapshot? lastDoc}) async {
     try {
       final result = await firebase.fetchAllProperties();
       return Right(result);
