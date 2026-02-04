@@ -50,6 +50,7 @@ class _FavoritePageState extends State<FavoritePage> {
                           propertyList: list
                               .map((fav) => fav.property)
                               .toList(),
+                          showAll: true,
                         ),
                 ),
 
