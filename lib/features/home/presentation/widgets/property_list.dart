@@ -16,6 +16,7 @@ class PropertyList extends StatelessWidget {
     this.horizontal = 24,
     this.vertical = 12,
     required this.propertyList,
+    this.showAll = false,
   });
 
   /// property list
@@ -26,10 +27,13 @@ class PropertyList extends StatelessWidget {
 
   /// vertical padding
   final double vertical;
+
+  /// boolean checker to show all
+  final bool showAll;
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: propertyList.length,
+      itemCount: showAll ? propertyList.length : propertyList.take(3).length,
       itemBuilder: (context, index) {
         return Padding(
           padding: ResponsiveDimensions.paddingSymmetric(
