@@ -17,21 +17,10 @@ class RecommendedSection extends StatefulWidget {
 
 class _RecommendedSectionState extends State<RecommendedSection> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<PropertyListBloc>().add(GetRecommendedProperties());
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PropertyListBloc, PropertyListState>(
       builder: (context, state) {
-        if (state is PropertyListLoading && state.section == .recommended) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
         if (state is PropertyListFailure && state.section == .recommended) {
           return HandleErrorState(
             message: state.message,

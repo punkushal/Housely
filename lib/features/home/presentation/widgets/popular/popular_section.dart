@@ -15,11 +15,6 @@ class PopularSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PropertyListBloc, PropertyListState>(
       builder: (context, state) {
-        // Handle loading state
-        if (state is PropertyListLoading && state.section == .all) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
         // Handle error state
         if (state is PropertyListFailure && state.section == .all) {
           return HandleErrorState(
