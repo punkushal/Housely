@@ -29,6 +29,10 @@ class SearchFilterCubit extends Cubit<SearchFilterState> {
     emit(state.copyWith(priceRange: range));
   }
 
+  void clearPriceRange() {
+    emit(state.copyWith(clearPriceRange: true));
+  }
+
   // FACILITIES (multi chip select)
   void toggleFacility(String facility) {
     final updated = Set<String>.from(state.facilities);

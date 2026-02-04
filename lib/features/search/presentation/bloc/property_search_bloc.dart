@@ -57,7 +57,9 @@ class PropertySearchBloc
     // Only proceed if we are currently in a Loaded state
     if (state is PropertySearchAndFilterLoaded) {
       final currentState = state as PropertySearchAndFilterLoaded;
-      if (currentState.hasReachedMax) return; // Stop if end reached
+
+      // Don't load more if we've already reached the end
+      if (currentState.hasReachedMax) return;
 
       final result = await searchAndFilter(
         SearchAndFilterParam(
@@ -67,14 +69,15 @@ class PropertySearchBloc
       );
 
       result.fold((f) => emit(PropertySearchError(f.message)), (data) {
+        // If no results returned, we've reached the end
         if (data.$1.isEmpty) {
-          emit(currentState.copyWith(hasReachedMax: true));
+          return emit(currentState.copyWith(hasReachedMax: true));
         } else {
           emit(
             currentState.copyWith(
               properties: List.of(currentState.allProperties)..addAll(data.$1),
-              hasReachedMax: data.$1.length < 10,
-              lastDoc: data.$2,
+              hasReachedMax: data.$1.length < 10, // check if less than limit
+              lastDoc: data.$2, // update lastDoc for next pagination
             ),
           );
         }

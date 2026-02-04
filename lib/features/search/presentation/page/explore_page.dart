@@ -217,7 +217,7 @@ class _ExplorePageState extends State<ExplorePage> {
                             );
                           }
 
-                          return SizedBox.shrink();
+                          return _buildInitialState();
                         },
                       ),
                     ),
@@ -227,6 +227,29 @@ class _ExplorePageState extends State<ExplorePage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  // initial state
+  Widget _buildInitialState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: .center,
+        children: [
+          Icon(Icons.search, size: 80, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'Search for properties',
+            style: AppTextStyle.headingSemiBold(context, fontSize: 20),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Use the search bar or filters to find properties',
+            textAlign: TextAlign.center,
+            style: AppTextStyle.bodyRegular(context, color: AppColors.textHint),
+          ),
+        ],
       ),
     );
   }
