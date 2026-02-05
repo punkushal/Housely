@@ -7,6 +7,7 @@ import 'package:housely/features/detail/presentation/widgets/review_card.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/review/domain/entity/review.dart';
 import 'package:housely/features/review/presentation/bloc/review_bloc.dart';
+import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
 
 class ReviewList extends StatelessWidget {
   const ReviewList({
@@ -47,16 +48,19 @@ class ReviewList extends StatelessWidget {
                   ),
                 );
 
-                // If review was deleted or updated, refresh the reviews list
+                // If review was deleted or updated, refresh the reviews list and property
                 if (result == true && context.mounted) {
                   // Trigger refresh by fetching all reviews
-                  try {
-                    context.read<ReviewBloc>().add(
-                      GetAllReviews(propertyId: property.id!),
-                    );
-                  } catch (e) {
-                    // Bloc not available in context
-                  }
+
+                  context.read<ReviewBloc>().add(
+                    GetAllReviews(propertyId: property.id!),
+                  );
+
+                  // Also refresh the latest property data (so rating updates on card/detail pages)
+
+                  context.read<PropertyCrudBloc>().add(
+                    RefreshPropertyEvent(property.id!),
+                  );
                 }
               },
               child: ReviewCard(

@@ -7,6 +7,7 @@ import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
+import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
 import 'package:housely/features/property/presentation/widgets/upload_container.dart';
 import 'package:housely/features/review/domain/entity/review.dart';
 import 'package:housely/features/review/presentation/bloc/review_bloc.dart';
@@ -14,11 +15,19 @@ import 'package:housely/features/review/presentation/widgets/rating_section.dart
 import 'package:housely/features/review/presentation/widgets/write_review_container.dart';
 import 'package:housely/injection_container.dart';
 
+import '../../../property/presentation/bloc/crud/property_crud_bloc.dart';
+
 @RoutePage()
 class AddReviewPage extends StatefulWidget implements AutoRouteWrapper {
-  const AddReviewPage({super.key, required this.property, this.existedReview});
+  const AddReviewPage({
+    super.key,
+    required this.property,
+    this.existedReview,
+    this.propertyCrudBloc,
+  });
   final Property property;
   final Review? existedReview;
+  final PropertyCrudBloc? propertyCrudBloc;
   @override
   State<AddReviewPage> createState() => _AddReviewPageState();
 
@@ -129,11 +138,27 @@ class _AddReviewPageState extends State<AddReviewPage> {
                 ? 'Review updated successfully'
                 : 'Review added successfully',
           );
+
+          context.read<PropertyListBloc>().add(GetAllProperties());
+          context.read<PropertyListBloc>().add(GetRecommendedProperties());
+          context.read<PropertyListBloc>().add(
+            GetMyProperties(
+              userId: (context.read<AuthCubit>().state as Authenticated)
+                  .currentUser!
+                  .uid,
+            ),
+          );
+
+          // Refresh property data
+          if (widget.propertyCrudBloc != null) {
+            widget.propertyCrudBloc!.add(
+              RefreshPropertyEvent(widget.property.id!),
+            );
+          }
           // Return true to indicate data has changed (for update case)
-          // This will trigger parent refresh
           Future.delayed(Duration(milliseconds: 300), () {
             if (context.mounted) {
-              context.pop(widget.existedReview != null ? true : null);
+              context.pop(true);
             }
           });
         } else if (state.imageError != null) {

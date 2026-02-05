@@ -134,7 +134,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         label: "My properties list",
                         iconPath: ImageConstant.hospitalIcon,
                         onTap: () {
-                          context.router.push(MyPropertyListRoute());
+                          context.router.push(
+                            SeeAllListRoute(
+                              appBarTitle: 'My Properties',
+                              section: .my,
+                            ),
+                          );
                         },
                       ),
 

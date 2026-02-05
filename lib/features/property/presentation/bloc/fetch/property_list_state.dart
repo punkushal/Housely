@@ -1,7 +1,7 @@
 part of 'property_list_bloc.dart';
 
 /// Enum to identify which property section is being loaded/failed
-enum PropertySection { all, recommended, nearby }
+enum PropertySection { all, recommended, nearby, my }
 
 sealed class PropertyListState extends Equatable {
   const PropertyListState();
@@ -24,6 +24,7 @@ final class PropertyListLoading extends PropertyListState {
 
 final class PropertyListLoaded extends PropertyListState {
   final List<Property>? allProperties;
+  final List<Property>? myProperties;
   final DocumentSnapshot? lastDoc;
   final List<Property>? recommendedProperties;
   final List<Property>? nearbyProperties;
@@ -40,6 +41,7 @@ final class PropertyListLoaded extends PropertyListState {
     this.myPropertiesLastDoc,
     this.nearbyLastDoc,
     this.recommendedLastDoc,
+    this.myProperties,
   });
 
   PropertyListLoaded copyWith({
@@ -61,6 +63,7 @@ final class PropertyListLoaded extends PropertyListState {
       recommendedLastDoc: recommendedLastDoc ?? this.recommendedLastDoc,
       nearbyLastDoc: nearbyLastDoc ?? this.nearbyLastDoc,
       myPropertiesLastDoc: myPropertiesLastDoc ?? this.myPropertiesLastDoc,
+      myProperties: myProperties ?? this.myProperties,
     );
   }
 
@@ -73,6 +76,7 @@ final class PropertyListLoaded extends PropertyListState {
     allPropertiesLastDoc,
     nearbyProperties,
     recommendedProperties,
+    myProperties,
   ];
 }
 

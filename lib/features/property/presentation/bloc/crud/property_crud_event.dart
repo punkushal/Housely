@@ -113,3 +113,11 @@ class DeletePropertyEvent extends PropertyCrudEvent {
 class ResetPropertyCrud extends PropertyCrudEvent {
   const ResetPropertyCrud();
 }
+
+class RefreshPropertyEvent extends PropertyCrudEvent {
+  final String propertyId;
+  const RefreshPropertyEvent(this.propertyId);
+
+  @override
+  List<Object> get props => [propertyId];
+}

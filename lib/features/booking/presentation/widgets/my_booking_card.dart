@@ -11,6 +11,8 @@ import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
+import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyBookingCard extends StatelessWidget {
@@ -196,8 +198,21 @@ class MyBookingCard extends StatelessWidget {
         SizedBox(height: ResponsiveDimensions.spacing8(context)),
         status == .completed
             ? GestureDetector(
-                onTap: () {
-                  context.router.push(AddReviewRoute(property: property));
+                onTap: () async {
+                  final result = await context.router.push(
+                    AddReviewRoute(property: property),
+                  );
+
+                  if (result == true && context.mounted) {
+                    // Try to refresh property data if a relevant bloc is available
+                    try {
+                      context.read<PropertyCrudBloc>().add(
+                        RefreshPropertyEvent(property.id!),
+                      );
+                    } catch (e) {
+                      // Bloc might not be available in this context
+                    }
+                  }
                 },
                 child: _buildOptionContent(
                   context,
