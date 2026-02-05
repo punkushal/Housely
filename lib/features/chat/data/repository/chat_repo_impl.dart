@@ -158,4 +158,28 @@ class ChatRepoImpl implements ChatRepository {
       return Left(ServerFailure(e.message));
     }
   }
+
+  @override
+  ResultVoid sendPushNotification({
+    required String chatId,
+    required String senderName,
+    required String message,
+    required String targetUserId,
+    required String senderId,
+  }) async {
+    try {
+      await remoteDataSource.sendPushNotification(
+        chatId: chatId,
+        senderName: senderName,
+        message: message,
+        targetUserId: targetUserId,
+        senderId: senderId,
+      );
+      return const Right(null);
+    } catch (e) {
+      // Don't fail the whole action if notification fails, just log it.
+      // But repo must return ResultVoid.
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }
