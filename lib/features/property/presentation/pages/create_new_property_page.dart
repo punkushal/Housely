@@ -24,6 +24,8 @@ import 'package:housely/features/property/presentation/widgets/location_card.dar
 import 'package:housely/features/property/presentation/widgets/upload_container.dart';
 import 'package:housely/features/property/presentation/widgets/year_picker_form_field.dart';
 import 'package:housely/injection_container.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../../profile/presentation/cubit/profile_cubit.dart';
 import '../bloc/crud/property_crud_bloc.dart';
 
 @RoutePage()
@@ -73,6 +75,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<OwnerCubit>().fetchProfile();
       if (widget.property != null) {
         // Load property images into property crud bloc for editing
         context.read<PropertyCrudBloc>().add(
@@ -283,7 +286,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
           style: AppTextStyle.headingSemiBold(ctx),
         ),
         content: Text(
-          "Please complete your owner profile before adding a property.",
+          "Please complete your owner profile (Name & Phone) before adding a property.",
           style: AppTextStyle.bodyRegular(ctx),
         ),
         actions: [
@@ -291,7 +294,17 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
             onTap: () {
               // close the dialog box
               ctx.pop();
-              ctx.router.push(CompleteOwnerProfileRoute());
+              final authState = ctx.read<AuthCubit>().state;
+              if (authState is Authenticated && authState.currentUser != null) {
+                ctx.router.push(
+                  EditProfileRoute(
+                    appUser: authState.currentUser!,
+                    profileCubit: ctx.read<ProfileCubit>(),
+                  ),
+                );
+              } else {
+                SnackbarHelper.showError(ctx, "User not authenticated");
+              }
             },
             buttonLabel: "Go to Profile",
           ),
@@ -318,6 +331,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
         ),
 
         BlocListener<PropertyCrudBloc, PropertyCrudState>(
+          listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) {
             // Handle loading state - show loading dialog
             if (state.status == .loading) {
@@ -338,7 +352,8 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
             }
             // Handle success state - close loading dialog, show success message, and navigate
             else if (state.status == .success) {
-              context.pop();
+              // Close the dialog first
+              Navigator.of(context, rootNavigator: true).pop();
 
               // Show success messsage based on operation type
               final message = state.lastOperation == PropertyOperation.create
@@ -346,8 +361,7 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                   : 'Property updated successfully';
 
               SnackbarHelper.showSuccess(context, message);
-
-              // Reset form and navigate back
+              context.read<PropertyCrudBloc>().add(ResetPropertyCrud());
               _resetForm();
               context.pop(true);
             }

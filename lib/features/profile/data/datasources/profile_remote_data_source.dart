@@ -31,13 +31,26 @@ class ProfileRemoteDataSource {
 
       final userModel = AppUserModel.fromEntity(appUser);
 
+      // update user profile
       await userRef.doc(appUser.uid).update(userModel.toMap());
 
-      if (owner != null) {
-        final ownerModel = PropertyOwnerModel.fromEntity(
-          owner.copyWith(profileImage: appUser.photoUrl),
+      // If user has a name and phone number, sync with owner collection
+      if (appUser.username.isNotEmpty &&
+          appUser.phoneNumber != null &&
+          appUser.phoneNumber!.isNotEmpty) {
+        
+        final ownerModel = PropertyOwnerModel(
+           ownerId: appUser.uid,
+           name: appUser.username,
+           phone: appUser.phoneNumber!,
+           profileImage: appUser.photoUrl,
         );
-        ownerRef.doc(appUser.email).update(ownerModel.toJson());
+
+        // upsert (merge: true will create if not exists, update if exists)
+        await ownerRef.doc(appUser.email).set(
+          ownerModel.toJson(), 
+          SetOptions(merge: true)
+        );
       }
     } on FirebaseAuthException catch (e) {
       handleFirebaseException(e);

@@ -7,13 +7,12 @@ import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/extensions/date_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
-import 'package:housely/core/utils/snack_bar_helper.dart';
+import 'package:housely/core/utils/launcher_helper.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class MyBookingCard extends StatelessWidget {
   const MyBookingCard({
@@ -23,20 +22,6 @@ class MyBookingCard extends StatelessWidget {
   });
   final Property property;
   final Booking booking;
-
-  Future<void> makePhoneCall(BuildContext context, String number) async {
-    final Uri launchUri = Uri(scheme: 'tel', path: number);
-    if (await canLaunchUrl(launchUri)) {
-      await launchUrl(launchUri);
-    } else {
-      if (!context.mounted) return;
-      SnackbarHelper.showError(
-        context,
-        'Could not launch $number',
-        showTop: true,
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,13 +190,9 @@ class MyBookingCard extends StatelessWidget {
 
                   if (result == true && context.mounted) {
                     // Try to refresh property data if a relevant bloc is available
-                    try {
-                      context.read<PropertyCrudBloc>().add(
-                        RefreshPropertyEvent(property.id!),
-                      );
-                    } catch (e) {
-                      // Bloc might not be available in this context
-                    }
+                    context.read<PropertyCrudBloc>().add(
+                      RefreshPropertyEvent(property.id!),
+                    );
                   }
                 },
                 child: _buildOptionContent(
@@ -225,9 +206,9 @@ class MyBookingCard extends StatelessWidget {
             ? Divider(color: AppColors.divider)
             : SizedBox.shrink(),
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             // Navigation to phone contact
-            makePhoneCall(context, property.owner.phone);
+            await LauncherHelper.makePhoneCall(context, property.owner.phone);
           },
           child: _buildOptionContent(
             context,

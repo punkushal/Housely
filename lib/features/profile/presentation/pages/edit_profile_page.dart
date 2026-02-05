@@ -8,10 +8,10 @@ import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/core/widgets/custom_label_text_field.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/auth/domain/entities/app_user.dart';
+import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:housely/features/profile/presentation/widgets/profile_section.dart';
 import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
-import 'package:housely/features/property/domain/entities/property_owner.dart';
 
 @RoutePage()
 class EditProfilePage extends StatefulWidget {
@@ -19,28 +19,24 @@ class EditProfilePage extends StatefulWidget {
     super.key,
     required this.appUser,
     required this.profileCubit,
-    this.owner,
   });
   final AppUser appUser;
   final ProfileCubit profileCubit;
-  final PropertyOwner? owner;
+
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  final TextEditingController _nameController = .new();
-  final TextEditingController _phoneController = .new();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     _nameController.text = widget.appUser.username;
-
-    if (widget.owner != null) {
-      _phoneController.text = widget.owner!.phone;
-    }
+    _phoneController.text = widget.appUser.phoneNumber ?? "";
   }
 
   @override
@@ -55,18 +51,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     final updatedUser = widget.appUser.copyWith(
       username: _nameController.text.trim(),
+      phoneNumber: _phoneController.text.trim(),
     );
 
-    final hasData = widget.owner != null;
-
+    // We no longer pass the owner object explicitly since the remote data source will handle synchronization based on AppUser data.
     context.read<ProfileCubit>().updateUserProfile(
       appUser: updatedUser,
-      owner: hasData
-          ? widget.owner!.copyWith(
-              name: _nameController.text.trim(),
-              phone: _phoneController.text.trim(),
-            )
-          : null,
+      owner: null, 
     );
   }
 
@@ -78,9 +69,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         listener: (context, state) async {
           // errors
           if (state.errorMessage != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+             SnackbarHelper.showError(context, state.errorMessage!);
           }
 
           if (state.imageError != null) {
@@ -88,7 +77,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
           }
 
           // success
-          if (state.status == .success) {
+          if (state.status == ProfileStatus.success) {
+            // Sync AuthCubit with updated user data
+            if (state.appUser != null) {
+              context.read<AuthCubit>().updateUser(state.appUser!);
+            }
+            
+            // Sync OwnerCubit to reflect new profile changes (creation/update)
+            context.read<OwnerCubit>().fetchProfile();
+
             context.read<ProfileCubit>().reset();
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Profile updated successfully')),
@@ -97,7 +94,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           }
         },
         builder: (context, state) {
-          final isLoading = state.status == .loading;
+          final isLoading = state.status == ProfileStatus.loading;
           return PopScope(
             canPop: !isLoading,
             child: Scaffold(
@@ -127,25 +124,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ),
                           ),
 
-                          BlocBuilder<OwnerCubit, OwnerState>(
-                            builder: (context, ownerState) {
-                              if (ownerState is OwnerLoaded &&
-                                  ownerState.owner != null) {
-                                return CustomLabelTextField(
-                                  labelText: "Phone Number",
-                                  customTextField: CustomTextField(
-                                    hintText: "Enter your number",
-                                    controller: _phoneController,
-                                    keyboardType: TextInputType.number,
-                                    validator: (value) =>
-                                        FormValidators.validatePhoneNumber(
-                                          value,
-                                        ),
+                          CustomLabelTextField(
+                            labelText: "Phone Number",
+                            customTextField: CustomTextField(
+                              hintText: "Enter your number",
+                              controller: _phoneController,
+                              keyboardType: TextInputType.number,
+                              validator: (value) =>
+                                  FormValidators.validatePhoneNumber(
+                                    value,
                                   ),
-                                );
-                              }
-                              return const SizedBox.shrink();
-                            },
+                            ),
                           ),
                         ],
                       ),
