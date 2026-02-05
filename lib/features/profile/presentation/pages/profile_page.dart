@@ -26,6 +26,9 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      context.read<ProfileCubit>().setProfileUrl(
+        (context.read<AuthCubit>().state as Authenticated).currentUser!,
+      );
       await context.read<OwnerCubit>().fetchProfile();
     });
   }

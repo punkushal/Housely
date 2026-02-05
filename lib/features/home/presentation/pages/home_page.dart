@@ -16,9 +16,7 @@ import 'package:housely/features/home/presentation/widgets/custom_tab_item.dart'
 import 'package:housely/features/home/presentation/widgets/icon_wrapper.dart';
 import 'package:housely/features/home/presentation/widgets/popular/popular_section.dart';
 import 'package:housely/features/home/presentation/widgets/recommended/recommended_section.dart';
-import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
-import 'package:housely/injection_container.dart';
 
 @RoutePage()
 class TabWrapper extends StatelessWidget {
@@ -26,65 +24,55 @@ class TabWrapper extends StatelessWidget {
   final String? address;
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => sl<ProfileCubit>()
-            ..setProfileUrl(
-              (context.read<AuthCubit>().state as Authenticated).currentUser!,
-            ),
-        ),
+    return AutoTabsScaffold(
+      routes: [
+        HomeRoute(address: address),
+        ExploreRoute(),
+        MyBookingRoute(),
+        ProfileRoute(),
       ],
-      child: AutoTabsScaffold(
-        routes: [
-          HomeRoute(address: address),
-          ExploreRoute(),
-          MyBookingRoute(),
-          ProfileRoute(),
-        ],
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            context.pushRoute<bool>(CreateNewPropertyRoute());
-          },
-          shape: RoundedRectangleBorder(
-            borderRadius: ResponsiveDimensions.borderRadiusLarge(
-              context,
-              size: 28,
-            ),
-          ),
-          child: Icon(Icons.add),
-        ),
-        bottomNavigationBuilder: (_, tabsRouter) {
-          return Container(
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.textPrimary.withValues(alpha: 0.05),
-                  blurRadius: ResponsiveDimensions.radiusSmall(context),
-                ),
-              ],
-            ),
-            padding: ResponsiveDimensions.paddingOnly(context, bottom: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(navList.length, (index) {
-                final navItem = navList[index];
-                return GestureDetector(
-                  onTap: () => tabsRouter.setActiveIndex(index),
-                  child: CustomBottomNavItem(
-                    label: navItem.label,
-                    isActive: tabsRouter.activeIndex == index,
-                    iconPath: navItem.iconPath,
-                    filledIconPath: navItem.iconFilledPath,
-                  ),
-                );
-              }),
-            ),
-          );
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          context.pushRoute<bool>(CreateNewPropertyRoute());
         },
+        shape: RoundedRectangleBorder(
+          borderRadius: ResponsiveDimensions.borderRadiusLarge(
+            context,
+            size: 28,
+          ),
+        ),
+        child: Icon(Icons.add),
       ),
+      bottomNavigationBuilder: (_, tabsRouter) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.textPrimary.withValues(alpha: 0.05),
+                blurRadius: ResponsiveDimensions.radiusSmall(context),
+              ),
+            ],
+          ),
+          padding: ResponsiveDimensions.paddingOnly(context, bottom: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(navList.length, (index) {
+              final navItem = navList[index];
+              return GestureDetector(
+                onTap: () => tabsRouter.setActiveIndex(index),
+                child: CustomBottomNavItem(
+                  label: navItem.label,
+                  isActive: tabsRouter.activeIndex == index,
+                  iconPath: navItem.iconPath,
+                  filledIconPath: navItem.iconFilledPath,
+                ),
+              );
+            }),
+          ),
+        );
+      },
     );
   }
 }

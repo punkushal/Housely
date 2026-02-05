@@ -10,11 +10,13 @@ import 'package:housely/core/constants/text_constants.dart';
 import 'package:housely/core/extensions/number_extension.dart';
 import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/utils/launcher_helper.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/chat/domain/entity/chat_user.dart';
 import 'package:housely/features/detail/presentation/widgets/contact_container.dart';
+import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/detail/presentation/widgets/facility_list.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
 import 'package:housely/features/detail/presentation/widgets/icon_info_container.dart';
@@ -91,9 +93,10 @@ class PropertyDetailSection extends StatelessWidget {
       create: (context) =>
           sl<ReviewBloc>()..add(GetAllReviews(propertyId: property.id!)),
       child: BlocListener<PropertyCrudBloc, PropertyCrudState>(
+        listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
           // Handle loading state - show loading dialog
-          if (state.status == .loading) {
+          if (state.status == .loading && state.netWorkProperty == null) {
             showDialog(
               context: context,
               barrierDismissible: false,
@@ -102,14 +105,14 @@ class PropertyDetailSection extends StatelessWidget {
           }
 
           // Handle error state - close loading dialog and show error
-          if (state.status == .error) {
+          if (state.status == .error && state.lastOperation == .delete) {
             context.pop();
             SnackbarHelper.showError(
               context,
-              state.errorMessage ?? 'An error occurred',
+              state.errorMessage ?? 'Failed to delete the property',
             );
           }
-          if (state.lastOperation == .delete) {
+          if (state.lastOperation == .delete && state.status == .success) {
             context.pop();
 
             SnackbarHelper.showSuccess(context, "Property deleted");
@@ -284,14 +287,20 @@ class PropertyDetailSection extends StatelessWidget {
                 Row(
                   spacing: ResponsiveDimensions.spacing16(context),
                   children: [
-                    CircleAvatar(
-                      radius: ResponsiveDimensions.radiusXLarge(
-                        context,
-                        size: 22,
+                    Container(
+                      width: ResponsiveDimensions.spacing48(context),
+                      height: ResponsiveDimensions.spacing48(context),
+                      decoration: BoxDecoration(
+                        color: AppColors.border,
+                        shape: .circle,
                       ),
-                      backgroundColor: Colors.grey,
-                      foregroundImage: NetworkImage(
-                        property.media.coverImage['url'],
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(26),
+                        child: CustomCacheContainer(
+                          imageUrl: property.owner.profileImage!['url'],
+                          width: .infinity,
+                          height: .infinity,
+                        ),
                       ),
                     ),
 
@@ -323,6 +332,12 @@ class PropertyDetailSection extends StatelessWidget {
                             children: [
                               ContactContainer(
                                 iconPath: ImageConstant.callIcon,
+                                onTap: () async {
+                                  await LauncherHelper.makePhoneCall(
+                                    context,
+                                    property.owner.phone,
+                                  );
+                                },
                               ),
                               ContactContainer(
                                 iconPath: ImageConstant.chatIcon,
