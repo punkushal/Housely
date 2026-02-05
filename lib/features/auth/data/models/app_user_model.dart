@@ -5,6 +5,7 @@ class AppUserModel extends AppUser {
     required super.uid,
     required super.email,
     required super.username,
+    super.phoneNumber,
     super.photoUrl,
   });
 
@@ -13,6 +14,7 @@ class AppUserModel extends AppUser {
       uid: map['userId'],
       email: map['email'],
       username: map['username'],
+      phoneNumber: map['phoneNumber'],
       photoUrl: map['photoUrl'],
     );
   }
@@ -22,6 +24,7 @@ class AppUserModel extends AppUser {
       'userId': uid,
       'email': email,
       'username': username,
+      'phoneNumber': phoneNumber,
     };
 
     if (photoUrl != null) {
@@ -36,6 +39,7 @@ class AppUserModel extends AppUser {
       uid: appUser.uid,
       email: appUser.email,
       username: appUser.username,
+      phoneNumber: appUser.phoneNumber,
       photoUrl: appUser.photoUrl,
     );
   }

@@ -187,6 +187,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             uid: user.uid,
             email: user.email!,
             username: user.displayName ?? "New User",
+            phoneNumber: null,
           );
         }
       }
