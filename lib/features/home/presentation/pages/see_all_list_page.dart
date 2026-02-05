@@ -6,6 +6,7 @@ import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
 import 'package:housely/injection_container.dart';
 
+import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../widgets/property_list.dart';
 
 @RoutePage()
@@ -51,6 +52,16 @@ class _SeeAllListPageState extends State<SeeAllListPage> {
         break;
       case PropertySection.nearby:
         // bloc.add(GetNearbyProperties(latitude: lat, longitude: lng));
+        break;
+
+      case .my:
+        context.read<PropertyListBloc>().add(
+          GetMyProperties(
+            userId: (context.read<AuthCubit>().state as Authenticated)
+                .currentUser!
+                .uid,
+          ),
+        );
         break;
     }
   }
@@ -105,6 +116,7 @@ class _SeeAllListPageState extends State<SeeAllListPage> {
       PropertySection.all => state.allProperties,
       PropertySection.recommended => state.recommendedProperties,
       PropertySection.nearby => state.nearbyProperties,
+      .my => state.myProperties,
     };
   }
 }

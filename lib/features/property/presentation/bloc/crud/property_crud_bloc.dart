@@ -45,6 +45,7 @@ class PropertyCrudBloc extends Bloc<PropertyCrudEvent, PropertyCrudState> {
     on<DeletePropertyEvent>(_onDeleteProperty);
     on<ResetPropertyCrud>(_onResetPropertyCrud);
     on<LoadNetworkPropertyEvent>(_onLoadNetworkProperty);
+    on<RefreshPropertyEvent>(_onRefreshProperty);
   }
 
   // ============================================
@@ -399,5 +400,30 @@ class PropertyCrudBloc extends Bloc<PropertyCrudEvent, PropertyCrudState> {
     Emitter<PropertyCrudState> emit,
   ) async {
     emit(const PropertyCrudState());
+  }
+
+  Future<void> _onRefreshProperty(
+    RefreshPropertyEvent event,
+    Emitter<PropertyCrudState> emit,
+  ) async {
+    // not show loading for refresh (smoother UX)
+    final result = await getPropertyByIdUseCase(
+      GetPropertyParam(event.propertyId),
+    );
+
+    result.fold(
+      (f) => emit(
+        state.copyWith(
+          status: PropertyCrudStatus.error,
+          errorMessage: f.message,
+        ),
+      ),
+      (data) => emit(
+        state.copyWith(
+          netWorkProperty: data,
+          status: PropertyCrudStatus.networkPropertyLoaded,
+        ),
+      ),
+    );
   }
 }

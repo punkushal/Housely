@@ -99,7 +99,7 @@ class ReviewDetailPage extends StatelessWidget {
             // Return true to indicate data has changed
             Future.delayed(Duration(milliseconds: 500), () {
               if (context.mounted) {
-                context.pop();
+                context.pop(true);
               }
             });
           } else if (state.status == .error) {
@@ -117,13 +117,18 @@ class ReviewDetailPage extends StatelessWidget {
                       if (state is Authenticated &&
                           state.currentUser!.uid == review.userId) {
                         return IconButton(
-                          onPressed: () {
-                            context.router.push(
+                          onPressed: () async {
+                            final result = await context.router.push(
                               AddReviewRoute(
                                 property: property,
                                 existedReview: review,
                               ),
                             );
+
+                            // If review was updated, propagate the change back to caller
+                            if (result == true && context.mounted) {
+                              context.pop(true);
+                            }
                           },
                           icon: Container(
                             padding: ResponsiveDimensions.paddingAll8(context),

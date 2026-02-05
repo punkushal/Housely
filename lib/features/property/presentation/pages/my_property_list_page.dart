@@ -7,28 +7,14 @@ import 'package:housely/core/widgets/handle_error_state.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/home/presentation/widgets/property_list.dart';
 import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
-import 'package:housely/injection_container.dart';
-
 import '../../../favorites/presentation/bloc/favorites_bloc.dart';
 
 @RoutePage()
-class MyPropertyListPage extends StatefulWidget implements AutoRouteWrapper {
+class MyPropertyListPage extends StatefulWidget {
   const MyPropertyListPage({super.key});
 
   @override
   State<MyPropertyListPage> createState() => _MyPropertyListPageState();
-
-  @override
-  Widget wrappedRoute(BuildContext context) {
-    final authState = context.read<AuthCubit>().state as Authenticated;
-
-    return BlocProvider(
-      create: (context) =>
-          sl<PropertyListBloc>()
-            ..add(GetMyProperties(userId: authState.currentUser!.uid)),
-      child: this,
-    );
-  }
 }
 
 class _MyPropertyListPageState extends State<MyPropertyListPage> {
@@ -37,6 +23,10 @@ class _MyPropertyListPageState extends State<MyPropertyListPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final authState = context.read<AuthCubit>().state as Authenticated;
+      context.read<PropertyListBloc>().add(
+        GetMyProperties(userId: authState.currentUser!.uid),
+      );
       context.read<FavoritesBloc>().add(LoadFavoritesRequested());
     });
   }
@@ -47,11 +37,11 @@ class _MyPropertyListPageState extends State<MyPropertyListPage> {
       appBar: AppBar(title: const Text("My properties")),
       body: BlocBuilder<PropertyListBloc, PropertyListState>(
         builder: (context, state) {
-          if (state is PropertyListLoading && state.section == .all) {
+          if (state is PropertyListLoading && state.section == .my) {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is PropertyListLoaded) {
-            final properties = state.allProperties;
+            final properties = state.myProperties;
 
             if (properties == null) {
               return Center(
@@ -67,7 +57,7 @@ class _MyPropertyListPageState extends State<MyPropertyListPage> {
             return PropertyList(propertyList: properties);
           }
 
-          if (state is PropertyListFailure && state.section == .all) {
+          if (state is PropertyListFailure && state.section == .my) {
             return HandleErrorState(
               message: state.message,
               retry: () {

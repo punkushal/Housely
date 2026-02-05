@@ -28,7 +28,6 @@ class TabWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => sl<PropertyListBloc>()),
         BlocProvider(
           create: (context) => sl<ProfileCubit>()
             ..setProfileUrl(
@@ -106,6 +105,13 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<PropertyListBloc>().add(GetAllProperties());
       context.read<PropertyListBloc>().add(GetRecommendedProperties());
+      context.read<PropertyListBloc>().add(
+        GetMyProperties(
+          userId: (context.read<AuthCubit>().state as Authenticated)
+              .currentUser!
+              .uid,
+        ),
+      );
       context.read<FavoritesBloc>().add(LoadFavoritesRequested());
     });
   }

@@ -59,6 +59,17 @@ class DetailPage extends StatelessWidget {
                   slivers: [
                     // AppBar as sliver for better scroll behavior
                     SliverAppBar(
+                      leading: IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () {
+                          final currentProperty = context
+                              .read<PropertyCrudBloc>()
+                              .state
+                              .netWorkProperty;
+                          // Navigate back and return the result directly
+                          context.router.maybePop(currentProperty);
+                        },
+                      ),
                       backgroundColor: Colors.transparent,
                       title: const Text('Details'),
                       floating: true,

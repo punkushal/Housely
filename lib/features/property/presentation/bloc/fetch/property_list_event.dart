@@ -57,3 +57,10 @@ final class GetPropertyById extends PropertyListEvent {
   @override
   List<Object> get props => [propertyId];
 }
+
+class RefreshSingleProperty extends PropertyListEvent {
+  final Property updatedProperty;
+  const RefreshSingleProperty(this.updatedProperty);
+  @override
+  List<Object> get props => [updatedProperty];
+}

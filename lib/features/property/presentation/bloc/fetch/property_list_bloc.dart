@@ -22,6 +22,7 @@ class PropertyListBloc extends Bloc<PropertyListEvent, PropertyListState> {
     on<GetRecommendedProperties>(_onLoadRecommendedProperties);
     on<GetMyProperties>(_onLoadMyProperties);
     on<GetAllProperties>(_onLoadAllProperties);
+    on<RefreshSingleProperty>(_onRefreshSingleProperty);
   }
 
   // load all properties
@@ -78,12 +79,12 @@ class PropertyListBloc extends Bloc<PropertyListEvent, PropertyListState> {
     GetMyProperties event,
     Emitter<PropertyListState> emit,
   ) async {
-    emit(PropertyListLoading(section: .all));
+    emit(PropertyListLoading(section: .my));
     final result = await getMyPropertiesUseCase(
       MyPropertyParam(userId: event.userId, lastDoc: event.lastDoc),
     );
 
-    result.fold((f) => emit(PropertyListFailure(f.message, section: .all)), (
+    result.fold((f) => emit(PropertyListFailure(f.message, section: .my)), (
       value,
     ) {
       final currentState = state is PropertyListLoaded
@@ -91,10 +92,35 @@ class PropertyListBloc extends Bloc<PropertyListEvent, PropertyListState> {
           : const PropertyListLoaded();
       emit(
         currentState.copyWith(
-          allProperties: value.data,
-          allPropertiesLastDoc: value.lastDoc,
+          myProperties: value.data,
+          myPropertiesLastDoc: value.lastDoc,
         ),
       );
     });
+  }
+
+  Future<void> _onRefreshSingleProperty(
+    RefreshSingleProperty event,
+    Emitter<PropertyListState> emit,
+  ) async {
+    if (state is! PropertyListLoaded) return;
+
+    final currentState = state as PropertyListLoaded;
+    final updatedProperty = event.updatedProperty;
+
+    final updatedAll = currentState.allProperties?.map((prop) {
+      return prop.id == updatedProperty.id ? updatedProperty : prop;
+    }).toList();
+
+    final updatedRecommended = currentState.recommendedProperties?.map((prop) {
+      return prop.id == updatedProperty.id ? updatedProperty : prop;
+    }).toList();
+
+    emit(
+      currentState.copyWith(
+        allProperties: updatedAll,
+        recommendedProperties: updatedRecommended,
+      ),
+    );
   }
 }

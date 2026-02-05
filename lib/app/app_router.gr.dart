@@ -10,9 +10,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i27;
-import 'package:collection/collection.dart' as _i31;
+import 'package:collection/collection.dart' as _i32;
 import 'package:flutter/material.dart' as _i28;
-import 'package:housely/features/auth/domain/entities/app_user.dart' as _i33;
+import 'package:housely/features/auth/domain/entities/app_user.dart' as _i34;
 import 'package:housely/features/auth/presentation/pages/forgot_password_page.dart'
     as _i13;
 import 'package:housely/features/auth/presentation/pages/login_page.dart'
@@ -25,7 +25,7 @@ import 'package:housely/features/booking/presentation/page/booking_request_page.
     as _i4;
 import 'package:housely/features/booking/presentation/page/my_booking_page.dart'
     as _i18;
-import 'package:housely/features/chat/domain/entity/chat_user.dart' as _i32;
+import 'package:housely/features/chat/domain/entity/chat_user.dart' as _i33;
 import 'package:housely/features/chat/presentation/page/chat_list_page.dart'
     as _i5;
 import 'package:housely/features/chat/presentation/page/chat_page.dart' as _i6;
@@ -38,7 +38,7 @@ import 'package:housely/features/home/presentation/pages/home_page.dart'
 import 'package:housely/features/home/presentation/pages/see_all_list_page.dart'
     as _i24;
 import 'package:housely/features/location/domain/entities/location.dart'
-    as _i36;
+    as _i37;
 import 'package:housely/features/location/presentation/pages/location_page.dart'
     as _i15;
 import 'package:housely/features/location/presentation/pages/map_picker_page.dart'
@@ -48,7 +48,7 @@ import 'package:housely/features/onboarding/presentation/pages/onboarding_page.d
 import 'package:housely/features/onboarding/presentation/pages/splash_page.dart'
     as _i26;
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart'
-    as _i34;
+    as _i35;
 import 'package:housely/features/profile/presentation/pages/edit_profile_page.dart'
     as _i10;
 import 'package:housely/features/profile/presentation/pages/payment_history_page.dart'
@@ -58,9 +58,11 @@ import 'package:housely/features/profile/presentation/pages/profile_page.dart'
 import 'package:housely/features/property/domain/entities/property.dart'
     as _i29;
 import 'package:housely/features/property/domain/entities/property_owner.dart'
-    as _i35;
+    as _i36;
+import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart'
+    as _i31;
 import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart'
-    as _i37;
+    as _i38;
 import 'package:housely/features/property/presentation/pages/complete_owner_profile_page.dart'
     as _i7;
 import 'package:housely/features/property/presentation/pages/create_new_property_page.dart'
@@ -84,6 +86,7 @@ class AddReviewRoute extends _i27.PageRouteInfo<AddReviewRouteArgs> {
     _i28.Key? key,
     required _i29.Property property,
     _i30.Review? existedReview,
+    _i31.PropertyCrudBloc? propertyCrudBloc,
     List<_i27.PageRouteInfo>? children,
   }) : super(
          AddReviewRoute.name,
@@ -91,6 +94,7 @@ class AddReviewRoute extends _i27.PageRouteInfo<AddReviewRouteArgs> {
            key: key,
            property: property,
            existedReview: existedReview,
+           propertyCrudBloc: propertyCrudBloc,
          ),
          initialChildren: children,
        );
@@ -106,6 +110,7 @@ class AddReviewRoute extends _i27.PageRouteInfo<AddReviewRouteArgs> {
           key: args.key,
           property: args.property,
           existedReview: args.existedReview,
+          propertyCrudBloc: args.propertyCrudBloc,
         ),
       );
     },
@@ -117,6 +122,7 @@ class AddReviewRouteArgs {
     this.key,
     required this.property,
     this.existedReview,
+    this.propertyCrudBloc,
   });
 
   final _i28.Key? key;
@@ -125,9 +131,11 @@ class AddReviewRouteArgs {
 
   final _i30.Review? existedReview;
 
+  final _i31.PropertyCrudBloc? propertyCrudBloc;
+
   @override
   String toString() {
-    return 'AddReviewRouteArgs{key: $key, property: $property, existedReview: $existedReview}';
+    return 'AddReviewRouteArgs{key: $key, property: $property, existedReview: $existedReview, propertyCrudBloc: $propertyCrudBloc}';
   }
 
   @override
@@ -136,11 +144,16 @@ class AddReviewRouteArgs {
     if (other is! AddReviewRouteArgs) return false;
     return key == other.key &&
         property == other.property &&
-        existedReview == other.existedReview;
+        existedReview == other.existedReview &&
+        propertyCrudBloc == other.propertyCrudBloc;
   }
 
   @override
-  int get hashCode => key.hashCode ^ property.hashCode ^ existedReview.hashCode;
+  int get hashCode =>
+      key.hashCode ^
+      property.hashCode ^
+      existedReview.hashCode ^
+      propertyCrudBloc.hashCode;
 }
 
 /// generated route for
@@ -150,6 +163,7 @@ class AllReviewListRoute extends _i27.PageRouteInfo<AllReviewListRouteArgs> {
     _i28.Key? key,
     required List<_i30.Review> allReviews,
     required _i29.Property property,
+    required _i31.PropertyCrudBloc crudBloc,
     List<_i27.PageRouteInfo>? children,
   }) : super(
          AllReviewListRoute.name,
@@ -157,6 +171,7 @@ class AllReviewListRoute extends _i27.PageRouteInfo<AllReviewListRouteArgs> {
            key: key,
            allReviews: allReviews,
            property: property,
+           crudBloc: crudBloc,
          ),
          initialChildren: children,
        );
@@ -171,6 +186,7 @@ class AllReviewListRoute extends _i27.PageRouteInfo<AllReviewListRouteArgs> {
         key: args.key,
         allReviews: args.allReviews,
         property: args.property,
+        crudBloc: args.crudBloc,
       );
     },
   );
@@ -181,6 +197,7 @@ class AllReviewListRouteArgs {
     this.key,
     required this.allReviews,
     required this.property,
+    required this.crudBloc,
   });
 
   final _i28.Key? key;
@@ -189,9 +206,11 @@ class AllReviewListRouteArgs {
 
   final _i29.Property property;
 
+  final _i31.PropertyCrudBloc crudBloc;
+
   @override
   String toString() {
-    return 'AllReviewListRouteArgs{key: $key, allReviews: $allReviews, property: $property}';
+    return 'AllReviewListRouteArgs{key: $key, allReviews: $allReviews, property: $property, crudBloc: $crudBloc}';
   }
 
   @override
@@ -199,18 +218,20 @@ class AllReviewListRouteArgs {
     if (identical(this, other)) return true;
     if (other is! AllReviewListRouteArgs) return false;
     return key == other.key &&
-        const _i31.ListEquality<_i30.Review>().equals(
+        const _i32.ListEquality<_i30.Review>().equals(
           allReviews,
           other.allReviews,
         ) &&
-        property == other.property;
+        property == other.property &&
+        crudBloc == other.crudBloc;
   }
 
   @override
   int get hashCode =>
       key.hashCode ^
-      const _i31.ListEquality<_i30.Review>().hash(allReviews) ^
-      property.hashCode;
+      const _i32.ListEquality<_i30.Review>().hash(allReviews) ^
+      property.hashCode ^
+      crudBloc.hashCode;
 }
 
 /// generated route for
@@ -297,8 +318,8 @@ class ChatListRoute extends _i27.PageRouteInfo<void> {
 class ChatRoute extends _i27.PageRouteInfo<ChatRouteArgs> {
   ChatRoute({
     _i28.Key? key,
-    required _i32.ChatUser currentUser,
-    required _i32.ChatUser otherUser,
+    required _i33.ChatUser currentUser,
+    required _i33.ChatUser otherUser,
     List<_i27.PageRouteInfo>? children,
   }) : super(
          ChatRoute.name,
@@ -336,9 +357,9 @@ class ChatRouteArgs {
 
   final _i28.Key? key;
 
-  final _i32.ChatUser currentUser;
+  final _i33.ChatUser currentUser;
 
-  final _i32.ChatUser otherUser;
+  final _i33.ChatUser otherUser;
 
   @override
   String toString() {
@@ -481,9 +502,9 @@ class DetailRouteArgs {
 class EditProfileRoute extends _i27.PageRouteInfo<EditProfileRouteArgs> {
   EditProfileRoute({
     _i28.Key? key,
-    required _i33.AppUser appUser,
-    required _i34.ProfileCubit profileCubit,
-    _i35.PropertyOwner? owner,
+    required _i34.AppUser appUser,
+    required _i35.ProfileCubit profileCubit,
+    _i36.PropertyOwner? owner,
     List<_i27.PageRouteInfo>? children,
   }) : super(
          EditProfileRoute.name,
@@ -522,11 +543,11 @@ class EditProfileRouteArgs {
 
   final _i28.Key? key;
 
-  final _i33.AppUser appUser;
+  final _i34.AppUser appUser;
 
-  final _i34.ProfileCubit profileCubit;
+  final _i35.ProfileCubit profileCubit;
 
-  final _i35.PropertyOwner? owner;
+  final _i36.PropertyOwner? owner;
 
   @override
   String toString() {
@@ -683,7 +704,7 @@ class MapPickerRoute extends _i27.PageRouteInfo<MapPickerRouteArgs> {
   MapPickerRoute({
     _i28.Key? key,
     bool isOwner = false,
-    _i36.Location? initialLocation,
+    _i37.Location? initialLocation,
     bool isVisitor = false,
     List<_i27.PageRouteInfo>? children,
   }) : super(
@@ -705,11 +726,13 @@ class MapPickerRoute extends _i27.PageRouteInfo<MapPickerRouteArgs> {
       final args = data.argsAs<MapPickerRouteArgs>(
         orElse: () => const MapPickerRouteArgs(),
       );
-      return _i17.MapPickerPage(
-        key: args.key,
-        isOwner: args.isOwner,
-        initialLocation: args.initialLocation,
-        isVisitor: args.isVisitor,
+      return _i27.WrappedRoute(
+        child: _i17.MapPickerPage(
+          key: args.key,
+          isOwner: args.isOwner,
+          initialLocation: args.initialLocation,
+          isVisitor: args.isVisitor,
+        ),
       );
     },
   );
@@ -727,7 +750,7 @@ class MapPickerRouteArgs {
 
   final bool isOwner;
 
-  final _i36.Location? initialLocation;
+  final _i37.Location? initialLocation;
 
   final bool isVisitor;
 
@@ -781,7 +804,7 @@ class MyPropertyListRoute extends _i27.PageRouteInfo<void> {
   static _i27.PageInfo page = _i27.PageInfo(
     name,
     builder: (data) {
-      return _i27.WrappedRoute(child: const _i19.MyPropertyListPage());
+      return const _i19.MyPropertyListPage();
     },
   );
 }
@@ -915,7 +938,7 @@ class SeeAllListRoute extends _i27.PageRouteInfo<SeeAllListRouteArgs> {
   SeeAllListRoute({
     _i28.Key? key,
     required String appBarTitle,
-    required _i37.PropertySection section,
+    required _i38.PropertySection section,
     List<_i27.PageRouteInfo>? children,
   }) : super(
          SeeAllListRoute.name,
@@ -955,7 +978,7 @@ class SeeAllListRouteArgs {
 
   final String appBarTitle;
 
-  final _i37.PropertySection section;
+  final _i38.PropertySection section;
 
   @override
   String toString() {

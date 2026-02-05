@@ -404,14 +404,18 @@ class PropertyDetailSection extends StatelessWidget {
                                 AllReviewListRoute(
                                   allReviews: state.allReviews,
                                   property: property,
+                                  crudBloc: context.read<PropertyCrudBloc>(),
                                 ),
                               );
                             },
                           ),
 
-                          ReviewList(
-                            allReviewsList: state.allReviews,
-                            property: property,
+                          BlocProvider.value(
+                            value: context.read<PropertyCrudBloc>(),
+                            child: ReviewList(
+                              allReviewsList: state.allReviews,
+                              property: property,
+                            ),
                           ),
                         ],
                       );
