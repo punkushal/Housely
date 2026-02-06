@@ -4,7 +4,7 @@ class ChatUser extends Equatable {
   final String uid;
   final String name;
   final String email;
-  final String? profileImage;
+  final Map<String, dynamic>? profileImage;
   final bool isOnline;
   final bool isOwner;
   final DateTime? lastSeen;
@@ -25,7 +25,7 @@ class ChatUser extends Equatable {
     String? uid,
     String? name,
     String? email,
-    String? profileImage,
+    Map<String, dynamic>? profileImage,
     bool? isOnline,
     bool? isOwner,
     DateTime? lastSeen,

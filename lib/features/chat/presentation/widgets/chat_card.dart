@@ -151,7 +151,7 @@ class ChatCard extends StatelessWidget {
                     radius: ResponsiveDimensions.getSize(context, 28),
                     backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                     backgroundImage: otherUser.profileImage != null
-                        ? NetworkImage(otherUser.profileImage!)
+                        ? NetworkImage(otherUser.profileImage!['url'])
                         : null,
                     child: otherUser.profileImage == null
                         ? Text(

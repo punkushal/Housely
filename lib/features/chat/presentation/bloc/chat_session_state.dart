@@ -24,6 +24,7 @@ final class ChatSessionLoaded extends ChatSessionState {
   // To handle delete message loading state
   final bool isDeletingMessage;
   final bool isSendingMessage;
+  final bool messageSent;
   final String? errorMessage;
   final bool isInitializing; // Track if still initializing chat
 
@@ -38,6 +39,7 @@ final class ChatSessionLoaded extends ChatSessionState {
     this.isLoadingMore = false,
     this.isSendingMessage = false,
     this.isInitializing = false,
+    this.messageSent = false,
   });
 
   ChatSessionLoaded copyWith({
@@ -49,6 +51,7 @@ final class ChatSessionLoaded extends ChatSessionState {
     bool? hasMoreMessages,
     bool? isLoadingMore,
     bool? isSendingMessage,
+    bool? messageSent,
     bool? isInitializing,
   }) {
     return ChatSessionLoaded(
@@ -62,6 +65,7 @@ final class ChatSessionLoaded extends ChatSessionState {
       errorMessage: errorMessage ?? this.errorMessage,
       isSendingMessage: isSendingMessage ?? this.isSendingMessage,
       isInitializing: isInitializing ?? this.isInitializing,
+      messageSent: messageSent ?? this.messageSent,
     );
   }
 
@@ -77,6 +81,7 @@ final class ChatSessionLoaded extends ChatSessionState {
     isLoadingMore,
     isSendingMessage,
     isInitializing,
+    messageSent,
   ];
 }
 

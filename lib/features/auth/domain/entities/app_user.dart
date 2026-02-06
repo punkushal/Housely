@@ -4,14 +4,16 @@ class AppUser {
   final String email;
   final String username;
   final String? phoneNumber;
-  final Map<String, dynamic>? photoUrl;
+  final String? fcmToken;
+  final Map<String, dynamic>? profileImage;
 
   AppUser({
     required this.uid,
     required this.email,
     required this.username,
     this.phoneNumber,
-    this.photoUrl,
+    this.fcmToken,
+    this.profileImage,
   });
 
   AppUser copyWith({
@@ -19,14 +21,16 @@ class AppUser {
     String? email,
     String? username,
     String? phoneNumber,
-    Map<String, dynamic>? photoUrl,
+    String? fcmToken,
+    Map<String, dynamic>? profileImage,
   }) {
     return AppUser(
       uid: uid ?? this.uid,
       email: email ?? this.email,
       username: username ?? this.username,
       phoneNumber: phoneNumber ?? this.phoneNumber,
-      photoUrl: photoUrl ?? this.photoUrl,
+      fcmToken: fcmToken ?? this.fcmToken,
+      profileImage: profileImage ?? this.profileImage,
     );
   }
 }

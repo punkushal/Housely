@@ -52,6 +52,31 @@ final class SendMessage extends ChatSessionEvent {
   ];
 }
 
+final class SendPushNotification extends ChatSessionEvent {
+  final String chatId;
+  final String senderName;
+  final String message;
+  final String recipientId;
+  final String senderId;
+
+  const SendPushNotification({
+    required this.chatId,
+    required this.senderName,
+    required this.message,
+    required this.recipientId,
+    required this.senderId,
+  });
+
+  @override
+  List<Object?> get props => [
+    chatId,
+    senderName,
+    message,
+    recipientId,
+    senderId,
+  ];
+}
+
 final class DeleteMessage extends ChatSessionEvent {
   final String messageId;
 

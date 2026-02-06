@@ -93,10 +93,8 @@ class _ChatPageState extends State<ChatPage> {
         message: _messageController.text.trim(),
         senderId: widget.currentUser.uid,
         senderName: widget.currentUser.name,
-        senderImage: widget.currentUser.profileImage,
         recipientUid: widget.otherUser.uid,
         recipientName: widget.otherUser.name,
-        recipientImage: widget.otherUser.profileImage,
         replyToMessageId: _replyToMessageId,
       ),
     );
@@ -124,7 +122,7 @@ class _ChatPageState extends State<ChatPage> {
               radius: ResponsiveDimensions.spacing24(context),
               backgroundColor: AppColors.primary.withValues(alpha: 0.1),
               backgroundImage: widget.otherUser.profileImage != null
-                  ? NetworkImage(widget.otherUser.profileImage!)
+                  ? NetworkImage(widget.otherUser.profileImage!['url'])
                   : null,
               child: widget.otherUser.profileImage == null
                   ? Text(
@@ -208,6 +206,19 @@ class _ChatPageState extends State<ChatPage> {
                   return Center(child: CircularProgressIndicator());
                 }
                 if (state is ChatSessionLoaded) {
+                  if (state.messageSent) {
+                    if (state.messages.isNotEmpty) {
+                      context.read<ChatSessionBloc>().add(
+                        SendPushNotification(
+                          chatId: state.chatId,
+                          senderName: widget.currentUser.name,
+                          message: state.messages.first.text,
+                          recipientId: widget.otherUser.uid,
+                          senderId: widget.currentUser.uid,
+                        ),
+                      );
+                    }
+                  }
                   return Padding(
                     padding: ResponsiveDimensions.paddingSymmetric(
                       context,

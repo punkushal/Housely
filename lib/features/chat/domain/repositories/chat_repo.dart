@@ -54,4 +54,13 @@ abstract interface class ChatRepository {
 
   /// Get user details
   ResultFuture<ChatUser> getUserDetails(String userId);
+
+  /// Send Push Notification
+  ResultVoid sendPushNotification({
+    required String chatId,
+    required String senderName,
+    required String message,
+    required String targetUserId,
+    required String senderId,
+  });
 }

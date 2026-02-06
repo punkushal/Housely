@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -6,6 +8,7 @@ import 'package:housely/core/error/exception.dart';
 import 'package:housely/core/utils/handle_error.dart';
 import 'package:housely/features/auth/data/models/app_user_model.dart';
 import 'package:housely/features/auth/domain/entities/app_user.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 abstract class AuthRemoteDataSource {
   Future<void> register({
@@ -33,6 +36,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
   final GoogleSignIn googleSignInInstance;
   final FirebaseFirestore firestore;
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   AuthRemoteDataSourceImpl({
     required this.firebaseAuth,
@@ -181,6 +185,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             .get();
 
         if (doc.exists && doc.data() != null) {
+          // Sync FCM Token
+          try {
+            String? token = await _fcm.getToken();
+            if (token != null) {
+              await firestore.collection(TextConstants.users).doc(uid).update({
+                'fcmToken': token,
+              });
+            }
+          } catch (e) {
+            // ignore token errors
+            log('token error: ${e.toString()}');
+          }
           return AppUserModel.fromMap(doc.data()!);
         } else {
           return AppUser(
