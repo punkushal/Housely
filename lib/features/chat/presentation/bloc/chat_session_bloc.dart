@@ -10,6 +10,7 @@ import 'package:housely/features/chat/domain/usecases/create_or_get_chat.dart';
 import 'package:housely/features/chat/domain/usecases/get_messages_use_case.dart';
 import 'package:housely/features/chat/domain/usecases/get_user_status.dart';
 import 'package:housely/features/chat/domain/usecases/send_message_use_case.dart';
+import 'package:housely/features/chat/domain/usecases/send_push_notification_use_case.dart';
 import 'package:housely/features/chat/domain/usecases/update_user_status.dart';
 import 'package:housely/features/chat/domain/usecases/delete_message.dart'
     as delete_message;
@@ -26,6 +27,7 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
   final UpdateOnlineStatusUseCase updateOnlineStatus;
   final GetUserStatusStreamUseCase getUserStatus;
   final CreateOrGetChatUseCase createOrGetChat;
+  final SendPushNotificationUseCase sendPushNotificationUseCase;
 
   StreamSubscription? _userStatusSubscription;
   StreamSubscription? _messagesSubscription;
@@ -41,6 +43,7 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
     required this.updateOnlineStatus,
     required this.getUserStatus,
     required this.createOrGetChat,
+    required this.sendPushNotificationUseCase,
   }) : super(ChatSessionInitial()) {
     on<InitializeChat>(_onInitializeChat);
     on<SendMessage>(_onSendMessage);
@@ -49,6 +52,7 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
     on<UserStatusUpdated>(_onUserStatusUpdated);
     on<MarkMessageAsReadEvent>(_onMarkMessagesAsRead);
     on<MessagesUpdated>(_onMessagesUpdated);
+    on<SendPushNotification>(_onSendPushNotification);
   }
 
   @override
@@ -320,14 +324,12 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
               uid: event.senderId,
               email: '',
               name: event.senderName ?? '',
-              profileImage: event.senderImage ?? '',
               isOwner: false,
             ),
             otherUser: ChatUser(
               uid: event.recipientUid ?? '',
               email: '',
               name: event.recipientName ?? '',
-              profileImage: event.recipientImage ?? '',
               isOwner: false,
             ),
           ),
@@ -365,6 +367,7 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
           currentState.copyWith(
             messages: updatedMessages,
             isSendingMessage: false,
+            messageSent: true,
           ),
         );
 
@@ -444,4 +447,45 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
       MarkParams(chatId: event.chatId, userId: event.currentUser),
     );
   }
+
+  /// Send push notification
+  Future<void> _onSendPushNotification(
+    SendPushNotification event,
+    Emitter<ChatSessionState> emit,
+  ) async {
+    final result = await sendPushNotificationUseCase(
+      SendNotificationParam(
+        chatId: event.chatId,
+        senderName: event.senderName,
+        message: event.message,
+        targetUserId: event.recipientId,
+        senderId: event.senderId,
+      ),
+    );
+
+    result.fold(
+      (f) {
+        // notification not sent
+      },
+      (_) {
+        // notificaiton sent
+      },
+    );
+  }
 }
+
+//  return result.fold(
+//       (failure) => Left(failure),
+//       (message) async {
+//         // Send Notification if message sent successfully
+//         await chatRepository.sendPushNotification(
+//           chatId: params.chatId,
+//           senderName: params.senderName,
+//           message: params.message,
+//           targetUserId: params.recipientUid,
+//           senderId: params.senderId,
+//           senderImage: params.senderImage,
+//         );
+//         return Right(message);
+//       },
+//     );
