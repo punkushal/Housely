@@ -17,6 +17,7 @@ class PropertyList extends StatelessWidget {
     this.vertical = 12,
     required this.propertyList,
     this.showAll = false,
+    this.isNearby = false,
   });
 
   /// property list
@@ -30,10 +31,13 @@ class PropertyList extends StatelessWidget {
 
   /// boolean checker to show all
   final bool showAll;
+  final bool isNearby;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: showAll ? .infinity : ResponsiveDimensions.getSize(context, 300),
+      height: showAll
+          ? .infinity
+          : ResponsiveDimensions.getSize(context, isNearby ? 100 : 250),
       child: ListView.builder(
         padding: .zero,
         itemCount: showAll ? propertyList.length : propertyList.take(3).length,

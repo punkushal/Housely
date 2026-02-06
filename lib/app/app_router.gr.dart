@@ -929,6 +929,8 @@ class SeeAllListRoute extends _i27.PageRouteInfo<SeeAllListRouteArgs> {
     _i28.Key? key,
     required String appBarTitle,
     required _i37.PropertySection section,
+    double? latitude,
+    double? longitude,
     List<_i27.PageRouteInfo>? children,
   }) : super(
          SeeAllListRoute.name,
@@ -936,6 +938,8 @@ class SeeAllListRoute extends _i27.PageRouteInfo<SeeAllListRouteArgs> {
            key: key,
            appBarTitle: appBarTitle,
            section: section,
+           latitude: latitude,
+           longitude: longitude,
          ),
          initialChildren: children,
        );
@@ -951,6 +955,8 @@ class SeeAllListRoute extends _i27.PageRouteInfo<SeeAllListRouteArgs> {
           key: args.key,
           appBarTitle: args.appBarTitle,
           section: args.section,
+          latitude: args.latitude,
+          longitude: args.longitude,
         ),
       );
     },
@@ -962,6 +968,8 @@ class SeeAllListRouteArgs {
     this.key,
     required this.appBarTitle,
     required this.section,
+    this.latitude,
+    this.longitude,
   });
 
   final _i28.Key? key;
@@ -970,9 +978,13 @@ class SeeAllListRouteArgs {
 
   final _i37.PropertySection section;
 
+  final double? latitude;
+
+  final double? longitude;
+
   @override
   String toString() {
-    return 'SeeAllListRouteArgs{key: $key, appBarTitle: $appBarTitle, section: $section}';
+    return 'SeeAllListRouteArgs{key: $key, appBarTitle: $appBarTitle, section: $section, latitude: $latitude, longitude: $longitude}';
   }
 
   @override
@@ -981,11 +993,18 @@ class SeeAllListRouteArgs {
     if (other is! SeeAllListRouteArgs) return false;
     return key == other.key &&
         appBarTitle == other.appBarTitle &&
-        section == other.section;
+        section == other.section &&
+        latitude == other.latitude &&
+        longitude == other.longitude;
   }
 
   @override
-  int get hashCode => key.hashCode ^ appBarTitle.hashCode ^ section.hashCode;
+  int get hashCode =>
+      key.hashCode ^
+      appBarTitle.hashCode ^
+      section.hashCode ^
+      latitude.hashCode ^
+      longitude.hashCode;
 }
 
 /// generated route for
