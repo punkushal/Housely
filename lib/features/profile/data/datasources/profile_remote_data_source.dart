@@ -38,19 +38,17 @@ class ProfileRemoteDataSource {
       if (appUser.username.isNotEmpty &&
           appUser.phoneNumber != null &&
           appUser.phoneNumber!.isNotEmpty) {
-        
         final ownerModel = PropertyOwnerModel(
-           ownerId: appUser.uid,
-           name: appUser.username,
-           phone: appUser.phoneNumber!,
-           profileImage: appUser.photoUrl,
+          ownerId: appUser.uid,
+          name: appUser.username,
+          phone: appUser.phoneNumber!,
+          profileImage: appUser.profileImage,
         );
 
         // upsert (merge: true will create if not exists, update if exists)
-        await ownerRef.doc(appUser.email).set(
-          ownerModel.toJson(), 
-          SetOptions(merge: true)
-        );
+        await ownerRef
+            .doc(appUser.email)
+            .set(ownerModel.toJson(), SetOptions(merge: true));
       }
     } on FirebaseAuthException catch (e) {
       handleFirebaseException(e);
