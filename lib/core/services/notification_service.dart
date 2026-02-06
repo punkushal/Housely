@@ -6,6 +6,8 @@ import 'package:housely/features/auth/domain/repositories/auth_repo.dart';
 import 'package:housely/features/chat/domain/entity/chat_user.dart';
 import 'package:housely/features/chat/domain/repositories/chat_repo.dart';
 import 'package:housely/injection_container.dart';
+import 'package:housely/features/notification/data/models/notification_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../../app/app_router.dart';
@@ -15,6 +17,33 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `Firebase.initializeApp` before using other Firebase services.
   // await Firebase.initializeApp();
+
+  RemoteNotification? notification = message.notification;
+  if (notification != null) {
+     final prefs = await SharedPreferences.getInstance();
+    final List<String> notifications =
+        prefs.getStringList('notifications') ?? [];
+
+    // Create payload
+    final payloadData = {
+      'chatId': message.data['chatId'],
+      'senderId': message.data['senderId'],
+    };
+    
+    // Ensure unique ID for each notification
+    int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+    final notificationModel = NotificationModel(
+      id: notificationId,
+      title: notification.title ?? 'No Title',
+      body: notification.body ?? 'No Body',
+      payload: jsonEncode(payloadData),
+      timestamp: DateTime.now(),
+    );
+
+    notifications.add(jsonEncode(notificationModel.toJson()));
+    await prefs.setStringList('notifications', notifications);
+  }
 }
 
 class NotificationService {
@@ -53,7 +82,7 @@ class NotificationService {
     await _flutterLocalNotificationsPlugin.initialize(
       settings: initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response) {
-        _handleNotificationClick(response.payload);
+        handleNotificationTap(response.payload);
       },
     );
 
@@ -75,6 +104,41 @@ class NotificationService {
     }
   }
 
+  Future<void> saveNotification(NotificationModel notification) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> notifications =
+        prefs.getStringList('notifications') ?? [];
+    notifications.add(jsonEncode(notification.toJson()));
+    await prefs.setStringList('notifications', notifications);
+  }
+
+  Future<List<NotificationModel>> getNotifications() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> notifications =
+        prefs.getStringList('notifications') ?? [];
+    return notifications
+        .map((e) => NotificationModel.fromJson(jsonDecode(e)))
+        .toList()
+        .reversed
+        .toList();
+  }
+
+  Future<void> clearAllNotifications() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('notifications');
+  }
+
+  Future<void> deleteNotification(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> notifications =
+        prefs.getStringList('notifications') ?? [];
+    notifications.removeWhere((element) {
+      final notification = NotificationModel.fromJson(jsonDecode(element));
+      return notification.id == id;
+    });
+    await prefs.setStringList('notifications', notifications);
+  }
+
   void _showForegroundNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
@@ -85,9 +149,21 @@ class NotificationService {
         'chatId': message.data['chatId'],
         'senderId': message.data['senderId'],
       };
+      
+      String payloadString = jsonEncode(payloadData);
 
       // Ensure unique ID for each notification
       int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      // Save notification locally
+      final notificationModel = NotificationModel(
+        id: notificationId,
+        title: notification.title ?? 'No Title',
+        body: notification.body ?? 'No Body',
+        payload: payloadString,
+        timestamp: DateTime.now(),
+      );
+      await saveNotification(notificationModel);
 
       await _flutterLocalNotificationsPlugin.show(
         id: notificationId,
@@ -103,12 +179,12 @@ class NotificationService {
           ),
           iOS: DarwinNotificationDetails(),
         ),
-        payload: jsonEncode(payloadData),
+        payload: payloadString,
       );
     }
   }
 
-  void _handleNotificationClick(String? payload) async {
+  void handleNotificationTap(String? payload) async {
     if (payload != null) {
       try {
         final data = jsonDecode(payload);
@@ -175,7 +251,7 @@ class NotificationService {
         'chatId': message.data['chatId'],
         'senderId': message.data['senderId'],
       });
-      _handleNotificationClick(payload);
+      handleNotificationTap(payload);
     }
   }
 }
