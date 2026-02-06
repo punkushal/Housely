@@ -17,6 +17,8 @@ import 'package:housely/features/home/presentation/widgets/icon_wrapper.dart';
 import 'package:housely/features/home/presentation/widgets/popular/popular_section.dart';
 import 'package:housely/features/home/presentation/widgets/recommended/recommended_section.dart';
 import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
+import 'package:housely/features/notification/presentation/cubit/notification_cubit.dart';
+import 'package:housely/injection_container.dart';
 
 @RoutePage()
 class TabWrapper extends StatelessWidget {
@@ -24,55 +26,59 @@ class TabWrapper extends StatelessWidget {
   final String? address;
   @override
   Widget build(BuildContext context) {
-    return AutoTabsScaffold(
-      routes: [
-        HomeRoute(address: address),
-        ExploreRoute(),
-        MyBookingRoute(),
-        ProfileRoute(),
-      ],
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.pushRoute<bool>(CreateNewPropertyRoute());
-        },
-        shape: RoundedRectangleBorder(
-          borderRadius: ResponsiveDimensions.borderRadiusLarge(
-            context,
-            size: 28,
+    return BlocProvider(
+      lazy: false,
+      create: (context) => sl<NotificationCubit>()..loadNotifications(),
+      child: AutoTabsScaffold(
+        routes: [
+          HomeRoute(address: address),
+          ExploreRoute(),
+          MyBookingRoute(),
+          ProfileRoute(),
+        ],
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            context.pushRoute<bool>(CreateNewPropertyRoute());
+          },
+          shape: RoundedRectangleBorder(
+            borderRadius: ResponsiveDimensions.borderRadiusLarge(
+              context,
+              size: 28,
+            ),
           ),
+          child: Icon(Icons.add),
         ),
-        child: Icon(Icons.add),
-      ),
-      bottomNavigationBuilder: (_, tabsRouter) {
-        return Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.textPrimary.withValues(alpha: 0.05),
-                blurRadius: ResponsiveDimensions.radiusSmall(context),
-              ),
-            ],
-          ),
-          padding: ResponsiveDimensions.paddingOnly(context, bottom: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(navList.length, (index) {
-              final navItem = navList[index];
-              return GestureDetector(
-                onTap: () => tabsRouter.setActiveIndex(index),
-                child: CustomBottomNavItem(
-                  label: navItem.label,
-                  isActive: tabsRouter.activeIndex == index,
-                  iconPath: navItem.iconPath,
-                  filledIconPath: navItem.iconFilledPath,
+        bottomNavigationBuilder: (_, tabsRouter) {
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.textPrimary.withValues(alpha: 0.05),
+                  blurRadius: ResponsiveDimensions.radiusSmall(context),
                 ),
-              );
-            }),
-          ),
-        );
-      },
+              ],
+            ),
+            padding: ResponsiveDimensions.paddingOnly(context, bottom: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(navList.length, (index) {
+                final navItem = navList[index];
+                return GestureDetector(
+                  onTap: () => tabsRouter.setActiveIndex(index),
+                  child: CustomBottomNavItem(
+                    label: navItem.label,
+                    isActive: tabsRouter.activeIndex == index,
+                    iconPath: navItem.iconPath,
+                    filledIconPath: navItem.iconFilledPath,
+                  ),
+                );
+              }),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -101,6 +107,9 @@ class _HomePageState extends State<HomePage> {
         ),
       );
       context.read<FavoritesBloc>().add(LoadFavoritesRequested());
+      if (context.mounted) {
+        context.read<NotificationCubit>().loadNotifications();
+      }
     });
   }
 
@@ -154,7 +163,30 @@ class _HomePageState extends State<HomePage> {
                   right: 18,
                 ),
                 actions: [
-                  IconWrapper(iconPath: ImageConstant.notificationIcon),
+                  BlocBuilder<NotificationCubit, NotificationState>(
+                    builder: (context, state) {
+                      int count = 0;
+                      if (state is NotificationLoaded) {
+                        count = state.notifications.where((n) => !n.isRead).length; 
+                        // Wait, user didn't specify "isRead", just "count". 
+                        // Usually badge implies "unread". But the requirement is "show count".
+                        // I'll assume total count for now or unread if I had that field. 
+                        // I added `isRead` to model. But `saveNotification` defaults it to false. 
+                        // I'll use total count of the list since "clearing" removes them.
+                        count = state.notifications.length;
+                      }
+                      return IconWrapper(
+                        iconPath: ImageConstant.notificationIcon,
+                        notificationCount: count,
+                        onTap: () async {
+                           await context.router.push(NotificationRoute());
+                           if(context.mounted){
+                             context.read<NotificationCubit>().loadNotifications();
+                           }
+                        },
+                      );
+                    },
+                  ),
                   ResponsiveDimensions.gapW8(context),
                   IconWrapper(
                     iconPath: ImageConstant.chatIcon,

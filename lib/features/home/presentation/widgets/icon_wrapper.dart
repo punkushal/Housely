@@ -9,6 +9,7 @@ class IconWrapper extends StatelessWidget {
     required this.iconPath,
     this.onTap,
     this.fit = .scaleDown,
+    this.notificationCount = 0,
   });
 
   /// icon path
@@ -19,6 +20,9 @@ class IconWrapper extends StatelessWidget {
 
   /// icon fit
   final BoxFit fit;
+
+  /// notification count
+  final int notificationCount;
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +35,45 @@ class IconWrapper extends StatelessWidget {
           shape: .circle,
           border: Border.all(color: AppColors.textHint),
         ),
-        child: SvgPicture.asset(
-          iconPath,
-          height: ResponsiveDimensions.getHeight(context, 24),
-          width: ResponsiveDimensions.getSize(context, 24),
-          fit: fit,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SvgPicture.asset(
+              iconPath,
+              height: ResponsiveDimensions.getHeight(context, 24),
+              width: ResponsiveDimensions.getSize(context, 24),
+              fit: fit,
+            ),
+            if (notificationCount > 0)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Center(
+                    child: Text(
+                      notificationCount > 3
+                          ? '3+'
+                          : notificationCount.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );

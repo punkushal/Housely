@@ -82,7 +82,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       OptionTile(
                         label: "Notifications",
                         iconPath: ImageConstant.notificationIcon,
-                        onTap: () {},
+                        onTap: () {
+                          context.router.push(NotificationRoute());
+                        },
                       ),
 
                       OptionTile(
@@ -108,7 +110,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                   EditProfileRoute(
                                     appUser: authUser.currentUser!,
                                     profileCubit: cubit,
-                                    owner: state.owner,
                                   ),
                                 );
                               },
