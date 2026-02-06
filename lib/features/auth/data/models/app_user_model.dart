@@ -1,4 +1,4 @@
-import 'package:housely/features/auth/domain/entities/app_user.dart';
+import '../../domain/entities/app_user.dart';
 
 class AppUserModel extends AppUser {
   AppUserModel({
@@ -6,7 +6,8 @@ class AppUserModel extends AppUser {
     required super.email,
     required super.username,
     super.phoneNumber,
-    super.photoUrl,
+    super.fcmToken,
+    super.profileImage,
   });
 
   factory AppUserModel.fromMap(Map<String, dynamic> map) {
@@ -15,7 +16,8 @@ class AppUserModel extends AppUser {
       email: map['email'],
       username: map['username'],
       phoneNumber: map['phoneNumber'],
-      photoUrl: map['photoUrl'],
+      fcmToken: map['fcmToken'],
+      profileImage: map['profileImage'],
     );
   }
 
@@ -25,10 +27,11 @@ class AppUserModel extends AppUser {
       'email': email,
       'username': username,
       'phoneNumber': phoneNumber,
+      'fcmToken': fcmToken,
     };
 
-    if (photoUrl != null) {
-      map['photoUrl'] = photoUrl;
+    if (profileImage != null) {
+      map['profileImage'] = profileImage;
     }
 
     return map;
@@ -40,7 +43,8 @@ class AppUserModel extends AppUser {
       email: appUser.email,
       username: appUser.username,
       phoneNumber: appUser.phoneNumber,
-      photoUrl: appUser.photoUrl,
+      fcmToken: appUser.fcmToken,
+      profileImage: appUser.profileImage,
     );
   }
 }

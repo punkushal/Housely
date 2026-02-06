@@ -22,7 +22,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   }) : super(ProfileState());
 
   void setProfileUrl(AppUser user) {
-    emit(state.copyWith(profileImageUrl: user.photoUrl, appUser: user));
+    emit(state.copyWith(profileImageUrl: user.profileImage, appUser: user));
   }
 
   void setProfileImage(File image) {
@@ -90,7 +90,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         email: appUser.email,
       );
       if (uploaded != null) {
-        updatedUser = updatedUser.copyWith(photoUrl: uploaded);
+        updatedUser = updatedUser.copyWith(profileImage: uploaded);
       } else {
         return emit(
           state.copyWith(

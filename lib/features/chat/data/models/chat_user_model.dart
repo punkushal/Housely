@@ -38,12 +38,12 @@ class ChatUserModel extends ChatUser {
 
       return ChatUserModel(
         uid: doc.id,
-        name: data['name']?.toString() ?? 'Unknown User',
+        name: data['username'],
         email: data['email']?.toString() ?? '',
-        profileImage: data['profileImage']?.toString(),
+        profileImage: data['photoUrl'],
         isOnline: data['isOnline'] == true, // Explicit boolean check
         lastSeen: (data['lastSeen'] as Timestamp?)?.toDate(),
-        fcmToken: data['fcmToken']?.toString(),
+        fcmToken: data['fcmToken'],
         isOwner: data['isOwner'] == true, // Explicit boolean check
       );
     } catch (e) {
@@ -76,7 +76,7 @@ class ChatUserModel extends ChatUser {
       return ChatUserModel(
         uid: uid,
         name: map['name']?.toString() ?? 'Unknown User',
-        profileImage: map['profileImage']?.toString(),
+        profileImage: map['profileImage'],
         isOnline: map['isOnline'] == true, // Explicit boolean check
         lastSeen: (map['lastSeen'] as Timestamp?)?.toDate(),
         isOwner: map['isOwner'] == true, // Explicit boolean check
