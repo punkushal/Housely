@@ -6,6 +6,8 @@ import 'package:housely/env/env.dart';
 import 'package:housely/firebase_options.dart';
 import 'package:housely/injection_container.dart';
 
+import 'package:housely/core/services/notification_service.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -18,5 +20,9 @@ void main() async {
 
   // Initialize dependencies
   await initializeDependencies();
+  
+  // Initialize Notifications
+  await NotificationService().initialize();
+  
   runApp(MyApp());
 }
