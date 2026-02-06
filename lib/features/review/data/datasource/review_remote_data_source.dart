@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:appwrite/appwrite.dart' hide Query;
@@ -90,10 +91,14 @@ class ReviewRemoteDataSource {
       await firestore.runTransaction((transaction) async {
         final propSnapshot = await transaction.get(propRef);
 
+        final data = propSnapshot.data();
+
+        final ratingMap = (data?['rating'] as Map<String, dynamic>?);
+
         final currentAvg =
-            (propSnapshot.data()?['rating']['averageRating'] ?? 0.0).toDouble();
-        final totalReviews =
-            (propSnapshot.data()?['rating']['totalReviews'] ?? 0) as int;
+            (ratingMap?['averageRating'] as num?)?.toDouble() ?? 0.0;
+
+        final totalReviews = (ratingMap?['totalReviews'] as int?) ?? 0;
 
         final double newAverage = RatingUtils.computeNewAverageOnAdd(
           currentAvg: currentAvg,
@@ -110,6 +115,7 @@ class ReviewRemoteDataSource {
         }, SetOptions(merge: true));
       });
     } catch (e) {
+      log('Failed to create new review: ${e.toString()}');
       throw ServerException("Failed to add new review: $e");
     }
   }
