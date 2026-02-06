@@ -15,6 +15,7 @@ import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/location/domain/entities/location.dart';
 import 'package:housely/features/property/domain/entities/property_owner.dart';
+import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
 import 'package:housely/features/property/presentation/cubit/form/property_form_cubit.dart';
 import 'package:housely/features/property/presentation/widgets/enum_drop_down.dart';
@@ -361,7 +362,8 @@ class _CreateNewPropertyPageState extends State<CreateNewPropertyPage> {
                   : 'Property updated successfully';
 
               SnackbarHelper.showSuccess(context, message);
-              context.read<PropertyCrudBloc>().add(ResetPropertyCrud());
+              context.read<PropertyListBloc>().add(GetAllProperties());
+              context.read<PropertyListBloc>().add(GetRecommendedProperties());
               _resetForm();
               context.pop(true);
             }
