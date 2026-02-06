@@ -37,6 +37,10 @@ class _RecommendedSectionState extends State<RecommendedSection> {
             return SizedBox.shrink();
           }
 
+          if (properties.isEmpty) {
+            return SizedBox.shrink();
+          }
+
           return Column(
             crossAxisAlignment: .start,
             spacing: ResponsiveDimensions.spacing12(context),
