@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:housely/core/services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app/app_router.dart';
 import 'core/constants/text_constants.dart';
@@ -88,6 +89,7 @@ import 'features/profile/domain/usecases/get_payment_history_use_case.dart';
 import 'features/profile/domain/usecases/upload_profile_image_use_case.dart';
 import 'features/profile/presentation/cubit/payments/cubit/payment_history_cubit.dart';
 import 'features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:housely/features/notification/presentation/cubit/notification_cubit.dart';
 import 'features/profile/data/datasources/profile_remote_data_source.dart';
 import 'features/profile/data/repository/profile_repo_impl.dart';
 import 'features/profile/domain/repository/profile_repo.dart';
@@ -147,6 +149,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => GoogleSignIn.instance);
   sl.registerLazySingleton(() => AppDatabase());
+  sl.registerLazySingleton(() => NotificationService());
 
   // ============= Data layer ==============
   sl.registerLazySingleton<OnboardingLocalDataSource>(
@@ -482,4 +485,6 @@ Future<void> initializeDependencies() async {
       isFavoriteUseCase: sl(),
     ),
   );
+
+  sl.registerFactory(() => NotificationCubit());
 }
