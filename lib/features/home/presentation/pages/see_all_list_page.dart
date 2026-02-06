@@ -15,10 +15,14 @@ class SeeAllListPage extends StatefulWidget implements AutoRouteWrapper {
     super.key,
     required this.appBarTitle,
     required this.section,
+    this.latitude,
+    this.longitude,
   });
 
   final String appBarTitle;
   final PropertySection section;
+  final double? latitude;
+  final double? longitude;
 
   @override
   State<SeeAllListPage> createState() => _SeeAllListPageState();
@@ -41,17 +45,22 @@ class _SeeAllListPageState extends State<SeeAllListPage> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) => _loadSection());
   }
 
-  void _loadSection() {
+  void _loadSection({double? lat, double? long}) {
     final bloc = context.read<PropertyListBloc>();
     switch (widget.section) {
-      case PropertySection.all:
+      case .all:
         bloc.add(const GetAllProperties());
         break;
-      case PropertySection.recommended:
+      case .recommended:
         bloc.add(const GetRecommendedProperties());
         break;
-      case PropertySection.nearby:
-        // bloc.add(GetNearbyProperties(latitude: lat, longitude: lng));
+      case .nearby:
+        bloc.add(
+          GetNearbyProperties(
+            latitude: widget.latitude != null ? widget.latitude! : 0,
+            longitude: widget.longitude != null ? widget.longitude! : 0,
+          ),
+        );
         break;
 
       case .my:

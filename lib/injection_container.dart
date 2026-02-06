@@ -107,6 +107,7 @@ import 'features/property/domain/usecases/delete_property.dart';
 import 'features/property/domain/usecases/fetch/get_my_properties_use_case.dart';
 import 'features/property/domain/usecases/fetch/get_property_by_id_use_case.dart';
 import 'features/property/domain/usecases/fetch/get_recommended_properties_use_case.dart';
+import 'features/property/domain/usecases/fetch/get_nearby_properties_use_case.dart';
 import 'features/property/domain/usecases/fetch_all_properties.dart';
 import 'features/property/domain/usecases/get_owner_profile.dart';
 import 'features/property/domain/usecases/search_and_filter.dart';
@@ -287,6 +288,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => SearchAndFilter(sl()));
   sl.registerLazySingleton(() => GetPropertyByIdUseCase(sl()));
   sl.registerLazySingleton(() => GetRecommendedPropertiesUseCase(sl()));
+  sl.registerLazySingleton(() => GetNearbyPropertiesUseCase(sl()));
   sl.registerLazySingleton(() => GetMyPropertiesUseCase(sl()));
 
   // owner use case
@@ -388,6 +390,7 @@ Future<void> initializeDependencies() async {
     () => PropertyListBloc(
       fetchAllProperties: sl(),
       getRecommendedPropertiesUseCase: sl(),
+      getNearbyPropertiesUseCase: sl(),
       getMyPropertiesUseCase: sl(),
     ),
   );

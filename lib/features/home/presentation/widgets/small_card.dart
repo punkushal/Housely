@@ -63,7 +63,7 @@ class SmallCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: .start,
                 mainAxisAlignment: .end,
-                spacing: ResponsiveDimensions.getHeight(context, 5),
+                spacing: ResponsiveDimensions.getSize(context, 5),
                 children: [
                   // Property name
                   Text(
@@ -93,7 +93,7 @@ class SmallCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: ResponsiveDimensions.getHeight(context, 5)),
+                  SizedBox(height: ResponsiveDimensions.getSize(context, 5)),
                   // Property price
                   Text(
                     "Rs${property.price.amount.toInt().toCompact}/${isMonth ? "month" : "night"}",
@@ -116,23 +116,25 @@ class SmallCard extends StatelessWidget {
                 Spacer(),
 
                 // rating container
-                property.rating.averageRating == 0
-                    ? SizedBox.shrink()
-                    : Container(
-                        width: ResponsiveDimensions.getSize(context, 40),
-                        height: ResponsiveDimensions.getHeight(context, 26),
-                        padding: ResponsiveDimensions.paddingSymmetric(
-                          context,
-                          horizontal: 4,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.rating,
-                          borderRadius: ResponsiveDimensions.borderRadiusMedium(
-                            context,
-                          ),
-                        ),
-                        child: Row(
+                Container(
+                  width: ResponsiveDimensions.getSize(context, 40),
+                  height: ResponsiveDimensions.getSize(context, 26),
+                  padding: ResponsiveDimensions.paddingSymmetric(
+                    context,
+                    horizontal: 4,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: property.rating.averageRating == 0
+                        ? Colors.transparent
+                        : AppColors.rating,
+                    borderRadius: ResponsiveDimensions.borderRadiusMedium(
+                      context,
+                    ),
+                  ),
+                  child: property.rating.averageRating == 0
+                      ? const SizedBox.shrink() // Empty but container still takes space
+                      : Row(
                           children: [
                             SvgPicture.asset(
                               ImageConstant.starIcon,
@@ -150,7 +152,7 @@ class SmallCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                      ),
+                ),
               ],
             ),
           ],

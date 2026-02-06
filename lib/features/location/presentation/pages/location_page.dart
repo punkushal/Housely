@@ -109,6 +109,8 @@ class _LocationPageState extends State<LocationPage> {
                           context.router.replace(
                             TabWrapper(address: state.location.address),
                           );
+                        } else if (state is LocationSkipped) {
+                          context.router.replace(TabWrapper());
                         }
                       },
                       builder: (context, state) {

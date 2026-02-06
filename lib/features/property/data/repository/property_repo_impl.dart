@@ -12,6 +12,7 @@ import 'package:housely/features/property/data/models/property_model.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/domain/entities/property_filter_params.dart';
 import 'package:housely/features/property/domain/repository/property_repo.dart';
+import 'package:geolocator/geolocator.dart';
 
 class PropertyRepoImpl implements PropertyRepo {
   final AppwriteStorageDataSource dataSource;
@@ -228,6 +229,35 @@ class PropertyRepoImpl implements PropertyRepo {
       return Left(handleFirebaseError(e));
     } catch (e) {
       return Left(ServerFailure("Failed to fetch recommended properties: $e"));
+    }
+  }
+
+  @override
+  ResultFuture<({List<Property> data, DocumentSnapshot<Object?>? lastDoc})>
+  fetchNearbyProperties({
+    required double latitude,
+    required double longitude,
+    DocumentSnapshot<Object?>? lastDoc,
+  }) async {
+    try {
+      // Fetch properties (reusing fetchAll for simplicity)
+      final result = await firebase.fetchAllProperties(lastDoc: lastDoc);
+
+      final nearby = result.data.where((prop) {
+        final dist = Geolocator.distanceBetween(
+          latitude,
+          longitude,
+          prop.location.latitude,
+          prop.location.longitude,
+        );
+        return dist <= 50000; // 50km radius
+      }).toList();
+
+      return Right((data: nearby, lastDoc: result.lastDoc));
+    } on FirebaseException catch (e) {
+      return Left(handleFirebaseError(e));
+    } catch (e) {
+      return Left(ServerFailure("Failed to fetch nearby properties: $e"));
     }
   }
 }

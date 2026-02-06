@@ -47,8 +47,13 @@ abstract interface class PropertyRepo {
   ResultFuture<({List<Property> data, DocumentSnapshot? lastDoc})>
   fetchRecommendedProperties({DocumentSnapshot? lastDoc});
 
-  //TODO: get nearby properties (if user enables their location)
-  // ResultFuture<List<Property>> fetchNearbyProperties();
+  // get nearby properties (if user enables their location)
+  ResultFuture<({List<Property> data, DocumentSnapshot? lastDoc})>
+  fetchNearbyProperties({
+    required double latitude,
+    required double longitude,
+    DocumentSnapshot? lastDoc,
+  });
 
   // get property by it's id
   ResultFuture<Property> fetchPropertyById(String propertyId);

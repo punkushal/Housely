@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
@@ -18,7 +17,9 @@ import 'package:housely/features/home/presentation/widgets/popular/popular_secti
 import 'package:housely/features/home/presentation/widgets/recommended/recommended_section.dart';
 import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
 import 'package:housely/features/notification/presentation/cubit/notification_cubit.dart';
+import 'package:housely/features/location/presentation/cubit/location_cubit.dart';
 import 'package:housely/injection_container.dart';
+import 'package:housely/features/home/presentation/widgets/nearby/nearby_list.dart';
 
 @RoutePage()
 class TabWrapper extends StatelessWidget {
@@ -26,9 +27,17 @@ class TabWrapper extends StatelessWidget {
   final String? address;
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      lazy: false,
-      create: (context) => sl<NotificationCubit>()..loadNotifications(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<NotificationCubit>()..loadNotifications(),
+          lazy: false,
+        ),
+        BlocProvider(
+          create: (context) => sl<LocationCubit>()..checkSavedLocation(),
+          lazy: false,
+        ),
+      ],
       child: AutoTabsScaffold(
         routes: [
           HomeRoute(address: address),
@@ -124,39 +133,8 @@ class _HomePageState extends State<HomePage> {
           return CustomScrollView(
             slivers: [
               SliverAppBar(
-                title: Column(
-                  mainAxisSize: .min,
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text(
-                      "Location",
-                      style: AppTextStyle.labelMedium(
-                        context,
-                        fontSize: 12,
-                        color: AppColors.textHint,
-                      ),
-                    ),
-
-                    Row(
-                      spacing: ResponsiveDimensions.getSize(context, 2),
-                      children: [
-                        SvgPicture.asset(
-                          ImageConstant.locationFilledIcon,
-                          height: ResponsiveDimensions.getSize(context, 24),
-                        ),
-                        SizedBox(
-                          width: ResponsiveDimensions.getSize(context, 92),
-                          child: Text(
-                            widget.address != null
-                                ? widget.address!
-                                : 'Home page',
-                            overflow: .ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                centerTitle: false,
+                title: Text('Housely'),
 
                 actionsPadding: ResponsiveDimensions.paddingOnly(
                   context,
@@ -167,22 +145,21 @@ class _HomePageState extends State<HomePage> {
                     builder: (context, state) {
                       int count = 0;
                       if (state is NotificationLoaded) {
-                        count = state.notifications.where((n) => !n.isRead).length; 
-                        // Wait, user didn't specify "isRead", just "count". 
-                        // Usually badge implies "unread". But the requirement is "show count".
-                        // I'll assume total count for now or unread if I had that field. 
-                        // I added `isRead` to model. But `saveNotification` defaults it to false. 
-                        // I'll use total count of the list since "clearing" removes them.
+                        count = state.notifications
+                            .where((n) => !n.isRead)
+                            .length;
                         count = state.notifications.length;
                       }
                       return IconWrapper(
                         iconPath: ImageConstant.notificationIcon,
                         notificationCount: count,
                         onTap: () async {
-                           await context.router.push(NotificationRoute());
-                           if(context.mounted){
-                             context.read<NotificationCubit>().loadNotifications();
-                           }
+                          await context.router.push(NotificationRoute());
+                          if (context.mounted) {
+                            context
+                                .read<NotificationCubit>()
+                                .loadNotifications();
+                          }
                         },
                       );
                     },
@@ -234,10 +211,27 @@ class _HomePageState extends State<HomePage> {
                         // recommended section
                         RecommendedSection(),
 
-                        // SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
-                        // // nearby section : later data fetched from internet with current logged in near properties
-                        // HeadingSection(title: 'Nearby', onTapText: "See all"),
-                        // NearbyList(),
+                        BlocConsumer<LocationCubit, LocationState>(
+                          listener: (context, state) {
+                            if (state is LocationLoaded) {
+                              context.read<PropertyListBloc>().add(
+                                GetNearbyProperties(
+                                  latitude: state.location.latitude,
+                                  longitude: state.location.longitude,
+                                ),
+                              );
+                            }
+                          },
+                          builder: (context, state) {
+                            if (state is LocationLoaded) {
+                              return NearbyList(
+                                latitude: state.location.latitude,
+                                longitude: state.location.longitude,
+                              );
+                            }
+                            return SizedBox.shrink();
+                          },
+                        ),
                         SizedBox(
                           height: ResponsiveDimensions.getSize(context, 8),
                         ),

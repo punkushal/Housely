@@ -20,6 +20,8 @@ final class LocationLoaded extends LocationState {
   List<Object> get props => [location];
 }
 
+final class LocationSkipped extends LocationState {}
+
 final class LocationFailure extends LocationState {
   final String message;
 
