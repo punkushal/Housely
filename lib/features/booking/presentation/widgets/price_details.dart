@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/extensions/number_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/booking/presentation/cubit/calendar_cubit.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
@@ -39,12 +40,12 @@ class PriceDetails extends StatelessWidget {
                   context,
                   label:
                       "${propertyType == 'house' ? 'Monthly' : 'Per night'} payment",
-                  price: "Rs$price",
+                  price: "Rs${price.toInt().toCompact}",
                 ),
                 _buildInfo(
                   context,
                   label: "Total",
-                  price: "Rs${state.totalPrice}",
+                  price: "Rs${state.totalPrice.toInt().toCompact}",
                   isTotal: true,
                 ),
               ],

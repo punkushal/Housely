@@ -167,7 +167,11 @@ class _SignupPageState extends State<SignupPage> {
                                 onTap: () => context
                                     .read<AuthFormCubit>()
                                     .togglePasswordVissibility(),
-                                child: Icon(Icons.visibility_off_outlined),
+                                child: Icon(
+                                  state
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility,
+                                ),
                               ),
                               validator: (value) =>
                                   FormValidators.validatePassword(value),

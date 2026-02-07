@@ -304,7 +304,7 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
       result.fold(
         (f) => emit(state.copyWith(errorMessage: f.message, status: .error)),
         (_) {
-          emit(state.copyWith(status: .deleted));
+          emit(state.copyWith(status: .deleted, ratings: null));
         },
       );
     } catch (e) {

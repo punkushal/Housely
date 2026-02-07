@@ -11,7 +11,7 @@ class RatingUtils {
     final double oldTotal = currentAvg * totalReviews;
     final int newTotalReviews = totalReviews + 1;
     final double newAvg = (oldTotal + newRating) / newTotalReviews;
-    return _round(newAvg, precision);
+    return _round(newAvg, precision).clamp(0.0, 5.0);
   }
 
   static double computeNewAverageOnUpdate({
@@ -21,11 +21,11 @@ class RatingUtils {
     required double newRating,
     int precision = 1,
   }) {
-    if (totalReviews <= 0) return _round(newRating, precision);
+    if (totalReviews <= 0) return _round(newRating, precision).clamp(0.0, 5.0);
 
     final double newAvg =
         ((currentAvg * totalReviews) - oldRating + newRating) / totalReviews;
-    return _round(newAvg, precision);
+    return _round(newAvg, precision).clamp(0.0, 5.0);
   }
 
   static double computeNewAverageOnDelete({
@@ -38,7 +38,7 @@ class RatingUtils {
     if (newCount > 0) {
       final double newAvg =
           ((currentAvg * totalReviews) - ratingToDelete) / newCount;
-      return _round(newAvg, precision);
+      return _round(newAvg, precision).clamp(0.0, 5.0);
     }
 
     return 0.0;

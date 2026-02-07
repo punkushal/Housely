@@ -97,11 +97,8 @@ class ReviewDetailPage extends StatelessWidget {
               "This review is successfully deleted",
             );
             // Return true to indicate data has changed
-            Future.delayed(Duration(milliseconds: 500), () {
-              if (context.mounted) {
-                context.pop(true);
-              }
-            });
+
+            context.pop(true);
           } else if (state.status == .error) {
             SnackbarHelper.showError(context, state.errorMessage!);
           }

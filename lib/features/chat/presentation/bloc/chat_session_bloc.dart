@@ -53,6 +53,7 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
     on<MarkMessageAsReadEvent>(_onMarkMessagesAsRead);
     on<MessagesUpdated>(_onMessagesUpdated);
     on<SendPushNotification>(_onSendPushNotification);
+    on<ResetMessageSentFlag>(_onResetMessageSentFlag);
   }
 
   @override
@@ -472,20 +473,14 @@ class ChatSessionBloc extends Bloc<ChatSessionEvent, ChatSessionState> {
       },
     );
   }
-}
 
-//  return result.fold(
-//       (failure) => Left(failure),
-//       (message) async {
-//         // Send Notification if message sent successfully
-//         await chatRepository.sendPushNotification(
-//           chatId: params.chatId,
-//           senderName: params.senderName,
-//           message: params.message,
-//           targetUserId: params.recipientUid,
-//           senderId: params.senderId,
-//           senderImage: params.senderImage,
-//         );
-//         return Right(message);
-//       },
-//     );
+  Future<void> _onResetMessageSentFlag(
+    ResetMessageSentFlag event,
+    Emitter<ChatSessionState> emit,
+  ) async {
+    if (state is ChatSessionLoaded) {
+      final currentState = state as ChatSessionLoaded;
+      emit(currentState.copyWith(messageSent: false));
+    }
+  }
+}

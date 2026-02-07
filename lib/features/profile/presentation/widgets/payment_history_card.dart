@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
+import 'package:housely/core/extensions/number_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
 import 'package:housely/features/property/domain/entities/property.dart';
@@ -56,7 +57,7 @@ class PaymentHistoryCard extends StatelessWidget {
         ),
 
         trailing: Text(
-          "Rs${booking.amount}",
+          "Rs${booking.amount.toInt().toCompact}",
           style: AppTextStyle.bodySemiBold(
             context,
             fontSize: 12,
