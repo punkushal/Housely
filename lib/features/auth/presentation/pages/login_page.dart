@@ -150,7 +150,11 @@ class _LoginPageState extends State<LoginPage> {
                                 onTap: () => context
                                     .read<AuthFormCubit>()
                                     .togglePasswordVissibility(),
-                                child: Icon(Icons.visibility_off_outlined),
+                                child: Icon(
+                                  state
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility,
+                                ),
                               ),
                               validator: (value) =>
                                   FormValidators.validatePassword(value),
@@ -205,22 +209,13 @@ class _LoginPageState extends State<LoginPage> {
                         listener: (context, state) {
                           if (state is LoginSuccess) {
                             context.router.replaceAll([LocationRoute()]);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: AppColors.success,
-                                duration: Duration(seconds: 3),
-                                content: Text('Successfully logged in'),
-                              ),
+                            SnackbarHelper.showSuccess(
+                              context,
+                              "Logged in successfully",
                             );
                           }
                           if (state is LoginError) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: AppColors.error,
-                                duration: Duration(seconds: 3),
-                                content: Text(state.error),
-                              ),
-                            );
+                            SnackbarHelper.showError(context, state.error);
                           }
                         },
                         builder: (context, state) {
@@ -260,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                             context.router.replaceAll([LocationRoute()]);
                             SnackbarHelper.showSuccess(
                               context,
-                              'Successfully logged in via google',
+                              'Logged in successfully',
                             );
                           }
                         },

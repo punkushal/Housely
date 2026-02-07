@@ -13,47 +13,17 @@ import 'package:housely/features/review/domain/entity/review.dart';
 import 'package:housely/features/review/presentation/bloc/review_bloc.dart';
 import 'package:housely/features/review/presentation/widgets/rating_section.dart';
 import 'package:housely/features/review/presentation/widgets/write_review_container.dart';
-import 'package:housely/injection_container.dart';
 
-import '../../../property/presentation/bloc/crud/property_crud_bloc.dart';
+import '../../../../core/network/cubit/connectivity_cubit.dart';
 
 @RoutePage()
-class AddReviewPage extends StatefulWidget implements AutoRouteWrapper {
-  const AddReviewPage({
-    super.key,
-    required this.property,
-    this.existedReview,
-    this.propertyCrudBloc,
-  });
+class AddReviewPage extends StatefulWidget {
+  const AddReviewPage({super.key, required this.property, this.existedReview});
   final Property property;
   final Review? existedReview;
-  final PropertyCrudBloc? propertyCrudBloc;
+
   @override
   State<AddReviewPage> createState() => _AddReviewPageState();
-
-  @override
-  Widget wrappedRoute(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final bloc = sl<ReviewBloc>();
-
-        if (existedReview != null) {
-          bloc.add(
-            SetInitialValues(
-              ratings: existedReview!.rating.toInt(),
-              existingNetworkImages: existedReview!.reviewImages != null
-                  ? List<Map<String, dynamic>>.from(
-                      existedReview!.reviewImages!['images'],
-                    )
-                  : [],
-            ),
-          );
-        }
-        return bloc;
-      },
-      child: this,
-    );
-  }
 }
 
 class _AddReviewPageState extends State<AddReviewPage> {
@@ -64,6 +34,17 @@ class _AddReviewPageState extends State<AddReviewPage> {
     super.initState();
     if (widget.existedReview != null) {
       _reviewController.text = widget.existedReview!.comment;
+
+      context.read<ReviewBloc>().add(
+        SetInitialValues(
+          ratings: widget.existedReview!.rating.toInt(),
+          existingNetworkImages: widget.existedReview!.reviewImages != null
+              ? List<Map<String, dynamic>>.from(
+                  widget.existedReview!.reviewImages!['images'],
+                )
+              : [],
+        ),
+      );
     }
   }
 
@@ -85,6 +66,17 @@ class _AddReviewPageState extends State<AddReviewPage> {
       );
     }
 
+    final isConnected = context
+        .read<ConnectivityCubit>()
+        .checkConnectivityForAction();
+    if (!isConnected) {
+      SnackbarHelper.showError(
+        context,
+        "No internet connection. Please try again",
+      );
+      return;
+    }
+
     final reviewState = context.read<ReviewBloc>().state;
 
     final ratings = reviewState.ratings;
@@ -94,6 +86,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
     }
     final hasReview = widget.existedReview != null;
     final authState = context.read<AuthCubit>().state as Authenticated;
+    final double rating = (ratings.toDouble() + 1).clamp(1.0, 5.0);
     final review = Review(
       reviewId: hasReview
           ? widget.existedReview!.reviewId
@@ -104,7 +97,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
       userName: hasReview
           ? widget.existedReview!.userName
           : authState.currentUser!.username,
-      rating: ratings.toDouble() + 1,
+      rating: rating,
       comment: comment,
       createdAt: hasReview ? widget.existedReview!.createdAt : .now(),
       updatedAt: hasReview ? .now() : null,
@@ -142,6 +135,12 @@ class _AddReviewPageState extends State<AddReviewPage> {
           context.read<PropertyListBloc>().add(GetAllProperties());
           context.read<PropertyListBloc>().add(GetRecommendedProperties());
           context.read<PropertyListBloc>().add(
+            GetNearbyProperties(
+              latitude: widget.property.location.latitude,
+              longitude: widget.property.location.longitude,
+            ),
+          );
+          context.read<PropertyListBloc>().add(
             GetMyProperties(
               userId: (context.read<AuthCubit>().state as Authenticated)
                   .currentUser!
@@ -149,18 +148,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
             ),
           );
 
-          // Refresh property data
-          if (widget.propertyCrudBloc != null) {
-            widget.propertyCrudBloc!.add(
-              RefreshPropertyEvent(widget.property.id!),
-            );
-          }
-          // Return true to indicate data has changed (for update case)
-          Future.delayed(Duration(milliseconds: 300), () {
-            if (context.mounted) {
-              context.pop(true);
-            }
-          });
+          context.pop(true);
         } else if (state.imageError != null) {
           SnackbarHelper.showError(context, state.imageError!);
         }

@@ -29,9 +29,7 @@ class ReviewCard extends StatelessWidget {
           CircleAvatar(
             backgroundColor: AppColors.divider,
             radius: ResponsiveDimensions.radiusXLarge(context, size: 40),
-            child:
-                review.userProfile !=
-                    null //TODO: i need modify user profile to hold map instead or string
+            child: review.userProfile != null
                 ? Image.network(review.userProfile!)
                 : SvgPicture.asset(ImageConstant.personIcon, fit: .scaleDown),
           ),

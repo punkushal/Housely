@@ -14,13 +14,9 @@ import '../../app/app_router.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `Firebase.initializeApp` before using other Firebase services.
-  // await Firebase.initializeApp();
-
   RemoteNotification? notification = message.notification;
   if (notification != null) {
-     final prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
     final List<String> notifications =
         prefs.getStringList('notifications') ?? [];
 
@@ -29,7 +25,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       'chatId': message.data['chatId'],
       'senderId': message.data['senderId'],
     };
-    
+
     // Ensure unique ID for each notification
     int notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
 
@@ -143,13 +139,27 @@ class NotificationService {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
 
+    // Check if message is from current user (Self Notification)
+    try {
+      final authRepo = sl<AuthRepo>();
+      final currentUserResult = await authRepo.getCurrentUser();
+      String? currentUserId;
+      currentUserResult.fold((l) => null, (r) => currentUserId = r?.uid);
+
+      if (currentUserId != null && message.data['senderId'] == currentUserId) {
+        return;
+      }
+    } catch (e) {
+      debugPrint("Error checking current user in notification: $e");
+    }
+
     if (notification != null && android != null) {
       // Create payload with required data for navigation
       final payloadData = {
         'chatId': message.data['chatId'],
         'senderId': message.data['senderId'],
       };
-      
+
       String payloadString = jsonEncode(payloadData);
 
       // Ensure unique ID for each notification
@@ -207,11 +217,7 @@ class NotificationService {
           currentUserResult.fold((failure) => null, (user) {
             if (user != null) {
               // Extracting image url safely from map if present
-              Map<String, dynamic>? profileImage;
-              if (user.profileImage != null &&
-                  user.profileImage!.containsKey('url')) {
-                profileImage = user.profileImage!['url'];
-              }
+              Map<String, dynamic>? profileImage = user.profileImage;
 
               currentUserEntity = ChatUser(
                 uid: user.uid,

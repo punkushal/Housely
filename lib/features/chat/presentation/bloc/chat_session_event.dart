@@ -137,3 +137,5 @@ class RetryMessageEvent extends ChatSessionEvent {
   @override
   List<Object?> get props => [message];
 }
+
+class ResetMessageSentFlag extends ChatSessionEvent {}

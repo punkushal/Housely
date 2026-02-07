@@ -194,6 +194,23 @@ class _ChatPageState extends State<ChatPage> {
           Expanded(
             child: BlocConsumer<ChatSessionBloc, ChatSessionState>(
               listener: (context, state) {
+                if (state is ChatSessionLoaded && state.messageSent) {
+                  if (state.messages.isNotEmpty) {
+                    context.read<ChatSessionBloc>().add(
+                      SendPushNotification(
+                        chatId: state.chatId,
+                        senderName: widget.currentUser.name,
+                        message: state.messages.first.text,
+                        recipientId: widget.otherUser.uid,
+                        senderId: widget.currentUser.uid,
+                      ),
+                    );
+
+                    // Reset the flag immediately
+                    context.read<ChatSessionBloc>().add(ResetMessageSentFlag());
+                  }
+                }
+
                 // Show error messages
                 if (state is ChatSessionLoaded && state.errorMessage != null) {
                   SnackbarHelper.showError(context, state.errorMessage!);
@@ -206,19 +223,6 @@ class _ChatPageState extends State<ChatPage> {
                   return Center(child: CircularProgressIndicator());
                 }
                 if (state is ChatSessionLoaded) {
-                  if (state.messageSent) {
-                    if (state.messages.isNotEmpty) {
-                      context.read<ChatSessionBloc>().add(
-                        SendPushNotification(
-                          chatId: state.chatId,
-                          senderName: widget.currentUser.name,
-                          message: state.messages.first.text,
-                          recipientId: widget.otherUser.uid,
-                          senderId: widget.currentUser.uid,
-                        ),
-                      );
-                    }
-                  }
                   return Padding(
                     padding: ResponsiveDimensions.paddingSymmetric(
                       context,

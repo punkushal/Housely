@@ -7,8 +7,10 @@ import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/favorites/presentation/bloc/favorites_bloc.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
 import 'package:housely/features/property/presentation/bloc/fetch/property_list_bloc.dart';
 import 'package:housely/features/property/presentation/cubit/owner/owner_cubit.dart';
+import 'package:housely/features/review/presentation/bloc/review_bloc.dart';
 import 'package:housely/injection_container.dart';
 
 class MyApp extends StatelessWidget {
@@ -26,6 +28,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<ProfileCubit>()),
         BlocProvider(create: (context) => sl<FavoritesBloc>()),
         BlocProvider(create: (context) => sl<PropertyListBloc>()),
+        BlocProvider(create: (context) => sl<ReviewBloc>()),
+        BlocProvider(create: (context) => sl<PropertyCrudBloc>()),
       ],
       child: MaterialApp.router(
         title: 'Housely',
