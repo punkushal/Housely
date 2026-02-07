@@ -15,6 +15,9 @@ class AppColors {
   static const Color background = Color(0xFFFCFCFC);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceAlt = Color(0xFFF2F4F7);
+  static const Color rating = Color(0xFFFFFAEB);
+  static const Color ratingStrong = Color(0xFFFDB022);
+  static const Color chipInActive = Color(0xFFF9F5FF);
 
   /* ===================== TEXT ===================== */
 
@@ -29,10 +32,10 @@ class AppColors {
 
   /* ===================== STATUS ===================== */
 
-  static const Color success = Color(0xFF027A48);
+  static const Color success = Color(0xFF12B76A);
   static const Color successBackground = Color(0xFFD1FADF);
   static const Color error = Color(0xFFF97066);
-  static const Color warning = Color(0xFFFEE4E2);
+  static const Color warning = Color(0xFFF79009);
 
   /* ===================== OVERLAY ===================== */
 
