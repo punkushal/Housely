@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class CustomLabelTextField extends StatelessWidget {
   const CustomLabelTextField({
@@ -18,7 +18,7 @@ class CustomLabelTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
-      spacing: ResponsiveDimensions.getHeight(context, 4),
+      spacing: context.sp4,
       children: [
         Text(labelText, style: AppTextStyle.bodySemiBold(context)),
         customTextField,

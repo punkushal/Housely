@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class RedirectSection extends StatelessWidget {
   /// Redirect section for appropriate auth page
@@ -24,7 +24,7 @@ class RedirectSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: .center,
-      spacing: ResponsiveDimensions.getSize(context, 4),
+      spacing: context.sp4,
       children: [
         Text(infoText, style: AppTextStyle.bodyRegular(context, fontSize: 14)),
         GestureDetector(

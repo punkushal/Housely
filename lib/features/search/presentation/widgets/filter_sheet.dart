@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
 import 'package:housely/features/property/domain/entities/property_filter_params.dart';
@@ -40,11 +40,11 @@ class FilterSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: ResponsiveDimensions.paddingSymmetric(context, horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: context.sp24),
       child: Column(
-        spacing: ResponsiveDimensions.spacing8(context),
+        spacing: context.sp8,
         children: [
-          SizedBox(height: ResponsiveDimensions.spacing8(context)),
+          SizedBox(height: context.sp8),
           HeadingLabel(label: "Filter"),
 
           // check box for property status
@@ -82,7 +82,7 @@ class FilterSheet extends StatelessWidget {
 
           // facility filter chip
           FacitlityFilterChipList(),
-          SizedBox(height: ResponsiveDimensions.spacing12(context)),
+          SizedBox(height: context.sp12),
           Row(
             children: [
               // reset button
@@ -141,9 +141,9 @@ class FilterCheckboxContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
-      spacing: ResponsiveDimensions.spacing16(context),
+      spacing: context.sp16,
       children: [
-        SizedBox(height: ResponsiveDimensions.spacing8(context)),
+        SizedBox(height: context.sp8),
         HeadingLabel(label: label),
         Wrap(
           children: checkOptions.entries

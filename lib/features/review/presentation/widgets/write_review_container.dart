@@ -2,8 +2,9 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
+
+import '../../../../core/extensions/context_extension.dart';
 
 class WriteReviewContainer extends StatefulWidget {
   const WriteReviewContainer({super.key, required this.reviewController});
@@ -20,7 +21,7 @@ class _WriteReviewContainerState extends State<WriteReviewContainer> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
-      spacing: ResponsiveDimensions.spacing8(context),
+      spacing: context.sp8,
       children: [
         Text(
           "Write your review",
@@ -34,7 +35,7 @@ class _WriteReviewContainerState extends State<WriteReviewContainer> {
         DottedBorder(
           options: RoundedRectDottedBorderOptions(
             padding: .zero,
-            radius: Radius.circular(ResponsiveDimensions.radiusSmall(context)),
+            radius: .circular(context.sp8),
             dashPattern: [4, 5],
             color: AppColors.border,
           ),
@@ -43,7 +44,7 @@ class _WriteReviewContainerState extends State<WriteReviewContainer> {
             border: .none,
             maxLines: 8,
             maxLength: maxChars,
-            contentPadding: ResponsiveDimensions.paddingAll8(context),
+            contentPadding: .all(context.sp8),
             onChanged: (value) {
               setState(() {
                 remainingChars = maxChars - value.length;

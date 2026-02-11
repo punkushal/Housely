@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/extensions/number_extension.dart';
 import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
@@ -39,17 +40,17 @@ class SmallCard extends StatelessWidget {
     return GestureDetector(
       onTap: navigateTo,
       child: Container(
-        height: height ?? ResponsiveDimensions.getSize(context, 84),
+        height: height ?? context.responsive(84),
         decoration: BoxDecoration(
-          borderRadius: ResponsiveDimensions.borderRadiusLarge(context),
+          borderRadius: BorderRadius.circular(context.sp16),
         ),
         child: Row(
           crossAxisAlignment: .end,
-          spacing: ResponsiveDimensions.getSize(context, 12),
+          spacing: context.sp12,
           children: [
             // image container
             ClipRRect(
-              borderRadius: ResponsiveDimensions.borderRadiusSmall(context),
+              borderRadius: BorderRadius.circular(context.sp8),
               child: CustomCacheContainer(
                 imageUrl: property.media.coverImage['url'],
                 width: 80,
@@ -59,11 +60,11 @@ class SmallCard extends StatelessWidget {
 
             // Property detail section
             SizedBox(
-              width: ResponsiveDimensions.getSize(context, 152),
+              width: context.responsive(152),
               child: Column(
                 crossAxisAlignment: .start,
                 mainAxisAlignment: .end,
-                spacing: ResponsiveDimensions.getSize(context, 5),
+                spacing: context.responsive(5),
                 children: [
                   // Property name
                   Text(
@@ -75,11 +76,11 @@ class SmallCard extends StatelessWidget {
                   // Property location
                   Row(
                     mainAxisSize: .min,
-                    spacing: ResponsiveDimensions.getSize(context, 4),
+                    spacing: context.responsive(4),
                     children: [
                       SvgPicture.asset(ImageConstant.locationIcon),
                       SizedBox(
-                        width: ResponsiveDimensions.getSize(context, 112),
+                        width: context.responsive(112),
                         child: Text(
                           property.location.address,
                           style: AppTextStyle.bodyRegular(
@@ -93,7 +94,7 @@ class SmallCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: ResponsiveDimensions.getSize(context, 5)),
+                  SizedBox(height: context.responsive(5)),
                   // Property price
                   Text(
                     "Rs${property.price.amount.toInt().toCompact}/${isMonth ? "month" : "night"}",
@@ -117,12 +118,11 @@ class SmallCard extends StatelessWidget {
 
                 // rating container
                 Container(
-                  width: ResponsiveDimensions.getSize(context, 40),
-                  height: ResponsiveDimensions.getSize(context, 26),
-                  padding: ResponsiveDimensions.paddingSymmetric(
-                    context,
-                    horizontal: 4,
-                    vertical: 6,
+                  width: context.sp40,
+                  height: context.responsive(26),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.sp4,
+                    vertical: context.responsive(6),
                   ),
                   decoration: BoxDecoration(
                     color: property.rating.averageRating == 0
@@ -138,8 +138,8 @@ class SmallCard extends StatelessWidget {
                           children: [
                             SvgPicture.asset(
                               ImageConstant.starIcon,
-                              width: ResponsiveDimensions.spacing12(context),
-                              height: ResponsiveDimensions.spacing12(context),
+                              width: context.sp12,
+                              height: context.sp12,
                             ),
 
                             // rating

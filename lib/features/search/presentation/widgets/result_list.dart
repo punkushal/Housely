@@ -6,6 +6,7 @@ import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/extensions/string_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
@@ -120,7 +121,7 @@ class ResultList extends StatelessWidget {
                 return Center(child: CircularProgressIndicator());
               }
               return Padding(
-                padding: ResponsiveDimensions.paddingOnly(context, bottom: 16),
+                padding: EdgeInsets.only(bottom: context.sp16),
                 child: GestureDetector(
                   onTap: () {
                     context.router.push(
@@ -172,9 +173,7 @@ class ResultList extends StatelessWidget {
                                   color: AppColors.textHint,
                                 ),
                               ),
-                              SizedBox(
-                                height: ResponsiveDimensions.spacing12(context),
-                              ),
+                              SizedBox(height: context.sp12),
                             ],
                           ),
                         ],

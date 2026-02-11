@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/image_constant.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class BannerSection extends StatelessWidget {
   const BannerSection({super.key});
@@ -8,10 +8,10 @@ class BannerSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(context.sp12),
       child: Image.asset(
         ImageConstant.bannerImg,
-        height: ResponsiveDimensions.getSize(context, 110),
+        height: context.responsive(110),
         fit: .cover,
       ),
     );

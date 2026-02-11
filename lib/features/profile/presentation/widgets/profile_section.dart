@@ -6,7 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
@@ -50,7 +50,7 @@ class ProfileSection extends StatelessWidget {
         child: AlertDialog(
           title: Text("Choose image"),
           content: Column(
-            spacing: ResponsiveDimensions.spacing4(ctx),
+            spacing: context.sp4,
             mainAxisSize: .min,
             children: [
               _buildImageOption(
@@ -97,17 +97,15 @@ class ProfileSection extends StatelessWidget {
                 final hasNetWorkImage = state.profileImageUrl != null;
 
                 return Container(
-                  width: ResponsiveDimensions.getSize(context, 80),
-                  height: ResponsiveDimensions.getSize(context, 80),
+                  width: context.responsive(80),
+                  height: context.responsive(80),
                   decoration: BoxDecoration(
                     color: AppColors.divider,
                     shape: .circle,
                   ),
 
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                      ResponsiveDimensions.getSize(context, 80),
-                    ),
+                    borderRadius: BorderRadius.circular(context.responsive(80)),
                     child: hasLocalImage
                         ? Image.file(state.pickedProfileImage!, fit: .cover)
                         : hasNetWorkImage
@@ -118,8 +116,8 @@ class ProfileSection extends StatelessWidget {
                           )
                         : SvgPicture.asset(
                             ImageConstant.personIcon,
-                            width: ResponsiveDimensions.getSize(context, 16),
-                            height: ResponsiveDimensions.getSize(context, 16),
+                            width: context.sp16,
+                            height: context.sp16,
                             fit: .scaleDown,
                           ),
                   ),
@@ -130,13 +128,13 @@ class ProfileSection extends StatelessWidget {
             isEditing
                 ? Positioned(
                     bottom: 0,
-                    right: ResponsiveDimensions.getSize(context, 6),
+                    right: context.responsive(6),
                     child: GestureDetector(
                       onTap: () {
                         _showOptionsForProfileImage(context);
                       },
                       child: CircleAvatar(
-                        radius: ResponsiveDimensions.spacing12(context),
+                        radius: context.sp12,
                         child: SvgPicture.asset(ImageConstant.cameraIcon),
                       ),
                     ),
@@ -144,7 +142,7 @@ class ProfileSection extends StatelessWidget {
                 : SizedBox.shrink(),
           ],
         ),
-        SizedBox(height: ResponsiveDimensions.spacing16(context)),
+        SizedBox(height: context.sp16),
         if (!isEditing)
           BlocBuilder<ProfileCubit, ProfileState>(
             builder: (context, state) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class CustomButton extends StatelessWidget {
   /// Custom Reusable Button Widget
@@ -51,13 +51,8 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: ResponsiveDimensions.paddingSymmetric(
-        context,
-        horizontal: horizontal,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: context.responsive(horizontal)),
       child: SizedBox(
-        //Color(0xFFFEF3F2) => this color for delete outline button
-        // width: double.infinity,
         child: ElevatedButton(
           onPressed: isLoading ? null : onTap,
           style: ElevatedButton.styleFrom(
@@ -66,7 +61,7 @@ class CustomButton extends StatelessWidget {
                 (isOutlined ? AppColors.surface : AppColors.primaryPressed),
             foregroundColor: AppColors.surface,
             shape: RoundedRectangleBorder(
-              borderRadius: ResponsiveDimensions.borderRadiusSmall(context),
+              borderRadius: BorderRadius.circular(context.sp8),
               side: BorderSide(
                 color: isOutlined
                     ? textColor ?? AppColors.primary
@@ -85,8 +80,8 @@ class CustomButton extends StatelessWidget {
                   style: AppTextStyle.bodyRegular(
                     context,
                     color: textColor ?? AppColors.surface,
-                    fontSize: fontSize ?? 18,
-                    lineHeight: lineHeight ?? 27,
+                    fontSize: fontSize ?? context.responsiveFont(18),
+                    lineHeight: lineHeight ?? context.responsiveFont(27),
                   ),
                 ),
         ),

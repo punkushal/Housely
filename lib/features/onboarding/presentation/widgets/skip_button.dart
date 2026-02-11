@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 
 class SkipButton extends StatelessWidget {
@@ -19,10 +20,10 @@ class SkipButton extends StatelessWidget {
           horizontal: 16,
           vertical: 8,
         ),
-        height: ResponsiveDimensions.buttonHeight(context, buttonHeight: 32),
-        width: ResponsiveDimensions.buttonHeight(context, buttonHeight: 57),
+        height: context.sp32,
+        width: context.responsive(57),
         decoration: BoxDecoration(
-          borderRadius: ResponsiveDimensions.borderRadiusXLarge(context),
+          borderRadius: BorderRadius.circular(context.sp24),
           border: Border.all(color: AppColors.divider),
         ),
         child: Text('Skip'),

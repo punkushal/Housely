@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/validator/form_validator.dart';
 import 'package:housely/core/widgets/custom_button.dart';
@@ -57,7 +57,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     // We no longer pass the owner object explicitly since the remote data source will handle synchronization based on AppUser data.
     context.read<ProfileCubit>().updateUserProfile(
       appUser: updatedUser,
-      owner: null, 
+      owner: null,
     );
   }
 
@@ -69,7 +69,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         listener: (context, state) async {
           // errors
           if (state.errorMessage != null) {
-             SnackbarHelper.showError(context, state.errorMessage!);
+            SnackbarHelper.showError(context, state.errorMessage!);
           }
 
           if (state.imageError != null) {
@@ -82,7 +82,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             if (state.appUser != null) {
               context.read<AuthCubit>().updateUser(state.appUser!);
             }
-            
+
             // Sync OwnerCubit to reflect new profile changes (creation/update)
             context.read<OwnerCubit>().fetchProfile();
 
@@ -102,14 +102,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
               body: SafeArea(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: ResponsiveDimensions.paddingSymmetric(
-                      context,
-                      horizontal: 22,
-                    ),
+                    padding: .symmetric(horizontal: context.responsive(22)),
                     child: Form(
                       key: _formKey,
                       child: Column(
-                        spacing: ResponsiveDimensions.spacing12(context),
+                        spacing: context.sp12,
                         children: [
                           // change profile picture
                           ProfileSection(isEditing: true),
@@ -131,9 +128,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               controller: _phoneController,
                               keyboardType: TextInputType.number,
                               validator: (value) =>
-                                  FormValidators.validatePhoneNumber(
-                                    value,
-                                  ),
+                                  FormValidators.validatePhoneNumber(value),
                             ),
                           ),
                         ],
@@ -143,10 +138,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               ),
               bottomSheet: Padding(
-                padding: ResponsiveDimensions.paddingSymmetric(
-                  context,
-                  vertical: 12,
-                  horizontal: 22,
+                padding: .symmetric(
+                  vertical: context.sp12,
+                  horizontal: context.responsive(22),
                 ),
                 child: CustomButton(
                   isLoading: isLoading,

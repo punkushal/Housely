@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/image_constant.dart';
-import '../../../../core/responsive/responsive_dimensions.dart';
 import '../../../../core/utils/snack_bar_helper.dart';
 import '../../../property/domain/entities/property.dart';
 import '../../domain/entity/favorite.dart';
@@ -28,8 +28,8 @@ class FavoriteToggleButton extends StatelessWidget {
             isFav
                 ? ImageConstant.favoriteFilledIcon
                 : ImageConstant.favoriteIcon,
-            width: ResponsiveDimensions.getSize(context, 24),
-            height: ResponsiveDimensions.getHeight(context, 24),
+            width: context.sp24,
+            height: context.sp24,
             colorFilter: ColorFilter.mode(AppColors.error, .srcIn),
           );
         },

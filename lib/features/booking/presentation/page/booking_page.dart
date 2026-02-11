@@ -5,7 +5,7 @@ import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/booking/domain/entity/booking.dart';
@@ -32,12 +32,12 @@ class BookingPage extends StatelessWidget {
       enableDrag: false,
       context: context,
       builder: (context) => Padding(
-        padding: ResponsiveDimensions.paddingSymmetric(context, horizontal: 24),
+        padding: .symmetric(horizontal: context.sp24),
         child: Column(
-          spacing: ResponsiveDimensions.spacing16(context),
+          spacing: context.sp16,
           children: [
             Image.asset(ImageConstant.bookingSuccessImg),
-            SizedBox(height: ResponsiveDimensions.spacing16(context)),
+            SizedBox(height: context.sp16),
             Text(
               "Yey, your booking succes",
               style: AppTextStyle.headingSemiBold(
@@ -169,12 +169,9 @@ class BookingPage extends StatelessWidget {
               body: SafeArea(
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: ResponsiveDimensions.paddingSymmetric(
-                      context,
-                      horizontal: 24,
-                    ),
+                    padding: .symmetric(horizontal: context.sp24),
                     child: Column(
-                      spacing: ResponsiveDimensions.spacing24(context),
+                      spacing: context.sp24,
                       crossAxisAlignment: .start,
                       children: [
                         BookingPropertyCard(property: property),
@@ -296,9 +293,7 @@ class BookingPage extends StatelessWidget {
                           },
                         ),
 
-                        SizedBox(
-                          height: ResponsiveDimensions.spacing12(context),
-                        ),
+                        SizedBox(height: context.sp12),
                       ],
                     ),
                   ),

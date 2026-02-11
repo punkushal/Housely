@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/property/domain/entities/property_filter_params.dart';
 import 'package:housely/features/search/presentation/bloc/property_search_bloc.dart';
@@ -67,36 +67,32 @@ class _ExplorePageState extends State<ExplorePage> {
             appBar: AppBar(title: Text('Explore')),
             body: SafeArea(
               child: Padding(
-                padding: ResponsiveDimensions.paddingSymmetric(
-                  context,
-                  horizontal: 24,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: context.sp24),
                 child: Column(
-                  spacing: ResponsiveDimensions.spacing16(context),
+                  spacing: context.sp16,
                   children: [
                     // search text field
                     CustomTextField(
                       controller: _controller,
                       prefixIcon: SvgPicture.asset(
                         ImageConstant.searchIcon,
-                        height: ResponsiveDimensions.getHeight(context, 24),
-                        width: ResponsiveDimensions.getSize(context, 24),
+                        height: context.sp24,
+                        width: context.sp24,
                         fit: .scaleDown,
                       ),
                       suffixIcon: GestureDetector(
                         onTap: () => showFitlerSheet(context),
                         child: SvgPicture.asset(
                           ImageConstant.filterIcon,
-                          height: ResponsiveDimensions.getHeight(context, 24),
-                          width: ResponsiveDimensions.getSize(context, 24),
+                          height: context.sp24,
+                          width: context.sp24,
                           fit: .scaleDown,
                         ),
                       ),
                       hintText: "Search Property",
-                      contentPadding: ResponsiveDimensions.paddingSymmetric(
-                        context,
-                        horizontal: 16,
-                        vertical: 14,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: context.sp16,
+                        vertical: context.responsive(14),
                       ),
 
                       onChanged: (value) {
@@ -145,26 +141,15 @@ class _ExplorePageState extends State<ExplorePage> {
                           if (state is PropertySearchAndFilterLoaded) {
                             if (state.allProperties.isEmpty) {
                               return Padding(
-                                padding: ResponsiveDimensions.paddingSymmetric(
-                                  context,
-                                  horizontal: 33,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: context.responsive(33),
                                 ),
                                 child: Column(
-                                  spacing: ResponsiveDimensions.spacing16(
-                                    context,
-                                  ),
+                                  spacing: context.sp16,
                                   children: [
-                                    SizedBox(
-                                      height: ResponsiveDimensions.spacing20(
-                                        context,
-                                      ),
-                                    ),
+                                    SizedBox(height: context.sp20),
                                     Image.asset(ImageConstant.searchNotFoundmg),
-                                    SizedBox(
-                                      height: ResponsiveDimensions.spacing8(
-                                        context,
-                                      ),
-                                    ),
+                                    SizedBox(height: context.sp8),
                                     Text(
                                       "Search not found",
                                       style: AppTextStyle.headingSemiBold(
@@ -236,14 +221,19 @@ class _ExplorePageState extends State<ExplorePage> {
     return Center(
       child: Column(
         mainAxisAlignment: .center,
+        spacing: context.sp8,
         children: [
-          Icon(Icons.search, size: 80, color: Colors.grey[400]),
-          const SizedBox(height: 16),
+          Icon(
+            Icons.search,
+            size: context.responsive(80),
+            color: Colors.grey[400],
+          ),
+          SizedBox(height: context.sp8),
           Text(
             'Search for properties',
             style: AppTextStyle.headingSemiBold(context, fontSize: 20),
           ),
-          const SizedBox(height: 8),
+
           Text(
             'Use the search bar or filters to find properties',
             textAlign: TextAlign.center,

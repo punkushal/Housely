@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_carousel_slider.dart';
@@ -84,10 +84,7 @@ class _DetailPageState extends State<DetailPage> {
                 title: const Text('Details'),
                 floating: true,
                 pinned: false,
-                actionsPadding: ResponsiveDimensions.paddingOnly(
-                  context,
-                  right: 18,
-                ),
+                actionsPadding: .only(right: context.responsive(18)),
                 actions: [
                   isOwner
                       ? IconButton(
@@ -105,15 +102,15 @@ class _DetailPageState extends State<DetailPage> {
                             }
                           },
                           icon: Container(
-                            padding: ResponsiveDimensions.paddingAll8(context),
+                            padding: .all(context.sp8),
                             decoration: BoxDecoration(
                               color: AppColors.primary.withValues(alpha: 0.7),
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(context.sp12),
                             ),
                             child: Icon(
                               Icons.edit_rounded,
                               color: AppColors.background,
-                              size: ResponsiveDimensions.spacing20(context),
+                              size: context.sp20,
                             ),
                           ),
                         )
@@ -123,10 +120,7 @@ class _DetailPageState extends State<DetailPage> {
 
               // Content
               SliverPadding(
-                padding: ResponsiveDimensions.paddingSymmetric(
-                  context,
-                  horizontal: 24,
-                ),
+                padding: .symmetric(horizontal: context.sp24),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     // Property image carousel
@@ -134,23 +128,17 @@ class _DetailPageState extends State<DetailPage> {
                       imageUrls: [property.media.coverImage['url'], ...urls],
                     ),
 
-                    SizedBox(
-                      height: ResponsiveDimensions.getHeight(context, 12),
-                    ),
+                    SizedBox(height: context.sp12),
 
                     // Images list
                     ImageList(imageUrls: urls),
 
-                    SizedBox(
-                      height: ResponsiveDimensions.getHeight(context, 12),
-                    ),
+                    SizedBox(height: context.sp12),
 
                     // Detail section
                     PropertyDetailSection(property: property, isOwner: isOwner),
 
-                    SizedBox(
-                      height: ResponsiveDimensions.getHeight(context, 6),
-                    ),
+                    SizedBox(height: context.responsive(6)),
                   ]),
                 ),
               ),
@@ -164,10 +152,11 @@ class _DetailPageState extends State<DetailPage> {
   Widget _buildErrorState(BuildContext context, String? message) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
+        spacing: context.sp16,
         children: [
           Text(message ?? 'Failed to load property'),
-          const SizedBox(height: 16),
+
           CustomButton(
             onTap: () {
               // Retry loading

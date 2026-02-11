@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
+
+import '../../../../core/extensions/context_extension.dart';
 
 class ImagesGridView extends StatelessWidget {
   const ImagesGridView({
@@ -26,8 +27,8 @@ class ImagesGridView extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+        crossAxisSpacing: context.sp8,
+        mainAxisSpacing: context.sp8,
       ),
       itemBuilder: (context, index) {
         // Determining if current index is a Network Image or Local File
@@ -41,24 +42,24 @@ class ImagesGridView extends StatelessWidget {
             // image display
             Positioned.fill(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: .circular(context.sp8),
                 child: isNetworkImage
                     ? CustomCacheContainer(
                         imageUrl: networkImages[fileIndex],
-                        width: ResponsiveDimensions.getSize(context, 98),
-                        height: ResponsiveDimensions.getSize(context, 68),
+                        width: context.responsive(98),
+                        height: context.responsive(68),
                       )
                     : Image.file(
                         localImages[fileIndex],
                         fit: .cover,
-                        width: ResponsiveDimensions.getSize(context, 98),
-                        height: ResponsiveDimensions.getSize(context, 68),
+                        width: context.responsive(98),
+                        height: context.responsive(68),
                       ),
               ),
             ),
             Positioned(
-              right: ResponsiveDimensions.spacing8(context),
-              top: ResponsiveDimensions.spacing4(context),
+              right: context.sp8,
+              top: context.sp4,
               child: GestureDetector(
                 onTap: () {
                   if (isNetworkImage) {
@@ -72,7 +73,11 @@ class ImagesGridView extends StatelessWidget {
                     color: AppColors.error,
                     shape: .circle,
                   ),
-                  child: Icon(Icons.close, color: AppColors.surface, size: 16),
+                  child: Icon(
+                    Icons.close,
+                    color: AppColors.surface,
+                    size: context.sp16,
+                  ),
                 ),
               ),
             ),

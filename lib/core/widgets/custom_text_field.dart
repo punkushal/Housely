@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -121,7 +122,7 @@ class CustomTextField extends StatelessWidget {
             (isFilled
                 ? OutlineInputBorder(
                     borderSide: .none,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(context.responsive(14)),
                   )
                 : null),
       ),

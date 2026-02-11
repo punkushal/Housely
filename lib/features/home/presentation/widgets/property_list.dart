@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/features/favorites/domain/entity/favorite.dart';
 import 'package:housely/features/favorites/presentation/bloc/favorites_bloc.dart';
@@ -35,16 +35,13 @@ class PropertyList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: showAll
-          ? .infinity
-          : ResponsiveDimensions.getSize(context, isNearby ? 100 : 250),
+      height: showAll ? .infinity : context.responsive(isNearby ? 100 : 250),
       child: ListView.builder(
         padding: .zero,
         itemCount: showAll ? propertyList.length : propertyList.take(3).length,
         itemBuilder: (context, index) {
           return Padding(
-            padding: ResponsiveDimensions.paddingSymmetric(
-              context,
+            padding: EdgeInsets.symmetric(
               horizontal: horizontal,
               vertical: vertical,
             ),
@@ -52,11 +49,11 @@ class PropertyList extends StatelessWidget {
               width: double.infinity,
               child: Column(
                 mainAxisSize: .min,
-                spacing: ResponsiveDimensions.getSize(context, 12),
+                spacing: context.sp12,
                 children: [
                   SmallCard(
                     property: propertyList[index],
-                    height: ResponsiveDimensions.getSize(context, 72),
+                    height: context.responsive(72),
                     navigateTo: () => context.router.push(
                       DetailRoute(propertyId: propertyList[index].id!),
                     ),

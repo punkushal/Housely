@@ -5,7 +5,7 @@ import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/location/presentation/cubit/location_cubit.dart';
@@ -43,23 +43,20 @@ class _LocationPageState extends State<LocationPage> {
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: .center,
-                spacing: ResponsiveDimensions.spacing16(context),
+                spacing: context.sp16,
                 children: [
-                  SizedBox(height: ResponsiveDimensions.getHeight(context, 40)),
+                  SizedBox(height: context.responsive(40)),
                   Padding(
-                    padding: ResponsiveDimensions.paddingSymmetric(
-                      context,
-                      horizontal: 38,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: context.responsive(38),
                     ),
                     child: Column(
-                      spacing: ResponsiveDimensions.spacing16(context),
+                      spacing: context.sp16,
                       children: [
                         //location image
                         Image.asset(ImageConstant.searchLocationImg),
 
-                        SizedBox(
-                          height: ResponsiveDimensions.getHeight(context, 14),
-                        ),
+                        SizedBox(height: context.responsive(14)),
                         // welcome message
                         Text(
                           "Hi, Nice to meet you !",
@@ -83,7 +80,7 @@ class _LocationPageState extends State<LocationPage> {
                       ],
                     ),
                   ),
-                  SizedBox(height: ResponsiveDimensions.getHeight(context, 60)),
+                  SizedBox(height: context.responsive(48)),
                   // current location button
                   DropShadow(
                     child: BlocConsumer<LocationCubit, LocationState>(
@@ -135,7 +132,7 @@ class _LocationPageState extends State<LocationPage> {
                       textColor: AppColors.primary,
                     ),
                   ),
-                  SizedBox(height: ResponsiveDimensions.getHeight(context, 48)),
+                  SizedBox(height: context.sp40),
                 ],
               ),
             ),

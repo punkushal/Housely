@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/text_constants.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
@@ -161,15 +161,14 @@ class _AddReviewPageState extends State<AddReviewPage> {
             ),
           ),
           body: Padding(
-            padding: ResponsiveDimensions.paddingSymmetric(
-              context,
-              horizontal: 22,
-              vertical: 12,
+            padding: .symmetric(
+              horizontal: context.responsive(22),
+              vertical: context.sp12,
             ),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: .start,
-                spacing: ResponsiveDimensions.spacing16(context),
+                spacing: context.sp16,
                 children: [
                   // upload review images
                   UploadContainer(
@@ -206,7 +205,7 @@ class _AddReviewPageState extends State<AddReviewPage> {
 
                   // rating section
                   RatingSection(),
-                  SizedBox(height: ResponsiveDimensions.spacing32(context)),
+                  SizedBox(height: context.sp32),
                   CustomButton(
                     onTap: () => onReviewSubmit(context),
                     buttonLabel: widget.existedReview != null

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/onboarding/data/on_boarding_data.dart';
@@ -71,7 +72,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         ],
       ),
       body: Column(
-        spacing: ResponsiveDimensions.spacing24(context),
+        spacing: context.sp24,
         children: [
           // Page view
           Expanded(
@@ -100,10 +101,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 children: List.generate(pages.length, (index) {
                   final isActive = currentIndex == index;
                   return Container(
-                    height: ResponsiveDimensions.getSize(context, 10),
+                    height: context.responsive(10),
                     width: isActive
-                        ? ResponsiveDimensions.getSize(context, 28)
-                        : ResponsiveDimensions.getSize(context, 10),
+                        ? context.responsive(28)
+                        : context.responsive(10),
                     decoration: BoxDecoration(
                       color: isActive ? AppColors.primary : AppColors.border,
                       borderRadius: isActive
@@ -119,7 +120,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             },
           ),
 
-          SizedBox(height: ResponsiveDimensions.getHeight(context, 20)),
+          SizedBox(height: context.sp20),
 
           // Next button
           BlocBuilder<OnboardingCubit, OnboardingState>(
@@ -136,7 +137,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             },
           ),
 
-          SizedBox(height: ResponsiveDimensions.getHeight(context, 20)),
+          SizedBox(height: context.sp20),
         ],
       ),
     );

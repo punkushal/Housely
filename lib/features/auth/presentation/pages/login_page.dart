@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/validator/form_validator.dart';
 import 'package:housely/core/widgets/custom_button.dart';
@@ -98,17 +98,14 @@ class _LoginPageState extends State<LoginPage> {
           appBar: AppBar(),
           body: SafeArea(
             child: Padding(
-              padding: ResponsiveDimensions.paddingSymmetric(
-                context,
-                horizontal: 24,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: context.sp24),
               child: SingleChildScrollView(
                 dragStartBehavior: .down,
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisAlignment: .end,
-                    spacing: ResponsiveDimensions.getHeight(context, 16),
+                    spacing: context.sp16,
                     children: [
                       // welcome message section
                       WelcomeMessage(
@@ -117,9 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                             "Sign in with your email and password\nor social media to continue",
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 12),
-                      ),
+                      SizedBox(height: context.sp12),
 
                       // Email input field
                       CustomLabelTextField(
@@ -200,9 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 12),
-                      ),
+                      SizedBox(height: context.sp12),
 
                       // sign in button
                       BlocConsumer<LoginCubit, LoginState>(
@@ -228,9 +221,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 6),
-                      ),
+                      SizedBox(height: context.responsive(6)),
 
                       // or section
                       Text(
@@ -238,9 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                         style: AppTextStyle.bodyRegular(context, fontSize: 14),
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 6),
-                      ),
+                      SizedBox(height: context.responsive(6)),
 
                       // google sign in section
                       BlocConsumer<GoogleSigninCubit, GoogleSigninState>(
@@ -270,9 +259,7 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 8),
-                      ),
+                      SizedBox(height: context.sp8),
 
                       // sign up section
                       RedirectSection(

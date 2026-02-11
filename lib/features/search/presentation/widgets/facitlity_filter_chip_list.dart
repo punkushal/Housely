@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
 import 'package:housely/features/search/presentation/cubit/search_filter_cubit.dart';
 
@@ -28,11 +28,11 @@ class _FacitlityFilterChipListState extends State<FacitlityFilterChipList> {
     return Column(
       mainAxisSize: .min,
       crossAxisAlignment: .start,
-      spacing: ResponsiveDimensions.spacing12(context),
+      spacing: context.sp12,
       children: [
         HeadingLabel(label: "Facilities"),
         SizedBox(
-          height: ResponsiveDimensions.getSize(context, 56),
+          height: context.responsive(56),
           child: BlocBuilder<SearchFilterCubit, SearchFilterState>(
             builder: (context, state) {
               return ListView.builder(
@@ -72,15 +72,11 @@ class FacilityFilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: ResponsiveDimensions.paddingSymmetric(
-        context,
-        horizontal: 12,
-        vertical: 4,
-      ),
-      margin: ResponsiveDimensions.paddingOnly(context, right: 8),
+      padding: .symmetric(horizontal: context.sp12, vertical: 4),
+      margin: .only(right: context.sp8),
       alignment: .center,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(context.sp8),
         color: isActive
             ? AppColors.primaryPressed.withValues(alpha: 0.3)
             : null,

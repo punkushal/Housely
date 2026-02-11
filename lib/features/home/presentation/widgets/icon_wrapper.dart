@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class IconWrapper extends StatelessWidget {
   const IconWrapper({
@@ -29,8 +29,8 @@ class IconWrapper extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: ResponsiveDimensions.getSize(context, 44),
-        height: ResponsiveDimensions.getHeight(context, 44),
+        width: context.responsive(42),
+        height: context.responsive(42),
         decoration: BoxDecoration(
           shape: .circle,
           border: Border.all(color: AppColors.textHint),
@@ -40,23 +40,23 @@ class IconWrapper extends StatelessWidget {
           children: [
             SvgPicture.asset(
               iconPath,
-              height: ResponsiveDimensions.getHeight(context, 24),
-              width: ResponsiveDimensions.getSize(context, 24),
+              height: context.sp24,
+              width: context.sp24,
               fit: fit,
             ),
             if (notificationCount > 0)
               Positioned(
-                top: 8,
-                right: 8,
+                top: context.sp8,
+                right: context.sp8,
                 child: Container(
-                  padding: const EdgeInsets.all(2),
+                  padding: EdgeInsets.all(context.responsive(2)),
                   decoration: const BoxDecoration(
                     color: Colors.red,
                     shape: BoxShape.circle,
                   ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
+                  constraints: BoxConstraints(
+                    minWidth: context.sp16,
+                    minHeight: context.sp16,
                   ),
                   child: Center(
                     child: Text(

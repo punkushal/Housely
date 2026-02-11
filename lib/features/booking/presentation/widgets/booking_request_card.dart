@@ -5,12 +5,13 @@ import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
 import 'package:housely/core/extensions/date_extension.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/booking/domain/entity/booking_detail.dart';
 import 'package:housely/features/booking/presentation/bloc/booking_bloc.dart';
 import 'package:housely/features/booking/presentation/widgets/price_details.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
+
+import '../../../../core/extensions/context_extension.dart';
 
 class BookingRequestCard extends StatelessWidget {
   const BookingRequestCard(this.bookingDetail, {super.key});
@@ -18,9 +19,9 @@ class BookingRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: ResponsiveDimensions.paddingSymmetric(context, horizontal: 24),
+      margin: .symmetric(horizontal: context.sp24),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(context.sp8),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -28,8 +29,8 @@ class BookingRequestCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8),
-              topRight: Radius.circular(8),
+              topLeft: Radius.circular(context.sp8),
+              topRight: Radius.circular(context.sp8),
             ),
             child: CustomCacheContainer(
               imageUrl: bookingDetail.property.media.coverImage['url'],
@@ -39,14 +40,13 @@ class BookingRequestCard extends StatelessWidget {
           ),
 
           Padding(
-            padding: ResponsiveDimensions.paddingSymmetric(
-              context,
-              horizontal: 16,
-              vertical: 8,
+            padding: .symmetric(
+              horizontal: context.sp16,
+              vertical: context.sp8,
             ),
             child: Column(
               crossAxisAlignment: .start,
-              spacing: ResponsiveDimensions.spacing12(context),
+              spacing: context.sp12,
               children: [
                 Text(
                   bookingDetail.property.name,
@@ -59,13 +59,13 @@ class BookingRequestCard extends StatelessWidget {
 
                 Row(
                   mainAxisSize: .min,
-                  spacing: ResponsiveDimensions.spacing8(context),
+                  spacing: context.sp8,
                   children: [
                     SvgPicture.asset(
                       ImageConstant.calenderIcon,
                       fit: .scaleDown,
-                      height: ResponsiveDimensions.getSize(context, 40),
-                      width: ResponsiveDimensions.getSize(context, 40),
+                      height: context.sp40,
+                      width: context.sp40,
                     ),
 
                     Column(
@@ -88,7 +88,7 @@ class BookingRequestCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: ResponsiveDimensions.spacing4(context)),
+                SizedBox(height: context.sp4),
                 PriceDetails(
                   price: bookingDetail.property.price.amount,
                   propertyType: bookingDetail.property.type.name,
@@ -96,7 +96,7 @@ class BookingRequestCard extends StatelessWidget {
 
                 // buttons
                 Row(
-                  spacing: ResponsiveDimensions.spacing8(context),
+                  spacing: context.sp8,
                   children: [
                     Expanded(
                       child: CustomButton(

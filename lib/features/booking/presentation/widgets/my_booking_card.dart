@@ -14,6 +14,8 @@ import 'package:housely/features/property/domain/entities/property.dart';
 import 'package:housely/features/property/presentation/bloc/crud/property_crud_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/extensions/context_extension.dart';
+
 class MyBookingCard extends StatelessWidget {
   const MyBookingCard({
     super.key,
@@ -26,17 +28,16 @@ class MyBookingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: ResponsiveDimensions.paddingSymmetric(
-        context,
-        horizontal: 22,
-        vertical: 16,
+      padding: .symmetric(
+        horizontal: context.responsive(22),
+        vertical: context.sp16,
       ),
       width: .infinity,
       color: AppColors.surface,
       child: Column(
         children: [
           Row(
-            spacing: ResponsiveDimensions.spacing8(context),
+            spacing: context.sp8,
             crossAxisAlignment: .end,
             children: [
               // cover image
@@ -54,7 +55,7 @@ class MyBookingCard extends StatelessWidget {
                 crossAxisAlignment: .start,
                 children: [
                   SizedBox(
-                    width: ResponsiveDimensions.getSize(context, 150),
+                    width: context.responsive(150),
                     child: Text(
                       property.name,
                       style: AppTextStyle.bodySemiBold(context),
@@ -73,7 +74,7 @@ class MyBookingCard extends StatelessWidget {
                       ),
 
                       SizedBox(
-                        width: ResponsiveDimensions.getSize(context, 140),
+                        width: context.responsive(140),
                         child: Text(
                           property.location.address,
                           overflow: .ellipsis,
@@ -85,7 +86,7 @@ class MyBookingCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: ResponsiveDimensions.spacing12(context)),
+                  SizedBox(height: context.sp12),
 
                   // selected date
                   Row(
@@ -108,7 +109,7 @@ class MyBookingCard extends StatelessWidget {
               _buildStatusContainer(context, booking.bookingStatus),
             ],
           ),
-          SizedBox(height: ResponsiveDimensions.spacing12(context)),
+          SizedBox(height: context.sp12),
           Divider(color: AppColors.divider),
 
           (booking.bookingStatus.name != "pending" &&
@@ -156,14 +157,10 @@ class MyBookingCard extends StatelessWidget {
     required String label,
   }) {
     return Container(
-      padding: ResponsiveDimensions.paddingSymmetric(
-        context,
-        horizontal: 8,
-        vertical: 2,
-      ),
-      height: ResponsiveDimensions.getSize(context, 20),
+      padding: .symmetric(horizontal: context.sp8, vertical: 2),
+      height: context.sp20,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(context.sp12),
         color: color.withValues(alpha: 0.2),
       ),
       child: Text(
@@ -178,9 +175,9 @@ class MyBookingCard extends StatelessWidget {
     required BookingStatus status,
   }) {
     return Column(
-      spacing: ResponsiveDimensions.spacing8(context),
+      spacing: context.sp8,
       children: [
-        SizedBox(height: ResponsiveDimensions.spacing8(context)),
+        SizedBox(height: context.sp8),
         status == .completed
             ? GestureDetector(
                 onTap: () async {
@@ -227,13 +224,9 @@ class MyBookingCard extends StatelessWidget {
     required String iconPath,
   }) {
     return Row(
-      spacing: ResponsiveDimensions.spacing12(context),
+      spacing: context.sp12,
       children: [
-        SvgPicture.asset(
-          iconPath,
-          width: ResponsiveDimensions.spacing24(context),
-          height: ResponsiveDimensions.spacing24(context),
-        ),
+        SvgPicture.asset(iconPath, width: context.sp24, height: context.sp24),
         Text(
           label,
           style: AppTextStyle.bodyRegular(context, color: AppColors.textHint),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/text_constants.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/widgets/custom_button.dart';
 import 'package:housely/features/booking/presentation/cubit/calendar_cubit.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -71,12 +71,10 @@ class SmartPropertyCalendar extends StatelessWidget {
             children: [
               // Display the selection
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: .all(context.sp16),
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  borderRadius: ResponsiveDimensions.borderRadiusMedium(
-                    context,
-                  ),
+                  borderRadius: .circular(context.sp12),
                 ),
                 child: Text(
                   state.formattedDateText,
@@ -161,7 +159,7 @@ class SmartPropertyCalendar extends StatelessWidget {
                 },
               ),
 
-              SizedBox(height: ResponsiveDimensions.spacing20(context)),
+              SizedBox(height: context.sp20),
             ],
           );
         },

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/image_constant.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 
@@ -123,15 +123,15 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            spacing: ResponsiveDimensions.spacing20(context),
+            spacing: context.sp20,
             children: [
               // Logo Icon
               ScaleTransition(
                 scale: scaleAnimation,
                 child: Image.asset(
                   ImageConstant.logoIcon,
-                  height: ResponsiveDimensions.getSize(context, 105),
-                  width: ResponsiveDimensions.getSize(context, 80),
+                  height: context.responsive(105),
+                  width: context.responsive(80),
                 ),
               ),
 
@@ -142,10 +142,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                   'HOUSELY',
                   style: Theme.of(context).textTheme.headlineLarge!.copyWith(
                     fontWeight: FontWeight.w800,
-                    letterSpacing: ResponsiveDimensions.getSize(
-                      context,
-                      0.16 * 24,
-                    ),
+                    letterSpacing: context.responsiveFont(0.16 * 24),
                   ),
                 ),
               ),

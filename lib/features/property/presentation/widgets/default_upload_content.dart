@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
 import 'package:housely/core/constants/image_constant.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class DefaultUploadContent extends StatelessWidget {
   const DefaultUploadContent({super.key});
@@ -16,8 +16,8 @@ class DefaultUploadContent extends StatelessWidget {
         children: [
           SvgPicture.asset(
             ImageConstant.uploadIcon,
-            width: ResponsiveDimensions.getSize(context, 60),
-            height: ResponsiveDimensions.getSize(context, 60),
+            width: context.responsive(60),
+            height: context.responsive(60),
             fit: .scaleDown,
             colorFilter: ColorFilter.mode(AppColors.primaryPressed, .srcIn),
           ),

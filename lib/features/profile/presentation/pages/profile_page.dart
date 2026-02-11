@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/image_constant.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:housely/features/auth/presentation/cubit/logout_cubit.dart';
 import 'package:housely/features/profile/presentation/cubit/profile_cubit.dart';
@@ -59,16 +59,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
               body: Padding(
-                padding: ResponsiveDimensions.paddingSymmetric(
-                  context,
-                  horizontal: 22,
-                ),
+                padding: .symmetric(horizontal: 22),
                 child: SingleChildScrollView(
                   child: Column(
-                    spacing: ResponsiveDimensions.spacing12(context),
+                    spacing: context.sp12,
                     children: [
                       ProfileSection(),
-                      SizedBox(height: ResponsiveDimensions.spacing16(context)),
+                      SizedBox(height: context.sp16),
                       Divider(color: AppColors.divider),
 
                       OptionTile(

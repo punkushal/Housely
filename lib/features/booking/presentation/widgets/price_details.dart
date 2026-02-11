@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/extensions/number_extension.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/booking/presentation/cubit/calendar_cubit.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
 
@@ -19,15 +19,15 @@ class PriceDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
-      spacing: ResponsiveDimensions.spacing4(context),
+      spacing: context.sp4,
       children: [
         const HeadingLabel(label: "Price Details"),
-        SizedBox(height: ResponsiveDimensions.spacing4(context)),
+        SizedBox(height: context.sp4),
         BlocBuilder<CalendarCubit, CalendarState>(
           builder: (context, state) {
             return Column(
               crossAxisAlignment: .start,
-              spacing: ResponsiveDimensions.spacing8(context),
+              spacing: context.sp8,
               children: [
                 _buildInfo(
                   context,

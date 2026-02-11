@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class CustomCacheContainer extends StatelessWidget {
   const CustomCacheContainer({
@@ -25,8 +25,8 @@ class CustomCacheContainer extends StatelessWidget {
       placeholder: (context, url) => Container(color: AppColors.divider),
       imageUrl: imageUrl,
       fit: .cover,
-      width: ResponsiveDimensions.getSize(context, width),
-      height: ResponsiveDimensions.getHeight(context, height),
+      width: context.responsive(width),
+      height: context.responsive(height),
     );
   }
 }

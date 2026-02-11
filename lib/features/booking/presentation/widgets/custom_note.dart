@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class CustomNote extends StatelessWidget {
   const CustomNote({super.key});
@@ -9,14 +9,10 @@ class CustomNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ResponsiveDimensions.getSize(context, 120),
-      padding: ResponsiveDimensions.paddingSymmetric(
-        context,
-        horizontal: 8,
-        vertical: 4,
-      ),
+      height: context.responsive(120),
+      padding: .symmetric(horizontal: context.sp8, vertical: context.sp4),
       decoration: BoxDecoration(
-        borderRadius: ResponsiveDimensions.borderRadiusSmall(context),
+        borderRadius: .circular(context.sp8),
         border: Border.all(color: AppColors.border),
       ),
       child: RichText(

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/image_constant.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/widgets/custom_text_field.dart';
 import 'package:housely/features/auth/presentation/cubit/auth_cubit.dart';
@@ -65,11 +66,11 @@ class TabWrapper extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: AppColors.textPrimary.withValues(alpha: 0.05),
-                  blurRadius: ResponsiveDimensions.radiusSmall(context),
+                  blurRadius: context.sp8,
                 ),
               ],
             ),
-            padding: ResponsiveDimensions.paddingOnly(context, bottom: 20),
+            padding: EdgeInsets.only(bottom: context.sp20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: List.generate(navList.length, (index) {
@@ -136,10 +137,7 @@ class _HomePageState extends State<HomePage> {
                 centerTitle: false,
                 title: Text('Housely'),
 
-                actionsPadding: ResponsiveDimensions.paddingOnly(
-                  context,
-                  right: 18,
-                ),
+                actionsPadding: EdgeInsets.only(right: context.responsive(18)),
                 actions: [
                   BlocBuilder<NotificationCubit, NotificationState>(
                     builder: (context, state) {
@@ -164,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                   ),
-                  ResponsiveDimensions.gapW8(context),
+                  SizedBox(width: context.sp8),
                   IconWrapper(
                     iconPath: ImageConstant.chatIcon,
                     onTap: () => context.router.push(ChatListRoute()),
@@ -174,34 +172,28 @@ class _HomePageState extends State<HomePage> {
 
               // content
               SliverPadding(
-                padding: ResponsiveDimensions.paddingSymmetric(
-                  context,
-                  horizontal: 24,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: context.sp24),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     Column(
-                      spacing: ResponsiveDimensions.getHeight(context, 16),
+                      spacing: context.sp16,
                       children: [
-                        SizedBox(
-                          height: ResponsiveDimensions.getHeight(context, 16),
-                        ),
+                        SizedBox(height: context.sp16),
 
                         // Search section
                         CustomTextField(
                           prefixIcon: SvgPicture.asset(
                             ImageConstant.searchIcon,
-                            height: ResponsiveDimensions.getHeight(context, 24),
-                            width: ResponsiveDimensions.getSize(context, 24),
+                            height: context.sp24,
+                            width: context.sp24,
                             fit: .scaleDown,
                           ),
                           hintText: "Search Property",
                           readOnly: true,
                           onTap: () => context.router.push(ExploreRoute()),
-                          contentPadding: ResponsiveDimensions.paddingSymmetric(
-                            context,
-                            horizontal: 16,
-                            vertical: 14,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: context.sp16,
+                            vertical: context.responsive(14),
                           ),
                         ),
 

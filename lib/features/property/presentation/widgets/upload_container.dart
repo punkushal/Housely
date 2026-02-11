@@ -3,11 +3,12 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/custom_cache_container.dart';
 import 'package:housely/features/property/presentation/widgets/default_upload_content.dart';
 import 'package:housely/features/property/presentation/widgets/images_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../../../core/extensions/context_extension.dart';
 
 class UploadContainer extends StatelessWidget {
   UploadContainer({
@@ -69,7 +70,7 @@ class UploadContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
-      spacing: ResponsiveDimensions.getSize(context, 8),
+      spacing: context.sp8,
       children: [
         // label
         Text(labelText, style: AppTextStyle.bodySemiBold(context)),
@@ -78,7 +79,7 @@ class UploadContainer extends StatelessWidget {
         DottedBorder(
           options: RoundedRectDottedBorderOptions(
             padding: .zero,
-            radius: Radius.circular(ResponsiveDimensions.radiusSmall(context)),
+            radius: .circular(context.sp8),
             dashPattern: [4, 5],
             color: AppColors.border,
           ),
@@ -89,9 +90,9 @@ class UploadContainer extends StatelessWidget {
             child: Container(
               // to take up all the available width provided by parent widget
               width: double.infinity,
-              height: ResponsiveDimensions.getHeight(context, 188),
+              height: context.responsive(188),
               decoration: BoxDecoration(
-                borderRadius: ResponsiveDimensions.borderRadiusMedium(context),
+                borderRadius: .circular(context.sp12),
                 border: Border.all(style: .none),
               ),
               child: _buildContent(context),
@@ -106,7 +107,7 @@ class UploadContainer extends StatelessWidget {
     // Single Image Display
     if (!hasMany && singleImage != null) {
       return ClipRRect(
-        borderRadius: ResponsiveDimensions.borderRadiusSmall(context),
+        borderRadius: .circular(context.sp8),
         child: Image.file(singleImage!, fit: BoxFit.cover),
       );
     }

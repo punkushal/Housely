@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
 import 'package:housely/core/validator/form_validator.dart';
 import 'package:housely/core/widgets/custom_button.dart';
@@ -101,20 +101,17 @@ class _SignupPageState extends State<SignupPage> {
           }
         },
         child: Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(backgroundColor: Colors.transparent),
           body: SafeArea(
             child: Padding(
-              padding: ResponsiveDimensions.paddingSymmetric(
-                context,
-                horizontal: 24,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: context.sp24),
               child: SingleChildScrollView(
                 dragStartBehavior: .down,
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisAlignment: .end,
-                    spacing: ResponsiveDimensions.getHeight(context, 16),
+                    spacing: context.sp16,
                     children: [
                       // welcome message section
                       WelcomeMessage(
@@ -123,9 +120,7 @@ class _SignupPageState extends State<SignupPage> {
                             "Sign in with your email and password\nor social media to continue",
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 12),
-                      ),
+                      SizedBox(height: context.sp12),
 
                       // Email input field
                       CustomLabelTextField(
@@ -198,7 +193,11 @@ class _SignupPageState extends State<SignupPage> {
                                 onTap: () => context
                                     .read<AuthFormCubit>()
                                     .toggleConfirmPasswordVissibility(),
-                                child: Icon(Icons.visibility_off_outlined),
+                                child: Icon(
+                                  state
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility,
+                                ),
                               ),
                               validator: (value) =>
                                   FormValidators.validateConfirmPassword(
@@ -226,9 +225,7 @@ class _SignupPageState extends State<SignupPage> {
                         },
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 12),
-                      ),
+                      SizedBox(height: context.sp12),
 
                       // sign up button
                       BlocConsumer<RegisterCubit, RegisterState>(
@@ -266,9 +263,7 @@ class _SignupPageState extends State<SignupPage> {
                         },
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 6),
-                      ),
+                      SizedBox(height: context.responsive(6)),
 
                       // or section
                       Text(
@@ -276,9 +271,7 @@ class _SignupPageState extends State<SignupPage> {
                         style: AppTextStyle.bodyRegular(context, fontSize: 14),
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 4),
-                      ),
+                      SizedBox(height: context.sp4),
 
                       // google sign in section
                       BlocConsumer<GoogleSigninCubit, GoogleSigninState>(
@@ -306,9 +299,7 @@ class _SignupPageState extends State<SignupPage> {
                           );
                         },
                       ),
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 4),
-                      ),
+                      SizedBox(height: context.sp4),
 
                       // sign up section
                       RedirectSection(
@@ -319,9 +310,7 @@ class _SignupPageState extends State<SignupPage> {
                         },
                       ),
 
-                      SizedBox(
-                        height: ResponsiveDimensions.getHeight(context, 4),
-                      ),
+                      SizedBox(height: context.sp4),
                     ],
                   ),
                 ),

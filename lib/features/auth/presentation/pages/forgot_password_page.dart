@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/network/cubit/connectivity_cubit.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/core/utils/snack_bar_helper.dart';
@@ -63,15 +64,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             ),
             child: Column(
               crossAxisAlignment: .start,
-              spacing: ResponsiveDimensions.getHeight(context, 16),
+              spacing: context.sp16,
               children: [
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 4)),
+                SizedBox(height: context.sp4),
                 WelcomeMessage(
                   headingTitle: "Forgot Password",
                   subtitle: "Enter your email to get reset code",
                 ),
 
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 8)),
+                SizedBox(height: context.sp8),
 
                 // Email input field
                 Form(
@@ -110,7 +111,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   },
                 ),
 
-                SizedBox(height: ResponsiveDimensions.getHeight(context, 32)),
+                SizedBox(height: context.sp32),
               ],
             ),
           ),

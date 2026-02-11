@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class WelcomeMessage extends StatelessWidget {
   const WelcomeMessage({
@@ -22,9 +22,9 @@ class WelcomeMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: ResponsiveDimensions.paddingOnly(context, right: right ?? 58),
+      padding: EdgeInsets.only(right: right ?? context.responsive(70)),
       child: Column(
-        spacing: ResponsiveDimensions.getHeight(context, 8),
+        spacing: context.sp8,
         crossAxisAlignment: .start,
         children: [
           // heading title section

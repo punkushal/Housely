@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_text_style.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class CheckboxSection extends StatelessWidget {
   const CheckboxSection({
@@ -26,12 +26,17 @@ class CheckboxSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      spacing: ResponsiveDimensions.spacing8(context),
+      spacing: context.sp8,
       children: [
+        SizedBox(width: context.responsive(2)),
         SizedBox(
-          width: ResponsiveDimensions.getSize(context, 16),
-          height: ResponsiveDimensions.getHeight(context, 16),
-          child: Checkbox(value: value, onChanged: onChanged),
+          width: context.sp12,
+          height: context.sp12,
+          child: Checkbox(
+            value: value,
+            onChanged: onChanged,
+            visualDensity: .compact,
+          ),
         ),
         hasHighlightText
             ? RichText(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:housely/core/constants/app_colors.dart';
-import 'package:housely/core/responsive/responsive_text.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 
 class AppTextStyle {
   AppTextStyle._();
@@ -20,7 +20,7 @@ class AppTextStyle {
   }) => TextStyle(
     fontFamily: _fontFamily,
     fontWeight: fontWeight,
-    fontSize: ResponsiveText.getSize(context, fontSize: fontSize),
+    fontSize: context.responsiveFont(fontSize),
     color: color ?? AppColors.textPrimary,
     height: lineHeight / fontSize,
   );

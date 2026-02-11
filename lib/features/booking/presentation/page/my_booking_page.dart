@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:housely/app/app_router.gr.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/app_text_style.dart';
+import 'package:housely/core/extensions/context_extension.dart';
 import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/booking/domain/entity/booking_detail.dart';
 import 'package:housely/features/booking/presentation/bloc/booking_bloc.dart';
@@ -73,21 +74,13 @@ class _BookingPageState extends State<MyBookingPage>
             appBar: AppBar(
               title: Text('My Booking'),
               bottom: PreferredSize(
-                preferredSize: Size(
-                  double.infinity,
-                  ResponsiveDimensions.getSize(context, 44),
-                ),
+                preferredSize: Size(double.infinity, context.responsive(44)),
                 child: Padding(
-                  padding: ResponsiveDimensions.paddingSymmetric(
-                    context,
-                    horizontal: 24,
-                  ),
+                  padding: .symmetric(horizontal: context.sp24),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Color(0xFFE5E7EB),
-                      borderRadius: ResponsiveDimensions.borderRadiusSmall(
-                        context,
-                      ),
+                      borderRadius: .circular(context.sp8),
                     ),
 
                     child: TabBar(
@@ -109,10 +102,9 @@ class _BookingPageState extends State<MyBookingPage>
                         ),
                         color: AppColors.primary,
                       ),
-                      indicatorPadding: ResponsiveDimensions.paddingSymmetric(
-                        context,
-                        horizontal: 4,
-                        vertical: 6,
+                      indicatorPadding: .symmetric(
+                        horizontal: context.sp4,
+                        vertical: context.responsive(6),
                       ),
                       tabs: [
                         Tab(text: 'Pending'),

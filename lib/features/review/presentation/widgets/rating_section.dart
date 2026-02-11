@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:housely/core/constants/app_colors.dart';
 import 'package:housely/core/constants/image_constant.dart';
-import 'package:housely/core/responsive/responsive_dimensions.dart';
 import 'package:housely/features/detail/presentation/widgets/heading_label.dart';
 import 'package:housely/features/review/presentation/bloc/review_bloc.dart';
+
+import '../../../../core/extensions/context_extension.dart';
 
 class RatingSection extends StatelessWidget {
   const RatingSection({super.key});
@@ -15,7 +16,7 @@ class RatingSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: .start,
-      spacing: ResponsiveDimensions.spacing8(context),
+      spacing: context.sp8,
       children: [
         const HeadingLabel(label: 'How was your experience?'),
         _buildRatingStars(context),
@@ -26,7 +27,7 @@ class RatingSection extends StatelessWidget {
   Widget _buildRatingStars(BuildContext context) {
     int currentIndex = -1;
     return Row(
-      spacing: ResponsiveDimensions.spacing8(context),
+      spacing: context.sp8,
       children: List.generate(5, (index) {
         return GestureDetector(
           onTap: () {
@@ -37,8 +38,8 @@ class RatingSection extends StatelessWidget {
             builder: (context, state) {
               return SvgPicture.asset(
                 ImageConstant.starIcon,
-                height: ResponsiveDimensions.spacing24(context),
-                width: ResponsiveDimensions.spacing24(context),
+                height: context.sp24,
+                width: context.sp24,
                 colorFilter: ColorFilter.mode(
                   (state.ratings == null || state.ratings! < 0)
                       ? AppColors.border
